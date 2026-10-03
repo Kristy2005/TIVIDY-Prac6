@@ -1,0 +1,22 @@
+# Build outputs & executables
+*.o
+*.out
+taskforge
+taskforge_cov
+bin/
+build/
+obj/
+
+# Coverage reports
+coverage/
+*.gcda
+*.gcno
+*.gcov
+*.info
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.vpp.lck
+*.vpp_bak_*
+~$*
