@@ -1,3 +1,19 @@
+## TIVIDY - Practical 6
+
+## TIVIDY is a generic case-processing workflow management system developed for COS 214 Practical 6.
+
+The system is designed to manage workflows involving case submission, assignment, processing, escalation, resolution and closure.
+
+## Selected Scenario
+The selected scenario is University Student Complaint Management.
+
+A student submits a complaint, which is reviewed, assigned to the appropriate department, investigated, resolved or escalated, and eventually resolved or closed.
+
+## Repository Structure
+
+README.md - Project overview and team contributions
+docs/ - Research, UML diagrams, design documentation and supporting project files
+
 ## Team Contributions
 
 ### Task 1 – Research
