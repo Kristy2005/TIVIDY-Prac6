@@ -37,9 +37,9 @@ Lindokuhle Skosana and Joshua Peter worked on the UML Activity Diagrams for the 
 Kristy Heesen, Musa Msibi and Lindokuhle Skosana worked on identifying and justifying the GoF design patterns used in TIVIDY. This included defining the design problems, pattern participants, collaborations, variation points and how the patterns work together within the workflow management system.
 
 ### Task 5 – UML Class Diagram
-**Contributors:** [ADD NAMES]
+**Contributors:** Kristy Heesen
 
-The contributors worked on developing the complete UML Class Diagram for TIVIDY. This included the main classes, relationships, multiplicities, attributes, operations, ownership relationships and the collaborations between the different design patterns and subsystems.
+Kristy Heesen worked on developing the complete UML Class Diagram for TIVIDY. This included the main classes, relationships, multiplicities, attributes, operations, ownership relationships and the collaborations between the different design patterns and subsystems.
 
 ### Task 6 – Runtime Behaviour Diagrams
 **Contributors:** LM Kabongo, Musa Msibi
