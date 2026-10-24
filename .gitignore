@@ -1,11 +1,7 @@
 # Build outputs & executables
 *.o
 *.out
-taskforge
-taskforge_cov
-bin/
-build/
-obj/
+
 
 # Coverage reports
 coverage/
