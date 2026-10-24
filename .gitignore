@@ -1,18 +1,29 @@
-# Build outputs & executables
+# Build output
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Testing/
+
+# Compiled artefacts
 *.o
+*.a
 *.out
+tividy
+tividy_tests
 
+# Generated docs
+html/
+latex/
+docs/doxygen/
 
-# Coverage reports
-coverage/
-*.gcda
-*.gcno
-*.gcov
-*.info
-
-# IDE / Editor files
+# Editor / OS
 .vscode/
 .idea/
-*.vpp.lck
-*.vpp_bak_*
-~$*
+*.swp
+.DS_Store
+
+# Valgrind / debug
+core
+vgcore.*

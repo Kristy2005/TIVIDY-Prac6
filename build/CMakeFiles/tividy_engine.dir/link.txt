@@ -1,2 +1,0 @@
-/usr/bin/ar qc libtividy_engine.a CMakeFiles/tividy_engine.dir/src/engine/Placeholder.cpp.o
-/usr/bin/ranlib libtividy_engine.a

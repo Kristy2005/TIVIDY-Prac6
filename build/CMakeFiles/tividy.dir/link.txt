@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/tividy.dir/src/main.cpp.o -o tividy  libtividy_engine.a 

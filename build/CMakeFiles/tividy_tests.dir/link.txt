@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/tividy_tests.dir/tests/smoke_test.cpp.o CMakeFiles/tividy_tests.dir/tests/test_main.cpp.o -o tividy_tests  libtividy_engine.a 
