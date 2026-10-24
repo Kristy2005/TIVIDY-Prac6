@@ -1,6 +1,5 @@
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-TEST_CASE("smoke test"){
+TEST_CASE("smoke test") {
     CHECK(1 + 1 == 2);
 }
