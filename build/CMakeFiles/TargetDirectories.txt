@@ -1,0 +1,6 @@
+/home/lindo/Second Year(r)/COS 214/PRACS/TIVIDY-Prac6/build/CMakeFiles/tividy_engine.dir
+/home/lindo/Second Year(r)/COS 214/PRACS/TIVIDY-Prac6/build/CMakeFiles/tividy.dir
+/home/lindo/Second Year(r)/COS 214/PRACS/TIVIDY-Prac6/build/CMakeFiles/tividy_tests.dir
+/home/lindo/Second Year(r)/COS 214/PRACS/TIVIDY-Prac6/build/CMakeFiles/test.dir
+/home/lindo/Second Year(r)/COS 214/PRACS/TIVIDY-Prac6/build/CMakeFiles/edit_cache.dir
+/home/lindo/Second Year(r)/COS 214/PRACS/TIVIDY-Prac6/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,19 @@
+Start testing: Oct 24 16:12 SAST
+----------------------------------------------------------
+Unable to find executable: /home/lindo/Second Year(r)/COS 214/PRACS/TIVIDY-Prac6/build/tividy_tests
+1/1 Testing: all_tests
+1/1 Test: all_tests
+Command: ""
+Directory: /home/lindo/Second Year(r)/COS 214/PRACS/TIVIDY-Prac6/build
+"all_tests" start time: 
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"all_tests" end time: Oct 24 16:12 SAST
+"all_tests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 24 16:12 SAST

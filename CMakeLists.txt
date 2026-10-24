@@ -20,7 +20,7 @@ target_link_libraries(tividy tividy_engine)
 
 # Unit tests
 enable_testing()
-file(GLOB_RECURSE TEST_SRC CONFIGURE_DEPENDS test/*.cpp)
+file(GLOB_RECURSE TEST_SRC CONFIGURE_DEPENDS tests/*.cpp)
 add_executable(tividy_tests ${TEST_SRC})
 target_include_directories(tividy_tests PRIVATE test)
 target_link_libraries(tividy_tests tividy_engine)

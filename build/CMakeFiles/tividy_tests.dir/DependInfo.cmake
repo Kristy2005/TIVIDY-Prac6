@@ -1,0 +1,21 @@
+
+# Consider dependencies only in project.
+set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
+
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  )
+
+# The set of dependency files which are needed:
+set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/lindo/Second Year(r)/COS 214/PRACS/TIVIDY-Prac6/tests/smoke_test.cpp" "CMakeFiles/tividy_tests.dir/tests/smoke_test.cpp.o" "gcc" "CMakeFiles/tividy_tests.dir/tests/smoke_test.cpp.o.d"
+  "/home/lindo/Second Year(r)/COS 214/PRACS/TIVIDY-Prac6/tests/test_main.cpp" "CMakeFiles/tividy_tests.dir/tests/test_main.cpp.o" "gcc" "CMakeFiles/tividy_tests.dir/tests/test_main.cpp.o.d"
+  )
+
+# Targets to which this target links.
+set(CMAKE_TARGET_LINKED_INFO_FILES
+  "/home/lindo/Second Year(r)/COS 214/PRACS/TIVIDY-Prac6/build/CMakeFiles/tividy_engine.dir/DependInfo.cmake"
+  )
+
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")
