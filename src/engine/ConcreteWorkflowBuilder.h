@@ -16,6 +16,9 @@ public:
 	template <typename T>
 	void addRole(Role<T>* role) {
 		// Because it's a template, define it right here in the header!
+		//CLASSES THAT UTILIZE TEMPLATE CLASS OBJECTS MUST DEFINE A FUNCTION CONTAINING THE 
+		// TEMPLATE CLASSES OBJECT IN THE HEADER FILE FOR THE C++11 COMPILER TO CORRECTLY LINK THE .H & .CPP
+		//DO NOT REMOVE PLEASE 
 		// TODO - implement ConcreteWorkflowBuilder::addRole
 		throw "Not yet implemented";
 	}
