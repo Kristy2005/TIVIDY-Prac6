@@ -34,3 +34,24 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
       - name: Build docs
         run: doxygen Doxyfile
+
+  protect-files:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fail if protected files are deleted
+        run: |
+          PROTECTED="CMakeLists.txt Makefile .gitignore Doxyfile tests/doctest.h tests/test_main.cpp .github/workflows/ci.yml"
+          DELETED=$(git diff --no-renames --name-only --diff-filter=D origin/${{ github.base_ref }}...HEAD)
+          fail=0
+          for f in $PROTECTED; do
+            if echo "$DELETED" | grep -qx "$f"; then
+              echo "::error file=$f::This PR deletes protected file $f"
+              fail=1
+            fi
+          done
+          exit $fail
