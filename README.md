@@ -1,3 +1,6 @@
+# TIVIDY-Prac6
+generic case-processing workflow management system
+
 ## TIVIDY - Practical 6
 
 ## TIVIDY is a generic case-processing workflow management system developed for COS 214 Practical 6.
