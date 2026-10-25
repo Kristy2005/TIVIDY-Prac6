@@ -10,7 +10,7 @@ void WorkflowInstance::submit() {
 	throw "Not yet implemented";
 }
 
-void WorkflowInstance::activate() {
+void WorkflowInstance::activate(){
 	// TODO - implement WorkflowInstance::activate
 	throw "Not yet implemented";
 }

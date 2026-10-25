@@ -1,7 +1,9 @@
 #ifndef FINALDECISIONHANDLER_H
 #define FINALDECISIONHANDLER_H
 
-class FinalDecisionHandler : Handler {
+#include "Handler.h"
+
+class FinalDecisionHandler :public Handler {
 
 
 public:

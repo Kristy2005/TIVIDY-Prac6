@@ -1,6 +1,8 @@
 #ifndef WORKFLOWOBSERVER_H
 #define WORKFLOWOBSERVER_H
 
+#include "WorkflowInstance.h"
+
 class WorkflowObserver {
 
 public:

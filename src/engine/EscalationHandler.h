@@ -1,7 +1,9 @@
 #ifndef ESCALATIONHANDLER_H
 #define ESCALATIONHANDLER_H
 
-class EscalationHandler : Handler {
+#include "Handler.h"
+
+class EscalationHandler :public Handler {
 
 
 public:
