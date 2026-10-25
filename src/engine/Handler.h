@@ -1,7 +1,8 @@
 #ifndef HANDLER_H
 #define HANDLER_H
 
-#include "WorkflowInstance.h"
+// #include "WorkflowInstance.h"
+class WorkflowInstance;
 
 class Handler {
 

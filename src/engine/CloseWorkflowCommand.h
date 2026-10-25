@@ -7,9 +7,9 @@ class CloseWorkflowCommand :public Command {
 
 
 public:
-	void execute();
+	virtual void execute()override;
 
-	void undo();
+	virtual void undo()override;
 };
 
 #endif

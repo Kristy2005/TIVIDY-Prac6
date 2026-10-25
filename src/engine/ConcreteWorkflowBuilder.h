@@ -1,7 +1,11 @@
 #ifndef CONCRETEWORKFLOWBUILDER_H
 #define CONCRETEWORKFLOWBUILDER_H
 
-class ConcreteWorkflowBuilder : WorkflowBuilder {
+#include "WorkflowBuilder.h"
+// #include "WorkflowDefinition.h"
+class WorkflowDefinition;
+
+class ConcreteWorkflowBuilder :public WorkflowBuilder {
 
 public:
 	WorkflowDefinition* definition;

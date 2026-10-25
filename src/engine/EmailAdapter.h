@@ -1,12 +1,16 @@
 #ifndef EMAILADAPTER_H
 #define EMAILADAPTER_H
 
-class EmailAdapter : NotificationService {
+#include "NotificationService.h"
+#include "ExternalEmailService.h"
+#include <string>
+
+class EmailAdapter :public NotificationService {
 
 public:
 	ExternalEmailService* service;
 
-	void sendNotification(Participant* recipient, string message);
+	void sendNotification(Participant* recipient, std::string message);
 };
 
 #endif

@@ -2,6 +2,7 @@
 #define WORKFLOWOBSERVER_H
 
 #include "WorkflowInstance.h"
+class WorkflowInstance;
 
 class WorkflowObserver {
 

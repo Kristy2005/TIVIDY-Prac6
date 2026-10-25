@@ -1,4 +1,5 @@
 #include "NotificationObserver.h"
+#include "WorkflowInstance.h"
 
 void NotificationObserver::update(WorkflowInstance* instance) {
 	// TODO - implement NotificationObserver::update
