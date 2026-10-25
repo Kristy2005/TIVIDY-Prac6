@@ -13,7 +13,7 @@ private:
 public:
 	virtual void execute()override;
 
-	bool isComplete();
+	virtual bool isComplete()override;
 
 	void complete();
 };

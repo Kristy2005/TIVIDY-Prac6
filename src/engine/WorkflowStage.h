@@ -13,9 +13,9 @@ public:
 
 	void remove(WorkflowComponent* component);
 
-	void execute();
+	virtual void execute()override;
 
-	bool isComplete();
+	virtual bool isComplete()override;
 };
 
 #endif

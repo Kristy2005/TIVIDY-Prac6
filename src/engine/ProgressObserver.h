@@ -8,7 +8,7 @@ class ProgressObserver :public WorkflowObserver {
 
 
 public:
-	void update(WorkflowInstance* instance);
+	virtual void update(WorkflowInstance* instance)override;
 };
 
 #endif

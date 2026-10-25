@@ -5,6 +5,7 @@
 #include "Role.h"
 #include "AssignmentStrategy.h"
 #include "Handler.h"
+class WorkflowDefinition;
 
 class WorkflowBuilder {
 
@@ -12,7 +13,7 @@ class WorkflowBuilder {
 public:
 	virtual void addWorkItem(WorkItem* item) = 0;
 
-	virtual void addRole(Role* role) = 0;
+	virtual void addRole(Role<void>* role) = 0;
 
 	virtual void addDependency(WorkItem* before, WorkItem* after) = 0;
 

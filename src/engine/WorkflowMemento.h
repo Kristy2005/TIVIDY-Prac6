@@ -1,7 +1,8 @@
 #ifndef WORKFLOWMEMENTO_H
 #define WORKFLOWMEMENTO_H
 
-#include "WorkflowState.h"
+// #include "WorkflowState.h"
+class WorkflowState;
 
 class WorkflowMemento {
 

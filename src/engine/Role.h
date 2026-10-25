@@ -3,6 +3,7 @@
 
 #include <string>
 
+template <typename T>
 class Role {
 
 private:
@@ -12,4 +13,5 @@ public:
 	void configureRole();
 };
 
+// #include "Role.cpp"
 #endif

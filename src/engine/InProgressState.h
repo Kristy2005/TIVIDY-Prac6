@@ -8,11 +8,15 @@ class InProgressState :public WorkflowState {
 
 
 public:
-	void escalate(WorkflowInstance* instance);
+	virtual void activate(WorkflowInstance* instance)override;
 
-	void resolve(WorkflowInstance* instance);
+	virtual void startProcessing(WorkflowInstance* instance)override;
 
-	void close(WorkflowInstance* instance);
+	virtual void escalate(WorkflowInstance* instance)override;
+
+	virtual void resolve(WorkflowInstance* instance)override;
+
+	virtual void close(WorkflowInstance* instance)override;
 };
 
 #endif

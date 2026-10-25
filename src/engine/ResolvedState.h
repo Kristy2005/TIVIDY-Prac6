@@ -15,4 +15,4 @@ class ResolvedState :public WorkflowState {
 	virtual void close(WorkflowInstance* instance)override;
 };
 
-#endif
+#endif //RESOLVEDSTATE_H

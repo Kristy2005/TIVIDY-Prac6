@@ -2,8 +2,10 @@
 #define WORKFLOWINSTANCE_H
 
 #include "WorkflowDefinition.h"
-#include "WorkflowObserver.h"
+// #include "WorkflowObserver.h"
 #include "WorkflowMemento.h"
+
+class WorkflowObserver;
 
 #include <vector>
 
