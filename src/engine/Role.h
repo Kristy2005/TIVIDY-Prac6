@@ -1,10 +1,12 @@
 #ifndef ROLE_H
 #define ROLE_H
 
+#include <string>
+
 class Role {
 
 private:
-	string name;
+	std::string name;
 
 public:
 	void configureRole();

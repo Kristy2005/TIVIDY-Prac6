@@ -7,7 +7,7 @@
 class ApprovalHandler :public Handler{
 
 public:
-	virtual void handleRequest(WorkflowInstance* instance)override;
+	void handleRequest(WorkflowInstance* instance);
 };
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef WORKFLOWDIRECTOR_H
 #define WORKFLOWDIRECTOR_H
 
+#include "WorkflowBuilder.h"
+
 class WorkflowDirector {
 
 private:

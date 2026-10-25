@@ -1,10 +1,15 @@
 #ifndef WORKFLOWDEFINITION_H
 #define WORKFLOWDEFINITION_H
 
+#include "WorkflowComponent.h"
+#include "AssignmentStrategy.h"
+#include "Handler.h"
+#include <string>
+
 class WorkflowDefinition {
 
 private:
-	string name;
+	std::string name;
 	WorkflowComponent* root;
 	AssignmentStrategy* strategy;
 	Handler* escalationHandler;

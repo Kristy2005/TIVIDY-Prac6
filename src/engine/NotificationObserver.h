@@ -1,7 +1,10 @@
 #ifndef NOTIFICATIONOBSERVER_H
 #define NOTIFICATIONOBSERVER_H
 
-class NotificationObserver : WorkflowObserver {
+#include "WorkflowObserver.h"
+#include "WorkflowInstance.h"
+
+class NotificationObserver :public WorkflowObserver {
 
 
 public:

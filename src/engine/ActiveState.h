@@ -2,14 +2,14 @@
 #define ACTIVESTATE_H
 
 #include "WorkflowState.h"
-class WorkflowInstance;
+#include "WorkflowInstance.h"
 
 class ActiveState :public WorkflowState {
 
 public:
-	void startProcessing(WorkflowInstance* instance);
+	virtual void startProcessing(WorkflowInstance* instance)override;
 
-	void close(WorkflowInstance* instance);
+	virtual void close(WorkflowInstance* instance)override;
 };
 
 #endif

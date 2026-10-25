@@ -1,6 +1,8 @@
 #ifndef WORKFLOWMEMENTO_H
 #define WORKFLOWMEMENTO_H
 
+#include "WorkflowState.h"
+
 class WorkflowMemento {
 
 private:
@@ -8,3 +10,5 @@ private:
 };
 
 #endif
+
+// WORKFLOWMEMENTO_H

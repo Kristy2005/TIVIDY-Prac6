@@ -1,14 +1,17 @@
 #ifndef WORKITEM_H
 #define WORKITEM_H
 
-class WorkItem : WorkflowComponent {
+#include "WorkflowComponent.h"
+#include <string>
+
+class WorkItem :public WorkflowComponent {
 
 private:
-	string name;
+	std::string name;
 	bool completed;
 
 public:
-	void execute();
+	virtual void execute()override;
 
 	bool isComplete();
 

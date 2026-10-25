@@ -1,7 +1,10 @@
 #ifndef INPROGRESSSTATE_H
 #define INPROGRESSSTATE_H
 
-class InProgressState : WorkflowState {
+#include "WorkflowState.h"
+#include "WorkflowInstance.h"
+
+class InProgressState :public WorkflowState {
 
 
 public:

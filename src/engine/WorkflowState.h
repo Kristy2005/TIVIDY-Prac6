@@ -1,8 +1,9 @@
 #ifndef WORKFLOWSTATE_H
 #define WORKFLOWSTATE_H
 
-class WorkflowState {
+#include "WorkflowInstance.h"
 
+class WorkflowState {
 
 public:
 	virtual void activate(WorkflowInstance* instance) = 0;

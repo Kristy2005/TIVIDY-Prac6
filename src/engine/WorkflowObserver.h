@@ -3,7 +3,6 @@
 
 class WorkflowObserver {
 
-
 public:
 	virtual void update(WorkflowInstance* instance) = 0;
 };

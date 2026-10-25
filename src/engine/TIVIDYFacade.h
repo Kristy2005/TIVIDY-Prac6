@@ -1,6 +1,9 @@
 #ifndef TIVIDYFACADE_H
 #define TIVIDYFACADE_H
 
+#include "WorkflowDefinition.h"
+#include "WorkflowInstance.h"
+
 class TIVIDYFacade {
 
 

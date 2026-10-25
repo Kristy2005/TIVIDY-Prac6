@@ -1,10 +1,13 @@
 #ifndef WORKFLOWSTAGE_H
 #define WORKFLOWSTAGE_H
 
-class WorkflowStage : WorkflowComponent {
+#include "WorkflowComponent.h"
+#include <vector>
+
+class WorkflowStage :public WorkflowComponent {
 
 public:
-	vector<WorkflowComponent*> components;
+	std::vector<WorkflowComponent*> components;
 
 	void add(WorkflowComponent* component);
 

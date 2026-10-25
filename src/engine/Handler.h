@@ -9,9 +9,10 @@ private:
 	Handler* successor;
 
 public:
-	void setSuccessor(Handler* handler);
+//to be overridden later 
+	virtual void setSuccessor(Handler* handler);
 
-	void handleRequest(WorkflowInstance* instance);
+	virtual void handleRequest(WorkflowInstance* instance);
 };
 
 #endif

@@ -1,7 +1,9 @@
 #ifndef WORKHANDLER_H
 #define WORKHANDLER_H
 
-class WorkHandler : Handler {
+#include "Handler.h"
+
+class WorkHandler :public Handler {
 
 
 public:

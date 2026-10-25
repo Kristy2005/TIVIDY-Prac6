@@ -7,7 +7,7 @@ class WorkloadBasedAssignment :public AssignmentStrategy {
 
 
 public:
-	Participant* assign(WorkItem* item, vector<Participant*> participants);
+	Participant* assign(WorkItem* item, std::vector<Participant*> participants);
 };
 
 #endif

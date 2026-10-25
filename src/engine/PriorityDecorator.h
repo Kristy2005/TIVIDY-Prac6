@@ -1,16 +1,18 @@
 #ifndef PRIORITYDECORATOR_H
 #define PRIORITYDECORATOR_H
 
-class PriorityDecorator : WorkItemDecorator {
+#include "WorkItemDecorator.h"
+
+class PriorityDecorator :public WorkItemDecorator {
 
 public:
 	int priority;
 
 	int getPriority();
 
-	void execute();
+	virtual void execute()override;
 
-	bool isComplete();
+	virtual bool isComplete()override;
 };
 
 #endif

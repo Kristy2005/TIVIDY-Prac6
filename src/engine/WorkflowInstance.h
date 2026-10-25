@@ -1,12 +1,18 @@
 #ifndef WORKFLOWINSTANCE_H
 #define WORKFLOWINSTANCE_H
 
+#include "WorkflowDefinition.h"
+#include "WorkflowObserver.h"
+#include "WorkflowMemento.h"
+
+#include <vector>
+
 class WorkflowInstance {
 
 private:
 	WorkflowState* currentState;
 	WorkflowDefinition* definition;
-	vector<WorkflowObserver*> observers;
+	std::vector<WorkflowObserver*> observers;
 
 public:
 	void setState(WorkflowState* state);

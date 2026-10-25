@@ -1,10 +1,13 @@
 #ifndef PARTICIPANT_H
 #define PARTICIPANT_H
 
+#include <string>
+#include "WorkItem.h"
+
 class Participant {
 
 private:
-	string name;
+	std::string name;
 	int workload;
 
 public:

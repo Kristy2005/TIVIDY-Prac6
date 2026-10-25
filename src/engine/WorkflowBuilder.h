@@ -1,6 +1,11 @@
 #ifndef WORKFLOWBUILDER_H
 #define WORKFLOWBUILDER_H
 
+#include "WorkItem.h"
+#include "Role.h"
+#include "AssignmentStrategy.h"
+#include "Handler.h"
+
 class WorkflowBuilder {
 
 

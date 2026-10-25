@@ -1,7 +1,10 @@
 #ifndef HISTORYOBSERVER_H
 #define HISTORYOBSERVER_H
 
-class HistoryObserver : WorkflowObserver {
+#include "WorkflowObserver.h"
+#include "WorkflowInstance.h"
+
+class HistoryObserver :public WorkflowObserver {
 
 
 public:

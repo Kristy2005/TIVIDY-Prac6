@@ -1,7 +1,10 @@
 #ifndef PROGRESSOBSERVER_H
 #define PROGRESSOBSERVER_H
 
-class ProgressObserver : WorkflowObserver {
+#include "WorkflowObserver.h"
+#include "WorkflowInstance.h"
+
+class ProgressObserver :public WorkflowObserver {
 
 
 public:

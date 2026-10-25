@@ -1,7 +1,9 @@
 #ifndef WORKITEMDECORATOR_H
 #define WORKITEMDECORATOR_H
 
-class WorkItemDecorator : WorkflowComponent {
+#include "WorkflowComponent.h"
+
+class WorkItemDecorator :public WorkflowComponent {
 
 public:
 	WorkflowComponent* component;
