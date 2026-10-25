@@ -1,13 +1,15 @@
 #ifndef CANCELWORKCOMMAND_H
 #define CANCELWORKCOMMAND_H
 
-class CancelWorkCommand : Command {
+#include "Command.h"
+
+class CancelWorkCommand :public Command {
 
 
 public:
-	void execute();
+	virtual void execute()override;
 
-	void undo();
+	virtual void undo()override;
 };
 
 #endif

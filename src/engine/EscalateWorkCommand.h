@@ -1,13 +1,15 @@
 #ifndef ESCALATEWORKCOMMAND_H
 #define ESCALATEWORKCOMMAND_H
 
-class EscalateWorkCommand : Command {
+#include "Command.h"
+
+class EscalateWorkCommand :public Command {
 
 
 public:
-	void execute();
+	virtual void execute()override;
 
-	void undo();
+	virtual void undo()override;
 };
 
 #endif

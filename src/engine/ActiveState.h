@@ -1,8 +1,10 @@
 #ifndef ACTIVESTATE_H
 #define ACTIVESTATE_H
 
-class ActiveState : WorkflowState {
+#include "WorkflowState.h"
+class WorkflowInstance;
 
+class ActiveState :public WorkflowState {
 
 public:
 	void startProcessing(WorkflowInstance* instance);

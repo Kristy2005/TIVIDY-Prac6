@@ -1,13 +1,14 @@
 #ifndef APPROVEWORKCOMMAND_H
 #define APPROVEWORKCOMMAND_H
 
-class ApproveWorkCommand : Command {
+#include "Command.h"
 
+class ApproveWorkCommand :public Command {
 
 public:
-	void execute();
+	virtual void execute()override;
 
-	void undo();
+	virtual void undo()override;
 };
 
 #endif

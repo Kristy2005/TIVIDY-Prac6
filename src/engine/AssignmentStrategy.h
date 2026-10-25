@@ -1,6 +1,8 @@
 #ifndef ASSIGNMENTSTRATEGY_H
 #define ASSIGNMENTSTRATEGY_H
 
+#include "Participant.h"
+
 class AssignmentStrategy {
 
 

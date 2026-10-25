@@ -1,6 +1,8 @@
 #ifndef INVOKER_H
 #define INVOKER_H
 
+#include "Command.h"
+
 class Invoker {
 
 private:

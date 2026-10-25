@@ -1,13 +1,15 @@
 #ifndef COMPLETEWORKCOMMAND_H
 #define COMPLETEWORKCOMMAND_H
 
-class CompleteWorkCommand : Command {
+#include "Command.h"
+
+class CompleteWorkCommand :public Command {
 
 
 public:
-	void execute();
+	virtual void execute()override;
 
-	void undo();
+	virtual void undo()override;
 };
 
 #endif

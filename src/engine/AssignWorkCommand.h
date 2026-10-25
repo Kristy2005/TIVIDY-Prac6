@@ -1,13 +1,15 @@
 #ifndef ASSIGNWORKCOMMAND_H
 #define ASSIGNWORKCOMMAND_H
 
-class AssignWorkCommand : Command {
+#include "Command.h"
+
+class AssignWorkCommand : public Command{
 
 
 public:
-	void execute();
+	virtual void execute()override;
 
-	void undo();
+	virtual void undo()override;
 };
 
 #endif
