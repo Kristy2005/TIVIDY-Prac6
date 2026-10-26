@@ -1,22 +1,39 @@
 #include "WorkflowDefinition.h"
+#include "Participant.h"
+#include "WorkItem.h"
 
-namespace tividy {
+namespace tividy{
+  WorkflowDefinition::WorkflowDefinition()
+      : name(), root(nullptr), strategy(nullptr), escalationHandler(nullptr) {
+  }
 
-	void WorkflowDefinition::setRoot(WorkflowComponent* component) {
-		this->root = component;
-	}
+  void WorkflowDefinition::setRoot(WorkflowComponent* component) {
+      root = component;
+  }
 
-	void WorkflowDefinition::setAssignmentStrategy(AssignmentStrategy* strategy) {
-		// TODO - implement WorkflowDefinition::setAssignmentStrategy
-		throw "Not yet implemented";
-	}
+  void WorkflowDefinition::setAssignmentStrategy(AssignmentStrategy* strategyValue) {
+      strategy = strategyValue;
+  }
 
-	void WorkflowDefinition::setEscalationHandler(Handler* handler) {
-		this->escalationHandler = handler;
-	}
+  AssignmentStrategy* WorkflowDefinition::getAssignmentStrategy() const {
+      return strategy;
+  }
 
-	WorkflowInstance* WorkflowDefinition::createInstance() {
-		// TODO - implement WorkflowDefinition::createInstance
-		throw "Not yet implemented";
-	}
+  Participant* WorkflowDefinition::selectAssignee(
+      WorkItem* item, std::vector<Participant*> participants) const {
+      if (strategy == nullptr) {
+          return nullptr;
+      }
+
+      return strategy->assign(item, participants);
+  }
+
+  void WorkflowDefinition::setEscalationHandler(Handler* handler) {
+      escalationHandler = handler;
+  }
+
+  WorkflowInstance* WorkflowDefinition::createInstance() {
+      // Instance construction is outside the Strategy-pattern implementation.
+      throw "Not yet implemented";
+  }
 }

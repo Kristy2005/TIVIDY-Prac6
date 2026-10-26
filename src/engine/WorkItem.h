@@ -9,7 +9,8 @@
  *
  * WorkItem records whether a task has been completed. TIVIDY coordinates the
  * task but does not perform the real-world work; completion is recorded
- * explicitly with complete().
+ * explicitly with complete(). The optional required role is used by
+ * RoleBasedAssignment to route work without hard-coding roles in the strategy.
  */
 
 namespace tividy {
@@ -25,8 +26,13 @@ public:
     explicit WorkItem(const std::string& itemName);
 
     /**
-     * @brief Execute the component interface without completing the task.
+     * @brief Construct a work item with a required participant role.
+     * @param itemName Task name.
+     * @param requiredRoleName Role that should receive this item.
      */
+    WorkItem(const std::string& itemName, const std::string& requiredRoleName);
+
+    /** @brief Execute the component interface without completing the task. */
     virtual void execute();
 
     /**
@@ -41,9 +47,16 @@ public:
     /** @brief Return the name of this work item. */
     const std::string& getName() const;
 
+    /** @brief Set the role required to perform this work item. */
+    void setRequiredRole(const std::string& requiredRoleName);
+
+    /** @brief Return the role required to perform this work item, or an empty string. */
+    const std::string& getRequiredRole() const;
+
 private:
     std::string name;
     bool completed;
+    std::string requiredRole;
 };
 
 

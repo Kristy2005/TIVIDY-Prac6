@@ -1,30 +1,74 @@
 #include "ConcreteWorkflowBuilder.h"
+#include "WorkflowDefinition.h"
 
-namespace tividy {
+namespace tividy{
+  ConcreteWorkflowBuilder::ConcreteWorkflowBuilder()
+      : definition(new WorkflowDefinition()) {
+  }
 
-void ConcreteWorkflowBuilder::addWorkItem(WorkItem* item) {
-	throw "Not yet implemented";
-}
+  ConcreteWorkflowBuilder::ConcreteWorkflowBuilder(const ConcreteWorkflowBuilder& other) : definition(nullptr) {
+      if (other.definition != nullptr) {
+          definition = new WorkflowDefinition(*other.definition);
+      }
+  }
 
-// REMOVED addRole from here entirely!
+  ConcreteWorkflowBuilder& ConcreteWorkflowBuilder::operator=(
+      const ConcreteWorkflowBuilder& other) {
+      if (this == &other) {
+          return *this;
+      }
 
-void ConcreteWorkflowBuilder::addDependency(WorkItem* before, WorkItem* after) {
-	throw "Not yet implemented";
-}
+      WorkflowDefinition* replacement = nullptr;
+      if (other.definition != nullptr) {
+          replacement = new WorkflowDefinition(*other.definition);
+      }
 
-void ConcreteWorkflowBuilder::setAssignmentStrategy(AssignmentStrategy* strategy) {
-	throw "Not yet implemented";
-}
+      delete definition;
+      definition = replacement;
+      return *this;
+  }
 
-void ConcreteWorkflowBuilder::setEscalationHandler(Handler* handler) {
-	throw "Not yet implemented";
-}
+  ConcreteWorkflowBuilder::~ConcreteWorkflowBuilder() {
+      delete definition;
+  }
 
-void ConcreteWorkflowBuilder::addPriority(WorkItem* item, int priority) {
-	throw "Not yet implemented";
-}
+  void ConcreteWorkflowBuilder::addWorkItem(WorkItem* item) {
+      (void)item;
+      throw "Not yet implemented";
+  }
 
-WorkflowDefinition* ConcreteWorkflowBuilder::getResult() {
-	throw "Not yet implemented";
-}
+  void ConcreteWorkflowBuilder::addRole(Role<void>* role) {
+      (void)role;
+      throw "Not yet implemented";
+  }
+
+  void ConcreteWorkflowBuilder::addDependency(WorkItem* before, WorkItem* after) {
+      (void)before;
+      (void)after;
+      throw "Not yet implemented";
+  }
+
+  void ConcreteWorkflowBuilder::setAssignmentStrategy(AssignmentStrategy* strategy) {
+      if (definition == nullptr) {
+          definition = new WorkflowDefinition();
+      }
+      definition->setAssignmentStrategy(strategy);
+  }
+
+  void ConcreteWorkflowBuilder::setEscalationHandler(Handler* handler) {
+      (void)handler;
+      throw "Not yet implemented";
+  }
+
+  void ConcreteWorkflowBuilder::addPriority(WorkItem* item, int priority) {
+      (void)item;
+      (void)priority;
+      throw "Not yet implemented";
+  }
+
+  WorkflowDefinition* ConcreteWorkflowBuilder::getResult() {
+      WorkflowDefinition* result = definition;
+      definition = nullptr;
+      return result;
+  }
 }
