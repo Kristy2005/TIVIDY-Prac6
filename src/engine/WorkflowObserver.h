@@ -7,6 +7,9 @@ class WorkflowInstance;
 class WorkflowObserver {
 
 public:
+/**
+ * @brief: 
+ */
 	virtual void update(WorkflowInstance* instance) = 0;
 };
 
