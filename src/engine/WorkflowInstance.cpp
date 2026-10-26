@@ -60,21 +60,22 @@ namespace tividy {
 			throw std::logic_error("WorkflowInstance::notifyObservers: no registered observers");
 		}
 
-		for(WorkflowObserver* observer : observers) {
-			observer->update(this);
-		}
+		// for(WorkflowObserver* observer : observers) {
+		// 	observer->update(this);
+		// }
 	}
 
 	void WorkflowInstance::attach(WorkflowObserver* observer) {
-		this->observers.push_back(observer);
+		// this->observers.push_back(observer);
 	}
 
 	void WorkflowInstance::detach(WorkflowObserver* observer) {
-		auto it = std::find(observers.begin(), observers.end(), observer);
-		if(it != observers.end()) {
-			observers.erase(it);
-		} else {
-			throw std::invalid_argument("WorkflowInstance::detach: observer not found");
-		}
+		// auto it = std::find(observers.begin(), observers.end(), observer);
+		// if(it != observers.end()) {
+		// 	observers.erase(it);
+		// } else {
+		// 	throw std::invalid_argument("WorkflowInstance::detach: observer not found");
+		// }
 	}
+
 }
