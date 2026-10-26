@@ -111,10 +111,17 @@
 ---
 # MEMENTO
 
-- CHANGE:
-- ADD:
-- REMOVE:
-- DECIDE:
+- CHANGE: Nothing for now
+- ADD: 
+```c++
+WorkflowState* getState()const;
+void setState(WorkflowState* state);
+```
+- REMOVE: Nothing for now 
+- DECIDE: 
+	- Whether we should make it a flyweight such that when a WorkflowInstance member variables are altered 
+	- Observers are still in tact 
+	- WorkflowDefinition is still in tact 
 
 ---
 # DECORATOR

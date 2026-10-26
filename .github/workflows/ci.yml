@@ -53,5 +53,5 @@ jobs:
               echo "::error file=$f::This PR deletes protected file $f"
               fail=1
             fi
-          done
+          done   
           exit $fail
