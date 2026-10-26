@@ -3,6 +3,21 @@
 
 #include "WorkflowObserver.h"
 
+/**
+ * @brief Observer pattern: ConcreteObserver. Tells a participant when an
+ *        instance changes.
+ *
+ * Sends through the NotificationService interface only, so it never knows
+ * whether the message goes out by email or any other channel (see
+ * EmailAdapter).
+ *
+ * @par Ownership
+ * Holds the recipient and the service but owns neither. The creator
+ * deletes them, and must outlive this observer.
+ *
+ * @see WorkflowObserver, NotificationService, EmailAdapter
+ */
+
 class NotificationObserver :public WorkflowObserver {
 
 
