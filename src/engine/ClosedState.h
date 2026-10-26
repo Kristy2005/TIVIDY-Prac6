@@ -3,16 +3,52 @@
 
 #include "WorkflowState.h"
 
+/**
+ * @brief State pattern: ConcreteState (Closed).
+ *
+ * The final state of a workflow instance that has been closed.
+ * Rejects all further transitions.
+ *
+ * @par Data
+ * Holds no data of its own, so it is safe to share one object between
+ * instances.
+ *
+ * @see WorkflowState, WorkflowInstance
+ */
 class ClosedState : public WorkflowState {
-    virtual void activate(WorkflowInstance* instance)override;
 
-	virtual void startProcessing(WorkflowInstance* instance)override;
+public:
+	/**
+	 * @brief Not allowed from closed state.
+	 *
+	 * @param instance The instance. Not changed.
+	 * @throws std::logic_error Always.
+	 */
+	virtual void activate(WorkflowInstance* instance) override;
 
-	virtual void escalate(WorkflowInstance* instance)override;
+	/**
+	 * @brief Not allowed from closed state.
+	 *
+	 * @param instance The instance. Not changed.
+	 * @throws std::logic_error Always.
+	 */
+	virtual void startProcessing(WorkflowInstance* instance) override;
 
-	virtual void resolve(WorkflowInstance* instance)override;
+	/**
+	 * @brief Not allowed from closed state.
+	 *
+	 * @param instance The instance. Not changed.
+	 * @throws std::logic_error Always.
+	 */
+	virtual void resolve(WorkflowInstance* instance) override;
 
-	virtual void close(WorkflowInstance* instance)override;
+	/**
+	 * @brief Not allowed from closed state.
+	 *
+	 * @param instance The instance. Not changed.
+	 * @throws std::logic_error Always.
+	 */
+	virtual void close(WorkflowInstance* instance) override;
 };
 
-#endif
+#endif // CLOSEDSTATE_H

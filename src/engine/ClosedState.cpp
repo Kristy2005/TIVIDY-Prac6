@@ -1,27 +1,18 @@
 #include "ClosedState.h"
+#include <stdexcept>
 
 void ClosedState::startProcessing(WorkflowInstance* instance) {
-	// TODO - implement ClosedState::startProcessing
-	throw "Not yet implemented";
+	throw std::logic_error("CLOSED STATE: Cannot start processing a closed workflow instance");
 }
 
 void ClosedState::close(WorkflowInstance* instance) {
-	// TODO - implement ClosedState::close
-	throw "Not yet implemented";
+	throw std::logic_error("CLOSED STATE: Cannot close an already closed workflow instance");
 }
 
 void ClosedState::activate(WorkflowInstance* instance){
-	//TODO - IMPLEMENT
-	throw "Not yet implemented";
-}
-
-void ClosedState::escalate(WorkflowInstance* instance){
-	//TODO - IMPLEMENT
-	throw "Not yet implemented";
+	throw std::logic_error("CLOSED STATE: Cannot activate a closed workflow instance");
 }
 
 void ClosedState::resolve(WorkflowInstance* instance){
-	//TODO - IMPLEMENT
-	throw "Not yet implemented";
+	throw std::logic_error("CLOSED STATE: Cannot resolve a closed workflow instance");
 }
-
