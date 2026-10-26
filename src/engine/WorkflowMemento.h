@@ -10,6 +10,11 @@ class WorkflowMemento {
 
 private:
 	WorkflowState* state;
+
+public:
+	WorkflowMemento();
+	void setState(WorkflowState* state);
+	WorkflowState* getState() const;
 };
 
 #endif

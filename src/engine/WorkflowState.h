@@ -32,6 +32,9 @@
 
 
 namespace tividy {
+
+	class WorkflowInstance;
+
 	class WorkflowState {
 
 	public:

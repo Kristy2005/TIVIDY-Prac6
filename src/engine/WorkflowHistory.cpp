@@ -1,14 +1,19 @@
 #include "WorkflowHistory.h"
+#include <stdexcept>
 
 namespace tividy {
 
 void WorkflowHistory::save(WorkflowMemento* memento) {
-	// TODO - implement WorkflowHistory::save
-	throw "Not yet implemented";
+	if(memento == nullptr) {
+		throw std::invalid_argument("WorkflowHistory::save: memento cannot be null");
+	}
+	this->mementos.push_back(memento);
 }
 
 WorkflowMemento* WorkflowHistory::getLast() {
-	// TODO - implement WorkflowHistory::getLast
-	throw "Not yet implemented";
-}
+	if(this->mementos.empty()) {
+		throw std::logic_error("WorkflowHistory::getLast: no saved mementos");
+	}
+	return this->mementos.back();
+	}
 }

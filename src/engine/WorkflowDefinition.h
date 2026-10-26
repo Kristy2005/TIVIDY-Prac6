@@ -51,6 +51,13 @@ namespace tividy{
       /** @brief Create a running instance from this definition. */
       WorkflowInstance* createInstance();
 
+      /**
+       * @brief Escalate a running instance to the configured handler.
+       * @param instance Instance to escalate.
+       * @throws std::logic_error if no handler is configured.
+       */
+        void handleEscalation(WorkflowInstance* instance);
+
   private:
       std::string name;
       WorkflowComponent* root;
