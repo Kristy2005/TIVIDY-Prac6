@@ -1,14 +1,20 @@
-#ifndef ROLEBASEDASSIGNMENT_H
-#define ROLEBASEDASSIGNMENT_H
+#ifndef TIVIDY_ROLE_BASED_ASSIGNMENT_H
+#define TIVIDY_ROLE_BASED_ASSIGNMENT_H
 
 #include "AssignmentStrategy.h"
-#include <vector>
 
-class RoleBasedAssignment :public AssignmentStrategy {
-
-
+/**
+ * @brief Assignment strategy that selects the first participant with the required role.
+ *
+ * The required role is read from WorkItem. Candidates are considered in the
+ * order supplied by the caller, null candidates are ignored, and the strategy
+ * returns nullptr if the item has no required role or no candidate matches.
+ */
+class RoleBasedAssignment : public AssignmentStrategy {
 public:
-	Participant* assign(WorkItem* item, std::vector<Participant*> participants);
+    /** @brief Select a participant whose roles match the work item's required role. */
+    virtual Participant* assign(WorkItem* item,
+                                std::vector<Participant*> participants);
 };
 
-#endif
+#endif // TIVIDY_ROLE_BASED_ASSIGNMENT_H
