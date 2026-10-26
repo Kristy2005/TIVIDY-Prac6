@@ -18,11 +18,15 @@
  * @see WorkflowObserver, NotificationService, EmailAdapter
  */
 
-class NotificationObserver :public WorkflowObserver {
+
+namespace tividy {
+	class NotificationObserver :public WorkflowObserver {
 
 
-public:
-	virtual void update(WorkflowInstance* instance)override;
-};
+	public:
+		virtual void update(WorkflowInstance* instance)override;
+	};
 
-#endif
+}
+
+#endif // NOTIFICATIONOBSERVER_H

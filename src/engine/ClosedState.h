@@ -15,6 +15,8 @@
  *
  * @see WorkflowState, WorkflowInstance
  */
+
+namespace tividy {
 class ClosedState : public WorkflowState {
 
 public:
@@ -51,4 +53,7 @@ public:
 	virtual void close(WorkflowInstance* instance) override;
 };
 
+} // namespace tividy
+
 #endif // CLOSEDSTATE_H
+

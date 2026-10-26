@@ -1,17 +1,21 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+
+namespace tividy {
 class WorkflowInstance;
 
-class Command {
+	class Command {
 
-protected:
-	WorkflowInstance* receiver;
+	protected:
+		WorkflowInstance* receiver;
 
-public:
-	virtual void execute() = 0;
+	public:
+		virtual void execute() = 0;
 
-	virtual void undo() = 0;
-};
+		virtual void undo() = 0;
+	};
 
-#endif
+}
+
+#endif // COMMAND_H

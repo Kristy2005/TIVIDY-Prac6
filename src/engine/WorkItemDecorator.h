@@ -10,6 +10,8 @@
  * decorators must implement execute() and isComplete(), normally delegating
  * to the wrapped component while adding their own behaviour.
  */
+
+namespace tividy {
 class WorkItemDecorator : public WorkflowComponent {
 public:
     /**
@@ -37,3 +39,5 @@ protected:
 };
 
 #endif // TIVIDY_WORK_ITEM_DECORATOR_H
+}
+

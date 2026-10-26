@@ -12,6 +12,8 @@
  * explicitly with complete(). The optional required role is used by
  * RoleBasedAssignment to route work without hard-coding roles in the strategy.
  */
+
+namespace tividy {
 class WorkItem : public WorkflowComponent {
 public:
     /** @brief Construct an unnamed, incomplete work item. */
@@ -56,5 +58,8 @@ private:
     bool completed;
     std::string requiredRole;
 };
+
+
+}
 
 #endif // TIVIDY_WORK_ITEM_H

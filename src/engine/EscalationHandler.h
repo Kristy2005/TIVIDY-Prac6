@@ -3,11 +3,15 @@
 
 #include "Handler.h"
 
-class EscalationHandler :public Handler {
+
+namespace tividy {
+	class EscalationHandler :public Handler {
 
 
-public:
-	void handleRequest(WorkflowInstance* instance);
-};
+	public:
+		void handleRequest(WorkflowInstance* instance);
+	};
 
-#endif
+}
+
+#endif // ESCALATIONHANDLER_H

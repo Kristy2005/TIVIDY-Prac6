@@ -1,5 +1,7 @@
 #include "CloseWorkflowCommand.h"
 
+namespace tividy {
+
 void CloseWorkflowCommand::execute() {
 	// TODO - implement CloseWorkflowCommand::execute
 	throw "Not yet implemented";
@@ -8,4 +10,5 @@ void CloseWorkflowCommand::execute() {
 void CloseWorkflowCommand::undo() {
 	// TODO - implement CloseWorkflowCommand::undo
 	throw "Not yet implemented";
+}
 }

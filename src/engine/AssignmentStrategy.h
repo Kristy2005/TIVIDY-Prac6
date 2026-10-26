@@ -3,29 +3,32 @@
 
 #include <vector>
 
-class Participant;
-class WorkItem;
+#include "Participant.h"
 
-/**
- * @brief Interface for interchangeable work-assignment algorithms.
- *
- * Concrete strategies select a participant for a work item without changing
- * the work item or the workflow engine. The caller is responsible for
- * recording the assignment with Participant::assignWork after a participant
- * has been selected.
- */
-class AssignmentStrategy {
-public:
-    /** @brief Virtual destructor. */
-    virtual ~AssignmentStrategy() {}
+namespace tividy {
+  class Participant;
+  class WorkItem;
 
-    /**
-     * @brief Select the participant who should receive a work item.
-     * @param item Work item to route. A null item is rejected.
-     * @param participants Candidates to consider; null entries are ignored.
-     * @return Selected participant, or nullptr when no candidate is suitable.
-     */
-    virtual Participant* assign(WorkItem* item, std::vector<Participant*> participants) = 0;
-};
+  /**
+   * @brief Interface for interchangeable work-assignment algorithms.
+   *
+   * Concrete strategies select a participant for a work item without changing
+   * the work item or the workflow engine. The caller is responsible for
+   * recording the assignment with Participant::assignWork after a participant
+   * has been selected.
+   */
+  class AssignmentStrategy {
+  public:
+      /** @brief Virtual destructor. */
+      virtual ~AssignmentStrategy() {}
 
+      /**
+       * @brief Select the participant who should receive a work item.
+       * @param item Work item to route. A null item is rejected.
+       * @param participants Candidates to consider; null entries are ignored.
+       * @return Selected participant, or nullptr when no candidate is suitable.
+       */
+      virtual Participant* assign(WorkItem* item, std::vector<Participant*> participants) = 0;
+   };
+}
 #endif 

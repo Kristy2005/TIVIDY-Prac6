@@ -4,11 +4,16 @@
 #include "Participant.h"
 #include <string>
 
-class NotificationService {
+
+namespace tividy {
+	class NotificationService {
 
 
-public:
-	virtual void sendNotification(Participant* recipient, std::string message) = 0;
-};
+	public:
+		virtual void sendNotification(Participant* recipient, std::string message) = 0;
+	};
 
-#endif
+}
+
+#endif // NOTIFICATIONSERVICE_H
+

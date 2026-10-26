@@ -4,11 +4,15 @@
 #include "WorkflowObserver.h"
 #include "WorkflowInstance.h"
 
-class ProgressObserver :public WorkflowObserver {
+
+namespace tividy {
+	class ProgressObserver :public WorkflowObserver {
 
 
-public:
-	virtual void update(WorkflowInstance* instance)override;
-};
+	public:
+		virtual void update(WorkflowInstance* instance)override;
+	};
+
+}
 
 #endif

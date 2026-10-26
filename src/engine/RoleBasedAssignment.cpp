@@ -1,5 +1,7 @@
 #include "RoleBasedAssignment.h"
 
+namespace tividy {
+
 #include "Participant.h"
 #include "WorkItem.h"
 
@@ -23,4 +25,5 @@ Participant* RoleBasedAssignment::assign(
     }
 
     return nullptr;
+}
 }

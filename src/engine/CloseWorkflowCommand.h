@@ -3,13 +3,17 @@
 
 #include "Command.h"
 
-class CloseWorkflowCommand :public Command {
+
+namespace tividy {
+	class CloseWorkflowCommand :public Command {
 
 
-public:
-	virtual void execute()override;
+	public:
+		virtual void execute()override;
 
-	virtual void undo()override;
-};
+		virtual void undo()override;
+	};
 
-#endif
+}
+
+#endif // CLOSEWORKFLOWCOMMAND_H

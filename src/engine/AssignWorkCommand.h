@@ -3,13 +3,16 @@
 
 #include "Command.h"
 
-class AssignWorkCommand : public Command{
+
+namespace tividy {
+	class AssignWorkCommand : public Command{
 
 
-public:
-	virtual void execute()override;
+	public:
+		virtual void execute()override;
 
-	virtual void undo()override;
-};
+		virtual void undo()override;
+	};
+}
 
-#endif
+#endif // ASSIGNWORKCOMMAND_H

@@ -3,11 +3,13 @@
 #include "engine/PriorityDecorator.h"
 #include "engine/WorkItem.h"
 
+using namespace tividy;
+
 namespace {
 template <typename T>
 struct IsAbstract {
     template <typename U>
-    static char test(decltype(U(static_cast<WorkflowComponent*>(0)))*);
+    static char test(decltype(U(static_cast<tividy::WorkflowComponent*>(0)))*);
 
     template <typename U>
     static long test(...);

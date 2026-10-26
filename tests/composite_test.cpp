@@ -7,6 +7,8 @@
 #include "engine/WorkItem.h"
 #include "engine/WorkflowStage.h"
 
+using namespace tividy;
+
 namespace {
 
 /** Test double that records execution and lets a test control completion. */

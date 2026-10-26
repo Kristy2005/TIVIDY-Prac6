@@ -5,12 +5,16 @@
 #include "ExternalEmailService.h"
 #include <string>
 
-class EmailAdapter :public NotificationService {
 
-public:
-	ExternalEmailService* service;
+namespace tividy {
+	class EmailAdapter :public NotificationService {
 
-	void sendNotification(Participant* recipient, std::string message);
-};
+	public:
+		ExternalEmailService* service;
 
-#endif
+		void sendNotification(Participant* recipient, std::string message);
+	};
+
+}
+
+#endif // EMAILADAPTER_H

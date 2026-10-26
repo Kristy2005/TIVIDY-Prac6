@@ -3,22 +3,27 @@
 
 #include "WorkflowDefinition.h"
 #include "WorkflowInstance.h"
+class WorkItem;
 
-class TIVIDYFacade {
+namespace tividy {
+	class TIVIDYFacade {
 
 
-public:
-	WorkflowDefinition* createWorkflow();
+	public:
+		WorkflowDefinition* createWorkflow();
 
-	WorkflowInstance* startWorkflow(WorkflowDefinition* definition);
+		WorkflowInstance* startWorkflow(WorkflowDefinition* definition);
 
-	void assignWork(WorkflowInstance* instance, WorkItem* item);
+		void assignWork(WorkflowInstance* instance, WorkItem* item);
 
-	void completeWork(WorkflowInstance* instance, WorkItem* item);
+		void completeWork(WorkflowInstance* instance, WorkItem* item);
 
-	void escalateWork(WorkflowInstance* instance);
+		void escalateWork(WorkflowInstance* instance);
 
-	void closeWorkflow(WorkflowInstance* instance);
-};
+		void closeWorkflow(WorkflowInstance* instance);
+	};
 
-#endif
+	
+} // namespace tividy
+
+#endif // TIVIDYFACADE_H

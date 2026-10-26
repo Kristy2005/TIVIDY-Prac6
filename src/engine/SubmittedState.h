@@ -19,6 +19,8 @@
  *
  * @see WorkflowState, ActiveState, WorkflowInstance
  */
+
+namespace tividy {
 class SubmittedState : public WorkflowState {
 
 public:
@@ -55,4 +57,7 @@ public:
 	virtual void close(WorkflowInstance* instance) override;
 };
 
-#endif
+
+} // namespace tividy
+
+#endif // SUBMITTEDSTATE_H

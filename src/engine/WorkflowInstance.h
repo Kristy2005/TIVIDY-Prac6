@@ -1,13 +1,16 @@
 #ifndef WORKFLOWINSTANCE_H
 #define WORKFLOWINSTANCE_H
 
-#include "WorkflowDefinition.h"
+// #include "WorkflowDefinition.h"
 // #include "WorkflowObserver.h"
 #include "WorkflowMemento.h"
+#include <vector>
 
 class WorkflowObserver;
+class WorkflowDefinition;
 
-#include <vector>
+namespace tividy {
+
 
 class WorkflowInstance {
 
@@ -42,4 +45,6 @@ public:
 	void detach(WorkflowObserver* observer);
 };
 
-#endif
+}
+
+#endif // WORKFLOWINSTANCE_H

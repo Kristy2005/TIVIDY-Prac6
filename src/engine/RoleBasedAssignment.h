@@ -3,18 +3,19 @@
 
 #include "AssignmentStrategy.h"
 
-/**
- * @brief Assignment strategy that selects the first participant with the required role.
- *
- * The required role is read from WorkItem. Candidates are considered in the
- * order supplied by the caller, null candidates are ignored, and the strategy
- * returns nullptr if the item has no required role or no candidate matches.
- */
-class RoleBasedAssignment : public AssignmentStrategy {
-public:
-    /** @brief Select a participant whose roles match the work item's required role. */
-    virtual Participant* assign(WorkItem* item,
-                                std::vector<Participant*> participants);
-};
-
+namespace tividy{
+  /**
+   * @brief Assignment strategy that selects the first participant with the required role.
+   *
+   * The required role is read from WorkItem. Candidates are considered in the
+   * order supplied by the caller, null candidates are ignored, and the strategy
+   * returns nullptr if the item has no required role or no candidate matches.
+   */
+  class RoleBasedAssignment : public AssignmentStrategy {
+  public:
+      /** @brief Select a participant whose roles match the work item's required role. */
+      virtual Participant* assign(WorkItem* item,
+                                  std::vector<Participant*> participants);
+  };
+}
 #endif // TIVIDY_ROLE_BASED_ASSIGNMENT_H

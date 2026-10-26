@@ -3,12 +3,16 @@
 
 #include "Command.h"
 
-class ApproveWorkCommand :public Command {
 
-public:
-	virtual void execute()override;
+namespace tividy {
+	class ApproveWorkCommand :public Command {
 
-	virtual void undo()override;
-};
+	public:
+		virtual void execute()override;
 
-#endif
+		virtual void undo()override;
+	};
+
+}
+
+#endif // APPROVEWORKCOMMAND_H

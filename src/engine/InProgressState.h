@@ -31,6 +31,8 @@
  * @see WorkflowState, ResolvedState, ClosedState,
  *      WorkflowInstance
  */
+
+namespace tividy {
 class InProgressState : public WorkflowState {
 
 public:
@@ -71,4 +73,7 @@ public:
 	virtual void close(WorkflowInstance* instance) override;
 };
 
-#endif
+
+} // namespace tividy
+
+#endif // INPROGRESSSTATE_H

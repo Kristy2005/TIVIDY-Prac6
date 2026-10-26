@@ -2,6 +2,8 @@
 #define WORKFLOWMEMENTO_H
 
 // #include "WorkflowState.h"
+
+namespace tividy {
 class WorkflowState;
 
 class WorkflowMemento {
@@ -13,3 +15,5 @@ private:
 #endif
 
 // WORKFLOWMEMENTO_H
+}
+

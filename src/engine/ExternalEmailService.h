@@ -3,12 +3,14 @@
 
 #include <string>
 
+namespace tividy {
+	class ExternalEmailService {
 
-class ExternalEmailService {
 
+	public:
+		void sendEmail(std::string address, std::string body);
+	};
 
-public:
-	void sendEmail(std::string address, std::string body);
-};
+}
 
-#endif
+#endif  // EXTERNALEMAILSERVICE_H

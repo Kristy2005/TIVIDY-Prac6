@@ -5,6 +5,8 @@
 
 #include <vector>
 
+
+namespace tividy {
 class WorkflowHistory {
 
 private:
@@ -15,5 +17,7 @@ public:
 
 	WorkflowMemento* getLast();
 };
+
+}
 
 #endif

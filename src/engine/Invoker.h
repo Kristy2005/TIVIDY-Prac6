@@ -3,17 +3,21 @@
 
 #include "Command.h"
 
-class Invoker {
 
-private:
-	Command* command;
+namespace tividy {
+	class Invoker {
 
-public:
-	void setCommand(Command* command);
+	private:
+		Command* command;
 
-	void executeCommand();
+	public:
+		void setCommand(Command* command);
 
-	void undoCommand();
-};
+		void executeCommand();
 
-#endif
+		void undoCommand();
+	};
+
+}
+
+#endif // INVOKER_H
