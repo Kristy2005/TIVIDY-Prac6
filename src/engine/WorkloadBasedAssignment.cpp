@@ -24,5 +24,4 @@ namespace tividy{
 
       return selected;
   }
-  }
 }

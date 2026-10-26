@@ -13,13 +13,13 @@
 #include "engine/WorkflowDefinition.h"
 
 TEST_CASE("Assignment strategies can be used polymorphically") {
-    WorkItem item("Review complaint", "Administrator");
-    Participant administrator("Administrator A");
-    Role<void> adminRole("Administrator");
+    tividy::WorkItem item("Review complaint", "Administrator");
+    tividy::Participant administrator("Administrator A");
+    tividy::Role<void> adminRole("Administrator");
     administrator.addRole(&adminRole);
 
-    std::vector<Participant*> candidates(1, &administrator);
-    AssignmentStrategy* strategy = new RoleBasedAssignment();
+    std::vector<tividy::Participant*> candidates(1, &administrator);
+    tividy::AssignmentStrategy* strategy = new tividy::RoleBasedAssignment();
 
     CHECK(strategy->assign(&item, candidates) == &administrator);
 
@@ -27,59 +27,59 @@ TEST_CASE("Assignment strategies can be used polymorphically") {
 }
 
 TEST_CASE("Role-based assignment selects the first participant with the required role") {
-    Role<void> administratorRole("Administrator");
-    Role<void> staffRole("Staff");
-    Participant first("First staff member");
-    Participant administrator("Administrator");
-    Participant secondAdministrator("Second administrator");
+    tividy::Role<void> administratorRole("Administrator");
+    tividy::Role<void> staffRole("Staff");
+    tividy::Participant first("First staff member");
+    tividy::Participant administrator("Administrator");
+    tividy::Participant secondAdministrator("Second administrator");
     first.addRole(&staffRole);
     administrator.addRole(&administratorRole);
     secondAdministrator.addRole(&administratorRole);
 
-    WorkItem review("Review complaint", "Administrator");
-    std::vector<Participant*> candidates;
+    tividy::WorkItem review("Review complaint", "Administrator");
+    std::vector<tividy::Participant*> candidates;
     candidates.push_back(&first);
     candidates.push_back(nullptr);
     candidates.push_back(&administrator);
     candidates.push_back(&secondAdministrator);
 
-    RoleBasedAssignment strategy;
+    tividy::RoleBasedAssignment strategy;
     CHECK(strategy.assign(&review, candidates) == &administrator);
 }
 
 TEST_CASE("Role-based assignment rejects missing role, null work, and unmatched candidates") {
-    Role<void> staffRole("Staff");
-    Participant staff("Staff member");
+    tividy::Role<void> staffRole("Staff");
+    tividy::Participant staff("Staff member");
     staff.addRole(&staffRole);
-    std::vector<Participant*> candidates(1, &staff);
-    RoleBasedAssignment strategy;
-    WorkItem withoutRole("Unclassified work");
-    WorkItem noMatch("Review", "Department Head");
+    std::vector<tividy::Participant*> candidates(1, &staff);
+    tividy::RoleBasedAssignment strategy;
+    tividy::WorkItem withoutRole("Unclassified work");
+    tividy::WorkItem noMatch("Review", "Department Head");
 
     CHECK(strategy.assign(nullptr, candidates) == nullptr);
     CHECK(strategy.assign(&withoutRole, candidates) == nullptr);
     CHECK(strategy.assign(&noMatch, candidates) == nullptr);
 
-    std::vector<Participant*> emptyCandidates;
-    WorkItem review("Review", "Staff");
+    std::vector<tividy::Participant*> emptyCandidates;
+    tividy::WorkItem review("Review", "Staff");
     CHECK(strategy.assign(&review, emptyCandidates) == nullptr);
     review.complete();
     CHECK(strategy.assign(&review, candidates) == nullptr);
 }
 
 TEST_CASE("Role changes on a work item affect role-based routing") {
-    Role<void> administratorRole("Administrator");
-    Role<void> staffRole("Staff");
-    Participant staff("Staff");
-    Participant administrator("Administrator");
+    tividy::Role<void> administratorRole("Administrator");
+    tividy::Role<void> staffRole("Staff");
+    tividy::Participant staff("Staff");
+    tividy::Participant administrator("Administrator");
     staff.addRole(&staffRole);
     administrator.addRole(&administratorRole);
 
-    WorkItem item("Review complaint");
-    std::vector<Participant*> candidates;
+    tividy::WorkItem item("Review complaint");
+    std::vector<tividy::Participant*> candidates;
     candidates.push_back(&staff);
     candidates.push_back(&administrator);
-    RoleBasedAssignment strategy;
+    tividy::RoleBasedAssignment strategy;
 
     CHECK(strategy.assign(&item, candidates) == nullptr);
     item.setRequiredRole("Administrator");
@@ -89,23 +89,23 @@ TEST_CASE("Role changes on a work item affect role-based routing") {
 }
 
 TEST_CASE("Workload-based assignment chooses the smallest outstanding workload") {
-    Participant lightlyLoaded("Light workload");
-    Participant heavilyLoaded("Heavy workload");
-    WorkItem heavyOne("Heavy work 1");
-    WorkItem heavyTwo("Heavy work 2");
-    WorkItem lightOne("Light work");
+    tividy::Participant lightlyLoaded("Light workload");
+    tividy::Participant heavilyLoaded("Heavy workload");
+    tividy::WorkItem heavyOne("Heavy work 1");
+    tividy::WorkItem heavyTwo("Heavy work 2");
+    tividy::WorkItem lightOne("Light work");
 
     heavilyLoaded.assignWork(&heavyOne);
     heavilyLoaded.assignWork(&heavyTwo);
     lightlyLoaded.assignWork(&lightOne);
 
-    WorkItem newItem("New work");
-    std::vector<Participant*> candidates;
+    tividy::WorkItem newItem("New work");
+    std::vector<tividy::Participant*> candidates;
     candidates.push_back(&heavilyLoaded);
     candidates.push_back(nullptr);
     candidates.push_back(&lightlyLoaded);
 
-    WorkloadBasedAssignment strategy;
+    tividy::WorkloadBasedAssignment strategy;
     CHECK(heavilyLoaded.getWorkload() == 2);
     CHECK(lightlyLoaded.getWorkload() == 1);
     CHECK(strategy.assign(&newItem, candidates) == &lightlyLoaded);
@@ -117,21 +117,21 @@ TEST_CASE("Workload-based assignment chooses the smallest outstanding workload")
 }
 
 TEST_CASE("Workload-based assignment is stable for ties and rejects invalid input") {
-    Participant first("First");
-    Participant second("Second");
-    WorkItem item("New work");
-    WorkloadBasedAssignment strategy;
+    tividy::Participant first("First");
+    tividy::Participant second("Second");
+    tividy::WorkItem item("New work");
+    tividy::WorkloadBasedAssignment strategy;
 
-    std::vector<Participant*> tiedCandidates;
+    std::vector<tividy::Participant*> tiedCandidates;
     tiedCandidates.push_back(nullptr);
     tiedCandidates.push_back(&first);
     tiedCandidates.push_back(&second);
     CHECK(strategy.assign(&item, tiedCandidates) == &first);
     CHECK(strategy.assign(nullptr, tiedCandidates) == nullptr);
 
-    std::vector<Participant*> emptyCandidates;
+    std::vector<tividy::Participant*> emptyCandidates;
     CHECK(strategy.assign(&item, emptyCandidates) == nullptr);
-    std::vector<Participant*> nullCandidates(2, nullptr);
+    std::vector<tividy::Participant*> nullCandidates(2, nullptr);
     CHECK(strategy.assign(&item, nullCandidates) == nullptr);
 
     item.complete();
@@ -139,10 +139,10 @@ TEST_CASE("Workload-based assignment is stable for ties and rejects invalid inpu
 }
 
 TEST_CASE("Participant workload counts unique incomplete assignments") {
-    Participant participant("Investigator");
-    WorkItem first("Investigate");
-    WorkItem second("Collect evidence");
-    WorkItem alreadyComplete("Already complete");
+    tividy::Participant participant("Investigator");
+    tividy::WorkItem first("Investigate");
+    tividy::WorkItem second("Collect evidence");
+    tividy::WorkItem alreadyComplete("Already complete");
     alreadyComplete.complete();
 
     CHECK(participant.getWorkload() == 0);
@@ -172,8 +172,8 @@ TEST_CASE("Participant workload counts unique incomplete assignments") {
 }
 
 TEST_CASE("Participant records roles without duplicates or Role pointer ownership") {
-    Participant participant("Administrator");
-    Role<void> administratorRole("Administrator");
+    tividy::Participant participant("Administrator");
+    tividy::Role<void> administratorRole("Administrator");
 
     CHECK(participant.getName() == "Administrator");
     CHECK_FALSE(participant.hasRole("Administrator"));
@@ -187,33 +187,33 @@ TEST_CASE("Participant records roles without duplicates or Role pointer ownershi
 
     // The role name is copied rather than retaining a Role pointer.
     {
-        Role<void> reviewerRole("Reviewer");
+        tividy::Role<void> reviewerRole("Reviewer");
         participant.addRole(&reviewerRole);
     }
     CHECK(participant.hasRole("Reviewer"));
 }
 
 TEST_CASE("WorkflowDefinition delegates to the currently configured strategy") {
-    Role<void> adminRole("Administrator");
-    Participant administrator("Administrator");
-    Participant generalStaff("General staff");
+    tividy::Role<void> adminRole("Administrator");
+    tividy::Participant administrator("Administrator");
+    tividy::Participant generalStaff("General staff");
     administrator.addRole(&adminRole);
 
-    WorkItem item("Review complaint", "Administrator");
-    WorkItem staffLoad("Existing staff work");
-    WorkItem adminLoadOne("Existing administrator work 1");
-    WorkItem adminLoadTwo("Existing administrator work 2");
+    tividy::WorkItem item("Review complaint", "Administrator");
+    tividy::WorkItem staffLoad("Existing staff work");
+    tividy::WorkItem adminLoadOne("Existing administrator work 1");
+    tividy::WorkItem adminLoadTwo("Existing administrator work 2");
     generalStaff.assignWork(&staffLoad);
     administrator.assignWork(&adminLoadOne);
     administrator.assignWork(&adminLoadTwo);
 
-    std::vector<Participant*> candidates;
+    std::vector<tividy::Participant*> candidates;
     candidates.push_back(&administrator);
     candidates.push_back(&generalStaff);
 
-    RoleBasedAssignment roleStrategy;
-    WorkloadBasedAssignment workloadStrategy;
-    WorkflowDefinition definition;
+    tividy::RoleBasedAssignment roleStrategy;
+    tividy::WorkloadBasedAssignment workloadStrategy;
+    tividy::WorkflowDefinition definition;
 
     CHECK(definition.getAssignmentStrategy() == nullptr);
     CHECK(definition.selectAssignee(&item, candidates) == nullptr);
@@ -231,11 +231,11 @@ TEST_CASE("WorkflowDefinition delegates to the currently configured strategy") {
 }
 
 TEST_CASE("ConcreteWorkflowBuilder configures the definition through the builder interface") {
-    RoleBasedAssignment strategy;
-    WorkflowBuilder* builder = new ConcreteWorkflowBuilder();
+    tividy::RoleBasedAssignment strategy;
+    tividy::WorkflowBuilder* builder = new tividy::ConcreteWorkflowBuilder();
 
     builder->setAssignmentStrategy(&strategy);
-    WorkflowDefinition* definition = builder->getResult();
+    tividy::WorkflowDefinition* definition = builder->getResult();
     REQUIRE(definition != nullptr);
     CHECK(definition->getAssignmentStrategy() == &strategy);
     delete definition;

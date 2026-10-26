@@ -21,8 +21,6 @@ namespace tividy{
       return false;
   }
 
-  }  // namespace
-
   Participant::Participant() : name(), workload(0), assignedItems(), roles() {
   }
 
