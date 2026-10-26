@@ -1,15 +1,15 @@
 #include "PriorityDecorator.h"
 
-int PriorityDecorator::getPriority() {
-	return this->priority;
+PriorityDecorator::PriorityDecorator(WorkflowComponent* wrapped, int value) : WorkItemDecorator(wrapped), priority(value){}
+
+int PriorityDecorator::getPriority() const {
+    return priority;
 }
 
-void PriorityDecorator::execute() {
-	// TODO - implement PriorityDecorator::execute
-	throw "Not yet implemented";
+void PriorityDecorator::execute(){
+    component->execute();
 }
 
-bool PriorityDecorator::isComplete() {
-	// TODO - implement PriorityDecorator::isComplete
-	throw "Not yet implemented";
+bool PriorityDecorator::isComplete() const {
+    return component->isComplete();
 }

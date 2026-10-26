@@ -1,21 +1,42 @@
-#ifndef SUBPROCESS_H
-#define SUBPROCESS_H
+#ifndef TIVIDY_SUB_PROCESS_H
+#define TIVIDY_SUB_PROCESS_H
 
-#include "WorkflowComponent.h"
 #include <vector>
+#include "WorkflowComponent.h"
 
-class SubProcess :public WorkflowComponent {
-
+/**
+ * @brief Composite workflow node representing a nested sub-process.
+ *
+ * SubProcess implements the same interface as a WorkItem or WorkflowStage, so
+ * it can be nested in another stage or sub-process. Child pointers are
+ * non-owning; the caller remains responsible for the pointed-to objects.
+ */
+class SubProcess : public WorkflowComponent {
 public:
-	std::vector<WorkflowComponent*> components;
+    /**
+     * @brief Add a child component to this sub-process.
+     * @param component Component to add. Null, duplicate, and direct
+     * self-references are ignored.
+     */
+    void add(WorkflowComponent* component);
 
-	void add(WorkflowComponent* component);
+    /**
+     * @brief Remove a child component from this sub-process.
+     * @param component Component to remove. Null or absent pointers are ignored.
+     */
+    void remove(WorkflowComponent* component);
 
-	void remove(WorkflowComponent* component);
+    /** @brief Execute each child component. */
+    virtual void execute();
 
-	void execute();
+    /**
+     * @brief Check whether all child components have completed.
+     * @return true if every child is complete; an empty sub-process is complete.
+     */
+    virtual bool isComplete() const;
 
-	bool isComplete();
+private:
+    std::vector<WorkflowComponent*> components;
 };
 
-#endif
+#endif // TIVIDY_SUB_PROCESS_H

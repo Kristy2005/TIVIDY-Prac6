@@ -1,16 +1,19 @@
 #include "WorkItem.h"
 
-void WorkItem::execute() {
-	// TODO - implement WorkItem::execute
-	throw "Not yet implemented";
-}
+WorkItem::WorkItem() : name(), completed(false) {}
 
-bool WorkItem::isComplete() {
-	// TODO - implement WorkItem::isComplete
-	throw "Not yet implemented";
+WorkItem::WorkItem(const std::string& itemName) : name(itemName), completed(false) {}
+
+void WorkItem::execute() {}
+
+bool WorkItem::isComplete() const {
+    return completed;
 }
 
 void WorkItem::complete() {
-	// TODO - implement WorkItem::complete
-	throw "Not yet implemented";
+    completed = true;
+}
+
+const std::string& WorkItem::getName() const {
+    return name;
 }

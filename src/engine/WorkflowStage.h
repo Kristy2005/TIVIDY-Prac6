@@ -1,21 +1,41 @@
-#ifndef WORKFLOWSTAGE_H
-#define WORKFLOWSTAGE_H
+#ifndef TIVIDY_WORKFLOW_STAGE_H
+#define TIVIDY_WORKFLOW_STAGE_H
 
-#include "WorkflowComponent.h"
 #include <vector>
+#include "WorkflowComponent.h"
 
-class WorkflowStage :public WorkflowComponent {
-
+/**
+ * @brief Composite workflow node that groups components into a stage.
+ *
+ * The stage stores non-owning pointers. The caller that creates a component
+ * remains responsible for its lifetime and must keep it alive while this stage
+ * refers to it. Children are executed in the order in which they were added.
+ */
+class WorkflowStage : public WorkflowComponent {
 public:
-	std::vector<WorkflowComponent*> components;
+    /**
+     * @brief Add a child component to the stage.
+     * @param component Component to add.
+     */
+    void add(WorkflowComponent* component);
 
-	void add(WorkflowComponent* component);
+    /**
+     * @brief Remove a child component from the stage.
+     * @param component Component to remove. Null pointers are ignored.
+     */
+    void remove(WorkflowComponent* component);
 
-	void remove(WorkflowComponent* component);
+    /** @brief Execute each child component. */
+    virtual void execute();
 
-	virtual void execute()override;
+    /**
+     * @brief Check whether all children have completed.
+     * @return true if every child is complete; an empty stage is complete.
+     */
+    virtual bool isComplete() const;
 
-	virtual bool isComplete()override;
+private:
+    std::vector<WorkflowComponent*> components;
 };
 
-#endif
+#endif // TIVIDY_WORKFLOW_STAGE_H

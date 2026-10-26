@@ -1,18 +1,37 @@
-#ifndef PRIORITYDECORATOR_H
-#define PRIORITYDECORATOR_H
+#ifndef TIVIDY_PRIORITY_DECORATOR_H
+#define TIVIDY_PRIORITY_DECORATOR_H
 
 #include "WorkItemDecorator.h"
 
-class PriorityDecorator :public WorkItemDecorator {
-
+/**
+ * @brief Decorator that adds marks the priority of a workflow component
+ * 
+ * The assignment strategy can read getPriority() when deciding which
+ * item to assign. This decorator does not own the wrapper component and does
+ * not change the wrapper item's completion state itself.
+ */
+class PriorityDecorator : public WorkItemDecorator {
 public:
-	int priority;
+    /**
+     * @brief Decorate a component with a priority value.
+     * @param component Component to wrap; must not be null.
+     * @param priority Priority metadata to expose to routing/assignment logic.
+     * @throws std::invalid_argument when component is null.
+     */
 
-	int getPriority();
+     PriorityDecorator(WorkflowComponent* component, int priority);
 
-	virtual void execute()override;
+    /** @brief Return this decorator's priority value. */
+    int getPriority() const;
 
-	virtual bool isComplete()override;
+    /** Execute the wrapped component */
+    virtual void execute();
+
+    /** Return the wrapped components completion status */
+    virtual bool isComplete() const;
+
+private:
+    int priority;
 };
 
-#endif
+#endif // TIVIDY_PRIORITY_DECORATOR_H
