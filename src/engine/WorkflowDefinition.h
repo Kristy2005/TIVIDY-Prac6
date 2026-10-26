@@ -2,30 +2,33 @@
 #define WORKFLOWDEFINITION_H
 
 #include "WorkflowComponent.h"
-#include "AssignmentStrategy.h"
-#include "Handler.h"
+// #include "AssignmentStrategy.h"
+// #include "Handler.h"
+#include "WorkflowInstance.h"
+class AssignmentStrategy;
+class Handler;
 #include <string>
 
 
 namespace tividy {
-class WorkflowDefinition {
+	class WorkflowDefinition {
 
-private:
-	std::string name;
-	WorkflowComponent* root;
-	AssignmentStrategy* strategy;
-	Handler* escalationHandler;
+	private:
+		std::string name;
+		WorkflowComponent* root;
+		AssignmentStrategy* strategy;
+		Handler* escalationHandler;
 
-public:
-	void setRoot(WorkflowComponent* component);
+	public:
+		void setRoot(WorkflowComponent* component);
 
-	void setAssignmentStrategy(AssignmentStrategy* strategy);
+		void setAssignmentStrategy(AssignmentStrategy* strategy);
 
-	void setEscalationHandler(Handler* handler);
+		void setEscalationHandler(Handler* handler);
 
-	WorkflowInstance* createInstance();
-};
+		WorkflowInstance* createInstance();
+	};
 
-#endif
 }
 
+#endif

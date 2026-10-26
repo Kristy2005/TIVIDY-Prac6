@@ -18,6 +18,6 @@ public:
 	WorkflowMemento* getLast();
 };
 
-#endif
 }
 
+#endif

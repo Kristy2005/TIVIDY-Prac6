@@ -5,13 +5,13 @@
 
 
 namespace tividy {
-class WorkloadBasedAssignment :public AssignmentStrategy {
+	class WorkloadBasedAssignment : public tividy::AssignmentStrategy {
 
 
-public:
-	Participant* assign(WorkItem* item, std::vector<Participant*> participants);
-};
+	public:
+		Participant* assign(WorkItem* item, std::vector<Participant*> participants);
+	};
 
-#endif
+	#endif // WORKLOADBASEDASSIGNMENT_H
 }
 

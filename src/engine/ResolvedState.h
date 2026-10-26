@@ -53,6 +53,6 @@ public:
 	virtual void close(WorkflowInstance* instance) override;
 };
 
-#endif // RESOLVEDSTATE_H
-}
+} // namespace tividy
 
+#endif // RESOLVEDSTATE_H

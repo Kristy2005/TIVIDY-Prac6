@@ -29,4 +29,4 @@ void InProgressState::resolve(WorkflowInstance* instance){
 }
 
 
-}
+} // namespace tividy

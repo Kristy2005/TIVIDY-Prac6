@@ -60,6 +60,7 @@ public:
 	virtual void close(WorkflowInstance* instance) override;
 };
 
-#endif //ACTIVESTATE_H
-}
 
+} // namespace tividy
+
+#endif //ACTIVESTATE_H

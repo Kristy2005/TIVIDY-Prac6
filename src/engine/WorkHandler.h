@@ -2,16 +2,16 @@
 #define WORKHANDLER_H
 
 #include "Handler.h"
-
+#include "WorkflowInstance.h"
 
 namespace tividy {
-class WorkHandler :public Handler {
+	class WorkHandler :public tividy::Handler{ 
 
 
-public:
-	void handleRequest(WorkflowInstance* instance);
-};
+	public:
+		void handleRequest(WorkflowInstance* instance);
+	};
 
-#endif
 }
 
+#endif // WORKHANDLER_H

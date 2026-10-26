@@ -73,6 +73,7 @@ public:
 	virtual void close(WorkflowInstance* instance) override;
 };
 
-#endif
-}
 
+} // namespace tividy
+
+#endif // INPROGRESSSTATE_H

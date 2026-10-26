@@ -57,6 +57,7 @@ public:
 	virtual void close(WorkflowInstance* instance) override;
 };
 
-#endif
-}
 
+} // namespace tividy
+
+#endif // SUBMITTEDSTATE_H

@@ -34,4 +34,4 @@ void ActiveState::resolve(WorkflowInstance* instance){
 	throw std::logic_error("ACTIVESTATE: Cannot resolve an inactive workflow instance");
 }
 
-}
+} // namespace tividy

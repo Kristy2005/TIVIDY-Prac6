@@ -1,21 +1,22 @@
 #ifndef WORKFLOWDIRECTOR_H
 #define WORKFLOWDIRECTOR_H
 
-#include "WorkflowBuilder.h"
+// #include "WorkflowBuilder.h"
+class WorkflowBuilder;
 
 
 namespace tividy {
-class WorkflowDirector {
+	class WorkflowDirector {
 
-private:
-	WorkflowBuilder* builder;
+	private:
+		WorkflowBuilder* builder;
 
-public:
-	void setBuilder(WorkflowBuilder* builder);
+	public:
+		void setBuilder(WorkflowBuilder* builder);
 
-	void constructWorkflow();
-};
+		void constructWorkflow();
+	};
 
-#endif
 }
 
+#endif // WORKFLOWDIRECTOR_H

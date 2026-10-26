@@ -32,50 +32,49 @@
 
 
 namespace tividy {
-class WorkflowState {
+	class WorkflowState {
 
-public:
-/**
- * @brief Moves a submitted instance into the Active state.
- *
- * @param instance The instance to change. Must not be null.
- * @throws std::logic_error If this state does not allow activation.
- */
-	virtual void activate(WorkflowInstance* instance) = 0;
-/**
- * @brief Starts work on an active instance, moving it to In Progress.
- *
- * @param instance The instance to change. Must not be null.
- * @throws std::logic_error If this state does not allow processing to start.
- */
+	public:
+	/**
+	 * @brief Moves a submitted instance into the Active state.
+	 *
+	 * @param instance The instance to change. Must not be null.
+	 * @throws std::logic_error If this state does not allow activation.
+	 */
+		virtual void activate(WorkflowInstance* instance) = 0;
+	/**
+	 * @brief Starts work on an active instance, moving it to In Progress.
+	 *
+	 * @param instance The instance to change. Must not be null.
+	 * @throws std::logic_error If this state does not allow processing to start.
+	 */
 
-	virtual void startProcessing(WorkflowInstance* instance) = 0;
+		virtual void startProcessing(WorkflowInstance* instance) = 0;
 
-/**
- * @brief Marks the instance as successfully resolved.
- *
- * @param instance The instance to change. Must not be null.
- * @throws std::logic_error If this state does not allow resolving.
- */
+	/**
+	 * @brief Marks the instance as successfully resolved.
+	 *
+	 * @param instance The instance to change. Must not be null.
+	 * @throws std::logic_error If this state does not allow resolving.
+	 */
 
-	virtual void resolve(WorkflowInstance* instance) = 0;
-/**
- * @brief Closes the instance without resolving it, for example when the
- *        student withdraws or a final appeal is denied.
- *
- * @param instance The instance to change. Must not be null.
- * @throws std::logic_error If this state does not allow closing.
- */
+		virtual void resolve(WorkflowInstance* instance) = 0;
+	/**
+	 * @brief Closes the instance without resolving it, for example when the
+	 *        student withdraws or a final appeal is denied.
+	 *
+	 * @param instance The instance to change. Must not be null.
+	 * @throws std::logic_error If this state does not allow closing.
+	 */
 
-	virtual void close(WorkflowInstance* instance) = 0;
+		virtual void close(WorkflowInstance* instance) = 0;
 
-/**
- * @brief virtual Destructor so concrete classes can be deleted properly 
- *
- */
-	virtual ~WorkflowState(){};
-};
-
-#endif
+	/**
+	 * @brief virtual Destructor so concrete classes can be deleted properly 
+	 *
+	 */
+		virtual ~WorkflowState(){};
+	}; 
 }
 
+#endif // WORKFLOWSTATE_H

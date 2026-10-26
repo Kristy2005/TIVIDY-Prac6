@@ -46,6 +46,7 @@ private:
     bool completed;
 };
 
-#endif // TIVIDY_WORK_ITEM_H
+
 }
 
+#endif // TIVIDY_WORK_ITEM_H

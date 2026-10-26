@@ -45,6 +45,6 @@ public:
 	void detach(WorkflowObserver* observer);
 };
 
-#endif
 }
 
+#endif // WORKFLOWINSTANCE_H

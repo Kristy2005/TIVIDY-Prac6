@@ -26,4 +26,4 @@ void SubmittedState::resolve(WorkflowInstance* instance){
 		throw std::logic_error("SUBMITTED STATE: Resolution not yet implemented");
 }
 
-}
+} // namespace tividy

@@ -10,27 +10,27 @@
  */
 
 namespace tividy {
-class WorkflowComponent {
-public:
-    /** @brief Virtual destructor. */
-    virtual ~WorkflowComponent() {}
+    class WorkflowComponent {
+    public:
+        /** @brief Virtual destructor. */
+        virtual ~WorkflowComponent() {}
 
-    /**
-     * @brief Execute this workflow component.
-     *
-     * Composite components delegate execution to their children. The engine
-     * coordinates work rather than performing the real-world task represented
-     * by a WorkItem, so WorkItem execution does not itself mark the item complete.
-     */
-    virtual void execute() = 0;
+        /**
+         * @brief Execute this workflow component.
+         *
+         * Composite components delegate execution to their children. The engine
+         * coordinates work rather than performing the real-world task represented
+         * by a WorkItem, so WorkItem execution does not itself mark the item complete.
+         */
+        virtual void execute() = 0;
 
-    /**
-     * @brief Check whether this component has completed its work.
-     * @return true when the component is complete; otherwise false.
-     */
-    virtual bool isComplete() const = 0;
-};
+        /**
+         * @brief Check whether this component has completed its work.
+         * @return true when the component is complete; otherwise false.
+         */
+        virtual bool isComplete() const = 0;
+    };
 
-#endif // TIVIDY_WORKFLOW_COMPONENT_H
 }
 
+#endif // TIVIDY_WORKFLOW_COMPONENT_H
