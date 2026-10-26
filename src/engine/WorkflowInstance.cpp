@@ -1,64 +1,80 @@
 #include "WorkflowInstance.h"
+#include "WorkflowDefinition.h"
+#include <stdexcept>
+#include "SubmittedState.h"
+#include "WorkflowMemento.h"
+#include "WorkflowObserver.h"
+#include <algorithm>
 
 namespace tividy {
 
 	void WorkflowInstance::setState(WorkflowState* state) {
-		// TODO - implement WorkflowInstance::setState
-		throw "Not yet implemented";
+		if(state == nullptr) {
+			throw std::invalid_argument("WorkflowInstance::setState: state cannot be null");
+		}
+		
+		if(this->currentState)delete this->currentState;
+		this->currentState = state;
 	}
 
 	void WorkflowInstance::submit() {
-		// TODO - implement WorkflowInstance::submit
-		throw "Not yet implemented";
+		this->currentState = new SubmittedState();
 	}
 
 	void WorkflowInstance::activate(){
-		// TODO - implement WorkflowInstance::activate
-		throw "Not yet implemented";
+		this->currentState->activate(this);
 	}
 
 	void WorkflowInstance::startProcessing() {
-		// TODO - implement WorkflowInstance::startProcessing
-		throw "Not yet implemented";
+		this->currentState->startProcessing(this);
 	}
 
 	void WorkflowInstance::escalate() {
-		// TODO - implement WorkflowInstance::escalate
-		throw "Not yet implemented";
+		this->definition->handleEscalation(this);
 	}
 
 	WorkflowMemento* WorkflowInstance::createMemento() {
-		// TODO - implement WorkflowInstance::createMemento
-		throw "Not yet implemented";
+		WorkflowMemento* memento = new WorkflowMemento();
+		memento->setState(this->currentState);
+		return memento;
 	}
 
 	void WorkflowInstance::restore(WorkflowMemento* memento) {
-		// TODO - implement WorkflowInstance::restore
-		throw "Not yet implemented";
+		if(memento == nullptr) {
+			throw std::invalid_argument("WorkflowInstance::restore: memento cannot be null");
+		}
+		this->setState(memento->getState());
 	}
 
 	void WorkflowInstance::resolve() {
-		// TODO - implement WorkflowInstance::resolve
-		throw "Not yet implemented";
+		this->currentState->resolve(this);
 	}
 
 	void WorkflowInstance::close() {
-		// TODO - implement WorkflowInstance::close
-		throw "Not yet implemented";
+		this->currentState->close(this);
 	}
 
 	void WorkflowInstance::notifyObservers() {
-		// TODO - implement WorkflowInstance::notifyObservers
-		throw "Not yet implemented";
+
+		if(this->observers.empty()) {
+			throw std::logic_error("WorkflowInstance::notifyObservers: no registered observers");
+		}
+
+		for(WorkflowObserver* observer : observers) {
+			observer->update(this);
+		}
 	}
 
 	void WorkflowInstance::attach(WorkflowObserver* observer) {
-		// TODO - implement WorkflowInstance::attach
-		throw "Not yet implemented";
+		this->observers.push_back(observer);
 	}
 
 	void WorkflowInstance::detach(WorkflowObserver* observer) {
-		// TODO - implement WorkflowInstance::detach
-		throw "Not yet implemented";
+		auto it = std::find(observers.begin(), observers.end(), observer);
+		if(it != observers.end()) {
+			observers.erase(it);
+		} else {
+			throw std::invalid_argument("WorkflowInstance::detach: observer not found");
+		}
 	}
 }
