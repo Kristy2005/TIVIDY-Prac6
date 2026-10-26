@@ -5,17 +5,17 @@
 
 
 namespace tividy {
-template <typename T>
-class Role {
+	template <typename T>
+	class Role {
 
-private:
-	std::string name;
+	private:
+		std::string name;
 
-public:
-	void configureRole();
-};
+	public:
+		void configureRole();
+	};
 
-// #include "Role.cpp"
-#endif
+	// #include "Role.cpp"
 }
 
+#endif 

@@ -6,12 +6,12 @@
 
 
 namespace tividy {
-class ApprovalHandler :public Handler{
+	class ApprovalHandler :public Handler{
 
-public:
-	void handleRequest(WorkflowInstance* instance);
-};
+	public:
+		void handleRequest(WorkflowInstance* instance);
+	};
 
-#endif
 }
 
+#endif // APPROVALHANDLER_H

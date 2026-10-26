@@ -5,15 +5,14 @@
 
 
 namespace tividy {
-class AssignWorkCommand : public Command{
+	class AssignWorkCommand : public Command{
 
 
-public:
-	virtual void execute()override;
+	public:
+		virtual void execute()override;
 
-	virtual void undo()override;
-};
-
-#endif
+		virtual void undo()override;
+	};
 }
 
+#endif // ASSIGNWORKCOMMAND_H

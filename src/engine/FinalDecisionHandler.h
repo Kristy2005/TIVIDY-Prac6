@@ -5,13 +5,13 @@
 
 
 namespace tividy {
-class FinalDecisionHandler :public Handler {
+	class FinalDecisionHandler :public Handler {
 
 
-public:
-	void handleRequest(WorkflowInstance* instance);
-};
+	public:
+		void handleRequest(WorkflowInstance* instance);
+	};
 
-#endif
 }
 
+#endif // FINALDECISIONHANDLER_H

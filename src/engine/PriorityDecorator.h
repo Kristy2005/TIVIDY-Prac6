@@ -12,30 +12,30 @@
  */
 
 namespace tividy {
-class PriorityDecorator : public WorkItemDecorator {
-public:
-    /**
-     * @brief Decorate a component with a priority value.
-     * @param component Component to wrap; must not be null.
-     * @param priority Priority metadata to expose to routing/assignment logic.
-     * @throws std::invalid_argument when component is null.
-     */
+    class PriorityDecorator : public WorkItemDecorator {
+    public:
+        /**
+         * @brief Decorate a component with a priority value.
+         * @param component Component to wrap; must not be null.
+         * @param priority Priority metadata to expose to routing/assignment logic.
+         * @throws std::invalid_argument when component is null.
+         */
 
-     PriorityDecorator(WorkflowComponent* component, int priority);
+        PriorityDecorator(WorkflowComponent* component, int priority);
 
-    /** @brief Return this decorator's priority value. */
-    int getPriority() const;
+        /** @brief Return this decorator's priority value. */
+        int getPriority() const;
 
-    /** Execute the wrapped component */
-    virtual void execute();
+        /** Execute the wrapped component */
+        virtual void execute();
 
-    /** Return the wrapped components completion status */
-    virtual bool isComplete() const;
+        /** Return the wrapped components completion status */
+        virtual bool isComplete() const;
 
-private:
-    int priority;
-};
+    private:
+        int priority;
+    };
 
-#endif // TIVIDY_PRIORITY_DECORATOR_H
 }
 
+#endif // TIVIDY_PRIORITY_DECORATOR_H

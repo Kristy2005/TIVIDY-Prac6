@@ -6,13 +6,13 @@
 
 
 namespace tividy {
-class HistoryObserver :public WorkflowObserver {
+	class HistoryObserver :public WorkflowObserver {
 
 
-public:
-	virtual void update(WorkflowInstance* instance)override;
-};
+	public:
+		virtual void update(WorkflowInstance* instance)override;
+	};
 
-#endif
 }
 
+#endif // HISTORYOBSERVER_H

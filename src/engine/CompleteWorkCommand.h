@@ -5,15 +5,15 @@
 
 
 namespace tividy {
-class CompleteWorkCommand :public Command {
+	class CompleteWorkCommand :public Command {
 
 
-public:
-	virtual void execute()override;
+	public:
+		virtual void execute()override;
 
-	virtual void undo()override;
-};
+		virtual void undo()override;
+	};
 
-#endif
 }
 
+#endif // COMPLETEWORKCOMMAND_H

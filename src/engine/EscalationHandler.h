@@ -5,13 +5,13 @@
 
 
 namespace tividy {
-class EscalationHandler :public Handler {
+	class EscalationHandler :public Handler {
 
 
-public:
-	void handleRequest(WorkflowInstance* instance);
-};
+	public:
+		void handleRequest(WorkflowInstance* instance);
+	};
 
-#endif
 }
 
+#endif // ESCALATIONHANDLER_H

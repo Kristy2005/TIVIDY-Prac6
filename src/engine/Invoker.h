@@ -5,19 +5,19 @@
 
 
 namespace tividy {
-class Invoker {
+	class Invoker {
 
-private:
-	Command* command;
+	private:
+		Command* command;
 
-public:
-	void setCommand(Command* command);
+	public:
+		void setCommand(Command* command);
 
-	void executeCommand();
+		void executeCommand();
 
-	void undoCommand();
-};
+		void undoCommand();
+	};
 
-#endif
 }
 
+#endif // INVOKER_H

@@ -5,14 +5,14 @@
 
 
 namespace tividy {
-class ApproveWorkCommand :public Command {
+	class ApproveWorkCommand :public Command {
 
-public:
-	virtual void execute()override;
+	public:
+		virtual void execute()override;
 
-	virtual void undo()override;
-};
+		virtual void undo()override;
+	};
 
-#endif
 }
 
+#endif // APPROVEWORKCOMMAND_H

@@ -5,15 +5,15 @@
 
 
 namespace tividy {
-class CancelWorkCommand :public Command {
+	class CancelWorkCommand :public Command {
 
 
-public:
-	virtual void execute()override;
+	public:
+		virtual void execute()override;
 
-	virtual void undo()override;
-};
+		virtual void undo()override;
+	};
 
-#endif
 }
 
+#endif // CANCELWORKCOMMAND_H

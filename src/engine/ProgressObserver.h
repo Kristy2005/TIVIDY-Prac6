@@ -6,13 +6,13 @@
 
 
 namespace tividy {
-class ProgressObserver :public WorkflowObserver {
+	class ProgressObserver :public WorkflowObserver {
 
 
-public:
-	virtual void update(WorkflowInstance* instance)override;
-};
+	public:
+		virtual void update(WorkflowInstance* instance)override;
+	};
 
-#endif
 }
 
+#endif

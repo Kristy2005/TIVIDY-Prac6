@@ -5,15 +5,15 @@
 
 
 namespace tividy {
-class EscalateWorkCommand :public Command {
+	class EscalateWorkCommand :public Command {
 
 
-public:
-	virtual void execute()override;
+	public:
+		virtual void execute()override;
 
-	virtual void undo()override;
-};
+		virtual void undo()override;
+	};
 
-#endif
 }
 
+#endif // ESCALATEWORKCOMMAND_H

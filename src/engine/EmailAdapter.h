@@ -7,14 +7,14 @@
 
 
 namespace tividy {
-class EmailAdapter :public NotificationService {
+	class EmailAdapter :public NotificationService {
 
-public:
-	ExternalEmailService* service;
+	public:
+		ExternalEmailService* service;
 
-	void sendNotification(Participant* recipient, std::string message);
-};
+		void sendNotification(Participant* recipient, std::string message);
+	};
 
-#endif
 }
 
+#endif // EMAILADAPTER_H

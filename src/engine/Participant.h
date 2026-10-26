@@ -6,20 +6,20 @@
 
 
 namespace tividy {
-class Participant {
+	class Participant {
 
-private:
-	std::string name;
-	int workload;
+	private:
+		std::string name;
+		int workload;
 
-public:
-	void assignWork(WorkItem* item);
+	public:
+		void assignWork(WorkItem* item);
 
-	void completeWork(WorkItem* item);
+		void completeWork(WorkItem* item);
 
-	int getWorkload();
-};
+		int getWorkload();
+	};
 
-#endif
 }
 
+#endif // PARTICIPANT_H

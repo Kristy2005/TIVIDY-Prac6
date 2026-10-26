@@ -20,13 +20,13 @@
 
 
 namespace tividy {
-class NotificationObserver :public WorkflowObserver {
+	class NotificationObserver :public WorkflowObserver {
 
 
-public:
-	virtual void update(WorkflowInstance* instance)override;
-};
+	public:
+		virtual void update(WorkflowInstance* instance)override;
+	};
 
-#endif
 }
 
+#endif // NOTIFICATIONOBSERVER_H

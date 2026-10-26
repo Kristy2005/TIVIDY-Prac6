@@ -4,20 +4,20 @@
 // #include "WorkflowInstance.h"
 
 namespace tividy {
-class WorkflowInstance;
+	class WorkflowInstance;
 
-class Handler {
+	class Handler {
 
-private:
-	Handler* successor;
+	private:
+		Handler* successor;
 
-public:
-//to be overridden later 
-	virtual void setSuccessor(Handler* handler);
+	public:
+	//to be overridden later 
+		virtual void setSuccessor(Handler* handler);
 
-	virtual void handleRequest(WorkflowInstance* instance);
-};
+		virtual void handleRequest(WorkflowInstance* instance);
+	};
 
-#endif
 }
 
+#endif // HANDLER_H
