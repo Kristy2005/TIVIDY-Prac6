@@ -15,6 +15,8 @@
  *
  * @see WorkflowState, WorkflowInstance
  */
+
+namespace tividy {
 class ResolvedState : public WorkflowState {
 
 public:
@@ -52,3 +54,5 @@ public:
 };
 
 #endif // RESOLVEDSTATE_H
+}
+

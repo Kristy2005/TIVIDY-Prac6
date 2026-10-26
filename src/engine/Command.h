@@ -1,6 +1,8 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+
+namespace tividy {
 class WorkflowInstance;
 
 class Command {
@@ -15,3 +17,5 @@ public:
 };
 
 #endif
+}
+

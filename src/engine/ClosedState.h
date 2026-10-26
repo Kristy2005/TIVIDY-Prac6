@@ -15,6 +15,8 @@
  *
  * @see WorkflowState, WorkflowInstance
  */
+
+namespace tividy {
 class ClosedState : public WorkflowState {
 
 public:
@@ -52,3 +54,5 @@ public:
 };
 
 #endif // CLOSEDSTATE_H
+}
+

@@ -8,6 +8,8 @@
  * Clients can execute or query a WorkItem, WorkflowStage, SubProcess, or a
  * decorator without needing to know the concrete type.
  */
+
+namespace tividy {
 class WorkflowComponent {
 public:
     /** @brief Virtual destructor. */
@@ -30,3 +32,5 @@ public:
 };
 
 #endif // TIVIDY_WORKFLOW_COMPONENT_H
+}
+

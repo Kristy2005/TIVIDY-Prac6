@@ -18,6 +18,8 @@
  * @see WorkflowObserver, NotificationService, EmailAdapter
  */
 
+
+namespace tividy {
 class NotificationObserver :public WorkflowObserver {
 
 
@@ -26,3 +28,5 @@ public:
 };
 
 #endif
+}
+

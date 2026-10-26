@@ -4,6 +4,8 @@
 #include "WorkflowObserver.h"
 #include "WorkflowInstance.h"
 
+
+namespace tividy {
 class ProgressObserver :public WorkflowObserver {
 
 
@@ -12,3 +14,5 @@ public:
 };
 
 #endif
+}
+

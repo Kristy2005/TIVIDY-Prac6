@@ -5,6 +5,8 @@
 
 #include <vector>
 
+
+namespace tividy {
 class WorkflowHistory {
 
 private:
@@ -17,3 +19,5 @@ public:
 };
 
 #endif
+}
+

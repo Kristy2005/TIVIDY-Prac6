@@ -3,6 +3,8 @@
 
 #include "Command.h"
 
+
+namespace tividy {
 class CancelWorkCommand :public Command {
 
 
@@ -13,3 +15,5 @@ public:
 };
 
 #endif
+}
+

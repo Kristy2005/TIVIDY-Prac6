@@ -3,6 +3,8 @@
 
 #include "Command.h"
 
+
+namespace tividy {
 class Invoker {
 
 private:
@@ -17,3 +19,5 @@ public:
 };
 
 #endif
+}
+

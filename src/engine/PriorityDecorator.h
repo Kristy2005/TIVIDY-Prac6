@@ -10,6 +10,8 @@
  * item to assign. This decorator does not own the wrapper component and does
  * not change the wrapper item's completion state itself.
  */
+
+namespace tividy {
 class PriorityDecorator : public WorkItemDecorator {
 public:
     /**
@@ -35,3 +37,5 @@ private:
 };
 
 #endif // TIVIDY_PRIORITY_DECORATOR_H
+}
+

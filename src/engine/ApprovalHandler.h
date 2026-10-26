@@ -4,6 +4,8 @@
 #include "Handler.h"
 #include "WorkflowInstance.h"
 
+
+namespace tividy {
 class ApprovalHandler :public Handler{
 
 public:
@@ -11,3 +13,5 @@ public:
 };
 
 #endif
+}
+

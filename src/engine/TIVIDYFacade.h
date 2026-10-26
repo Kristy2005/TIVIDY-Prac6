@@ -3,7 +3,10 @@
 
 #include "WorkflowDefinition.h"
 #include "WorkflowInstance.h"
+#include "WorkItem.h"
 
+
+namespace tividy {
 class TIVIDYFacade {
 
 
@@ -21,4 +24,7 @@ public:
 	void closeWorkflow(WorkflowInstance* instance);
 };
 
-#endif
+#endif // TIVIDYFACADE_H
+
+}
+

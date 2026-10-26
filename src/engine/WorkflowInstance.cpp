@@ -1,5 +1,7 @@
 #include "WorkflowInstance.h"
 
+namespace tividy {
+
 void WorkflowInstance::setState(WorkflowState* state) {
 	// TODO - implement WorkflowInstance::setState
 	throw "Not yet implemented";
@@ -58,4 +60,5 @@ void WorkflowInstance::attach(WorkflowObserver* observer) {
 void WorkflowInstance::detach(WorkflowObserver* observer) {
 	// TODO - implement WorkflowInstance::detach
 	throw "Not yet implemented";
+}
 }

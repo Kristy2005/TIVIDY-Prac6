@@ -4,6 +4,8 @@
 #include "AssignmentStrategy.h"
 #include <vector>
 
+
+namespace tividy {
 class RoleBasedAssignment :public AssignmentStrategy {
 
 
@@ -12,3 +14,5 @@ public:
 };
 
 #endif
+}
+

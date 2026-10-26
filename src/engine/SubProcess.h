@@ -11,6 +11,8 @@
  * it can be nested in another stage or sub-process. Child pointers are
  * non-owning; the caller remains responsible for the pointed-to objects.
  */
+
+namespace tividy {
 class SubProcess : public WorkflowComponent {
 public:
     /**
@@ -40,3 +42,5 @@ private:
 };
 
 #endif // TIVIDY_SUB_PROCESS_H
+}
+

@@ -11,6 +11,8 @@
  * task but does not perform the real-world work; completion is recorded
  * explicitly with complete().
  */
+
+namespace tividy {
 class WorkItem : public WorkflowComponent {
 public:
     /** @brief Construct an unnamed, incomplete work item. */
@@ -45,3 +47,5 @@ private:
 };
 
 #endif // TIVIDY_WORK_ITEM_H
+}
+

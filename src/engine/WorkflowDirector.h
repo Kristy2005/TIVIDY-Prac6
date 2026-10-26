@@ -3,6 +3,8 @@
 
 #include "WorkflowBuilder.h"
 
+
+namespace tividy {
 class WorkflowDirector {
 
 private:
@@ -15,3 +17,5 @@ public:
 };
 
 #endif
+}
+

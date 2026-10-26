@@ -3,6 +3,8 @@
 #include "ClosedState.h"
 #include <stdexcept>
 
+namespace tividy {
+
 void InProgressState::startProcessing(WorkflowInstance* instance) {
 	throw std::logic_error("IN PROGRESS STATE: Cannot start processing an already active workflow instance");
 }
@@ -27,3 +29,4 @@ void InProgressState::resolve(WorkflowInstance* instance){
 }
 
 
+}

@@ -3,6 +3,8 @@
 
 #include <string>
 
+
+namespace tividy {
 template <typename T>
 class Role {
 
@@ -15,3 +17,5 @@ public:
 
 // #include "Role.cpp"
 #endif
+}
+

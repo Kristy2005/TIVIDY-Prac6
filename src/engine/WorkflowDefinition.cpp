@@ -1,5 +1,7 @@
 #include "WorkflowDefinition.h"
 
+namespace tividy {
+
 void WorkflowDefinition::setRoot(WorkflowComponent* component) {
 	this->root = component;
 }
@@ -16,4 +18,5 @@ void WorkflowDefinition::setEscalationHandler(Handler* handler) {
 WorkflowInstance* WorkflowDefinition::createInstance() {
 	// TODO - implement WorkflowDefinition::createInstance
 	throw "Not yet implemented";
+}
 }

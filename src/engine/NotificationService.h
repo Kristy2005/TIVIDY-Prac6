@@ -4,6 +4,8 @@
 #include "Participant.h"
 #include <string>
 
+
+namespace tividy {
 class NotificationService {
 
 
@@ -12,3 +14,5 @@ public:
 };
 
 #endif
+}
+

@@ -5,6 +5,8 @@
 #include "Role.h"
 #include "AssignmentStrategy.h"
 #include "Handler.h"
+
+namespace tividy {
 class WorkflowDefinition;
 
 class WorkflowBuilder {
@@ -27,3 +29,5 @@ public:
 };
 
 #endif
+}
+

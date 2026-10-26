@@ -1,5 +1,7 @@
 #include "TIVIDYFacade.h"
 
+namespace tividy {
+
 WorkflowDefinition* TIVIDYFacade::createWorkflow() {
 	// TODO - implement TIVIDYFacade::createWorkflow
 	throw "Not yet implemented";
@@ -28,4 +30,5 @@ void TIVIDYFacade::escalateWork(WorkflowInstance* instance) {
 void TIVIDYFacade::closeWorkflow(WorkflowInstance* instance) {
 	// TODO - implement TIVIDYFacade::closeWorkflow
 	throw "Not yet implemented";
+}
 }

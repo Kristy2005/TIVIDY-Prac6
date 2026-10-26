@@ -11,6 +11,8 @@
  * remains responsible for its lifetime and must keep it alive while this stage
  * refers to it. Children are executed in the order in which they were added.
  */
+
+namespace tividy {
 class WorkflowStage : public WorkflowComponent {
 public:
     /**
@@ -39,3 +41,5 @@ private:
 };
 
 #endif // TIVIDY_WORKFLOW_STAGE_H
+}
+

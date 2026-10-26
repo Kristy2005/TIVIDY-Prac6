@@ -3,6 +3,8 @@
 #include "ClosedState.h"
 #include <stdexcept>
 
+namespace tividy {
+
 void ActiveState::startProcessing(WorkflowInstance* instance) {
 	if(instance != nullptr) {
 		//TODO - DISCUSS CHANGES ON HOW NOTIFY OBESVERS WORKS 
@@ -32,3 +34,4 @@ void ActiveState::resolve(WorkflowInstance* instance){
 	throw std::logic_error("ACTIVESTATE: Cannot resolve an inactive workflow instance");
 }
 
+}

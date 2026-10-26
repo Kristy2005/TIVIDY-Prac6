@@ -30,6 +30,8 @@
  * @see WorkflowInstance
  */
 
+
+namespace tividy {
 class WorkflowState {
 
 public:
@@ -75,3 +77,5 @@ public:
 };
 
 #endif
+}
+

@@ -3,6 +3,8 @@
 
 #include "Handler.h"
 
+
+namespace tividy {
 class EscalationHandler :public Handler {
 
 
@@ -11,3 +13,5 @@ public:
 };
 
 #endif
+}
+

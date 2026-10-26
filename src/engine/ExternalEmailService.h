@@ -4,6 +4,8 @@
 #include <string>
 
 
+
+namespace tividy {
 class ExternalEmailService {
 
 
@@ -12,3 +14,5 @@ public:
 };
 
 #endif
+}
+

@@ -4,6 +4,8 @@
 #include <vector>
 
 #include "Participant.h"
+
+namespace tividy {
 class WorkItem;
 class Participant;
 
@@ -15,3 +17,5 @@ public:
 };
 
 #endif
+}
+

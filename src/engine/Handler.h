@@ -2,6 +2,8 @@
 #define HANDLER_H
 
 // #include "WorkflowInstance.h"
+
+namespace tividy {
 class WorkflowInstance;
 
 class Handler {
@@ -17,3 +19,5 @@ public:
 };
 
 #endif
+}
+

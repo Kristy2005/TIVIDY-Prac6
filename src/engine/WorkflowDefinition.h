@@ -6,6 +6,8 @@
 #include "Handler.h"
 #include <string>
 
+
+namespace tividy {
 class WorkflowDefinition {
 
 private:
@@ -25,3 +27,5 @@ public:
 };
 
 #endif
+}
+

@@ -3,6 +3,8 @@
 
 #include "Command.h"
 
+
+namespace tividy {
 class ApproveWorkCommand :public Command {
 
 public:
@@ -12,3 +14,5 @@ public:
 };
 
 #endif
+}
+

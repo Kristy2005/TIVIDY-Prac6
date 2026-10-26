@@ -2,6 +2,8 @@
 #define WORKFLOWOBSERVER_H
 
 #include "WorkflowInstance.h"
+
+namespace tividy {
 class WorkflowInstance;
 
 /**
@@ -51,4 +53,6 @@ public:
 	virtual ~WorkflowObserver(){};
 };
 
-#endif
+#endif // WORKFLOWOBSERVER_H
+}
+

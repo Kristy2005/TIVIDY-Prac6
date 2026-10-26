@@ -4,6 +4,8 @@
 #include <string>
 #include "WorkItem.h"
 
+
+namespace tividy {
 class Participant {
 
 private:
@@ -19,3 +21,5 @@ public:
 };
 
 #endif
+}
+

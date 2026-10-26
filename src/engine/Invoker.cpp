@@ -1,5 +1,7 @@
 #include "Invoker.h"
 
+namespace tividy {
+
 void Invoker::setCommand(Command* command) {
 	this->command = command;
 }
@@ -12,4 +14,5 @@ void Invoker::executeCommand() {
 void Invoker::undoCommand() {
 	// TODO - implement Invoker::undoCommand
 	throw "Not yet implemented";
+}
 }

@@ -1,5 +1,7 @@
 #include "Participant.h"
 
+namespace tividy {
+
 void Participant::assignWork(WorkItem* item) {
 	// TODO - implement Participant::assignWork
 	throw "Not yet implemented";
@@ -12,4 +14,5 @@ void Participant::completeWork(WorkItem* item) {
 
 int Participant::getWorkload() {
 	return this->workload;
+}
 }

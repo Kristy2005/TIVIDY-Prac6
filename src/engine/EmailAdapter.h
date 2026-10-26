@@ -5,6 +5,8 @@
 #include "ExternalEmailService.h"
 #include <string>
 
+
+namespace tividy {
 class EmailAdapter :public NotificationService {
 
 public:
@@ -14,3 +16,5 @@ public:
 };
 
 #endif
+}
+

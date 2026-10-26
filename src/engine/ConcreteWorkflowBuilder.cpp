@@ -1,5 +1,7 @@
 #include "ConcreteWorkflowBuilder.h"
 
+namespace tividy {
+
 void ConcreteWorkflowBuilder::addWorkItem(WorkItem* item) {
 	throw "Not yet implemented";
 }
@@ -24,4 +26,5 @@ void ConcreteWorkflowBuilder::addPriority(WorkItem* item, int priority) {
 
 WorkflowDefinition* ConcreteWorkflowBuilder::getResult() {
 	throw "Not yet implemented";
+}
 }

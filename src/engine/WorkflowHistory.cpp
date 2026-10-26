@@ -1,5 +1,7 @@
 #include "WorkflowHistory.h"
 
+namespace tividy {
+
 void WorkflowHistory::save(WorkflowMemento* memento) {
 	// TODO - implement WorkflowHistory::save
 	throw "Not yet implemented";
@@ -8,4 +10,5 @@ void WorkflowHistory::save(WorkflowMemento* memento) {
 WorkflowMemento* WorkflowHistory::getLast() {
 	// TODO - implement WorkflowHistory::getLast
 	throw "Not yet implemented";
+}
 }

@@ -31,6 +31,8 @@
  * @see WorkflowState, ResolvedState, ClosedState,
  *      WorkflowInstance
  */
+
+namespace tividy {
 class InProgressState : public WorkflowState {
 
 public:
@@ -72,3 +74,5 @@ public:
 };
 
 #endif
+}
+

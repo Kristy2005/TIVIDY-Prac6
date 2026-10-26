@@ -19,6 +19,8 @@
  *
  * @see WorkflowState, ActiveState, WorkflowInstance
  */
+
+namespace tividy {
 class SubmittedState : public WorkflowState {
 
 public:
@@ -56,3 +58,5 @@ public:
 };
 
 #endif
+}
+

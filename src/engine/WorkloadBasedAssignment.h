@@ -3,6 +3,8 @@
 
 #include "AssignmentStrategy.h"
 
+
+namespace tividy {
 class WorkloadBasedAssignment :public AssignmentStrategy {
 
 
@@ -11,3 +13,5 @@ public:
 };
 
 #endif
+}
+

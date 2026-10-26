@@ -4,6 +4,8 @@
 #include "WorkflowBuilder.h"
 #include "Role.h" // Include Role.h so the compiler knows what Role<T> is
 
+
+namespace tividy {
 class WorkflowDefinition;
 
 class ConcreteWorkflowBuilder : public WorkflowBuilder {
@@ -31,3 +33,5 @@ public:
 };
 
 #endif // CONCRETEWORKFLOWBUILDER_H
+}
+
