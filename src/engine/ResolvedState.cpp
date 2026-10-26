@@ -1,27 +1,18 @@
 #include "ResolvedState.h"
+#include <stdexcept>
 
 void ResolvedState::startProcessing(WorkflowInstance* instance) {
-	// TODO - implement ResolvedState::startProcessing
-	throw "Not yet implemented";
+	throw std::logic_error("RESOLVED STATE: Cannot start processing a resolved workflow instance");
 }
 
 void ResolvedState::close(WorkflowInstance* instance) {
-	// TODO - implement ResolvedState::close
-	throw "Not yet implemented";
+	throw std::logic_error("RESOLVED STATE: Cannot close a resolved workflow instance");
 }
 
 void ResolvedState::activate(WorkflowInstance* instance){
-	//TODO - IMPLEMENT
-	throw "Not yet implemented";
-}
-
-void ResolvedState::escalate(WorkflowInstance* instance){
-	//TODO - IMPLEMENT
-	throw "Not yet implemented";
+	throw std::logic_error("RESOLVED STATE: Cannot activate a resolved workflow instance");
 }
 
 void ResolvedState::resolve(WorkflowInstance* instance){
-	//TODO - IMPLEMENT
-	throw "Not yet implemented";
+	throw std::logic_error("RESOLVED STATE: Cannot resolve an already resolved workflow instance");
 }
-

@@ -1,27 +1,29 @@
 #include "InProgressState.h"
+#include "ResolvedState.h"
+#include "ClosedState.h"
+#include <stdexcept>
 
 void InProgressState::startProcessing(WorkflowInstance* instance) {
-	// TODO - implement InProgressState::startProcessing
-	throw "Not yet implemented";
+	throw std::logic_error("IN PROGRESS STATE: Cannot start processing an already active workflow instance");
 }
 
 void InProgressState::close(WorkflowInstance* instance) {
-	// TODO - implement InProgressState::close
-	throw "Not yet implemented";
+	throw std::logic_error("IN PROGRESS STATE: Cannot close an in-progress workflow instance");
 }
 
 void InProgressState::activate(WorkflowInstance* instance){
-	//TODO - IMPLEMENT
-	throw "Not yet implemented";
+	throw std::logic_error("IN PROGRESS STATE: Cannot activate an in-progress workflow instance");
 }
 
-void InProgressState::escalate(WorkflowInstance* instance){
-	//TODO - IMPLEMENT
-	throw "Not yet implemented";
-}
 
 void InProgressState::resolve(WorkflowInstance* instance){
-	//TODO - IMPLEMENT
-	throw "Not yet implemented";
+	if(instance != nullptr) {
+		//TODO - DISCUSS CHANGES ON HOW NOTIFY OBESVERS WORKS 
+		instance->setState(new ResolvedState());
+		instance->notifyObservers();
+	}else{
+		throw std::invalid_argument("IN PROGRESS STATE: NULL PTR");
+	}
 }
+
 
