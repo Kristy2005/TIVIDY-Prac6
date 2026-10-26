@@ -1,10 +1,16 @@
 #include "WorkItem.h"
 
-WorkItem::WorkItem() : name(), completed(false) {}
+WorkItem::WorkItem() : name(), completed(false), requiredRole() {
+}
 
-WorkItem::WorkItem(const std::string& itemName) : name(itemName), completed(false) {}
+WorkItem::WorkItem(const std::string& itemName) : name(itemName), completed(false), requiredRole() {
+}
 
-void WorkItem::execute() {}
+WorkItem::WorkItem(const std::string& itemName, const std::string& requiredRoleName) : name(itemName), completed(false), requiredRole(requiredRoleName) {
+}
+
+void WorkItem::execute() {
+}
 
 bool WorkItem::isComplete() const {
     return completed;
@@ -16,4 +22,12 @@ void WorkItem::complete() {
 
 const std::string& WorkItem::getName() const {
     return name;
+}
+
+void WorkItem::setRequiredRole(const std::string& requiredRoleName) {
+    requiredRole = requiredRoleName;
+}
+
+const std::string& WorkItem::getRequiredRole() const {
+    return requiredRole;
 }

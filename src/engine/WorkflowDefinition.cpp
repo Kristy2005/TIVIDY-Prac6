@@ -1,19 +1,37 @@
 #include "WorkflowDefinition.h"
+#include "Participant.h"
+#include "WorkItem.h"
 
-void WorkflowDefinition::setRoot(WorkflowComponent* component) {
-	this->root = component;
+WorkflowDefinition::WorkflowDefinition()
+    : name(), root(nullptr), strategy(nullptr), escalationHandler(nullptr) {
 }
 
-void WorkflowDefinition::setAssignmentStrategy(AssignmentStrategy* strategy) {
-	// TODO - implement WorkflowDefinition::setAssignmentStrategy
-	throw "Not yet implemented";
+void WorkflowDefinition::setRoot(WorkflowComponent* component) {
+    root = component;
+}
+
+void WorkflowDefinition::setAssignmentStrategy(AssignmentStrategy* strategyValue) {
+    strategy = strategyValue;
+}
+
+AssignmentStrategy* WorkflowDefinition::getAssignmentStrategy() const {
+    return strategy;
+}
+
+Participant* WorkflowDefinition::selectAssignee(
+    WorkItem* item, std::vector<Participant*> participants) const {
+    if (strategy == nullptr) {
+        return nullptr;
+    }
+
+    return strategy->assign(item, participants);
 }
 
 void WorkflowDefinition::setEscalationHandler(Handler* handler) {
-	this->escalationHandler = handler;
+    escalationHandler = handler;
 }
 
 WorkflowInstance* WorkflowDefinition::createInstance() {
-	// TODO - implement WorkflowDefinition::createInstance
-	throw "Not yet implemented";
+    // Instance construction is outside the Strategy-pattern implementation.
+    throw "Not yet implemented";
 }
