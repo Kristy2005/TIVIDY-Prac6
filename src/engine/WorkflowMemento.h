@@ -17,7 +17,7 @@ public:
 
     WorkflowState* getState() const;
 
-};
+    };
 
 }
 
