@@ -74,7 +74,8 @@ public:
 template <typename S>
 std::unique_ptr<WorkflowInstance> makeInstanceIn() {
 	std::unique_ptr<WorkflowInstance> instance(new WorkflowInstance());
-	instance->setState(new S());
+	static S s;  // one shared object of type S for all instances in this state
+	instance->setState(&s);  // setState() notifies observers, but there are none yet
 	return instance;
 }
 

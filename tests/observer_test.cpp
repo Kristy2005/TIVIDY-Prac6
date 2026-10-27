@@ -261,10 +261,11 @@ TEST_CASE("Attached observer is notified when the state changes") {
     WorkflowDefinition definition;
     WorkflowInstance instance(&definition);
     RecordingObserver observer;
-    StubState* state = new StubState();
+    // StubState* state = new StubState();
+    static StubState state;
     instance.attach(&observer);
 
-    instance.setState(state);
+    instance.setState(&state);
 
     CHECK(observer.updateCount == 1);
 }
@@ -273,8 +274,8 @@ TEST_CASE("Each state change notifies the observer once") {
     WorkflowDefinition definition;
     WorkflowInstance instance(&definition);
     RecordingObserver observer;
-    StubState first;
-    StubState second;
+    static StubState first;
+    static StubState second;
     instance.attach(&observer);
 
     instance.setState(&first);
@@ -287,7 +288,7 @@ TEST_CASE("Detached observer is no longer notified") {
     WorkflowDefinition definition;
     WorkflowInstance instance(&definition);
     RecordingObserver observer;
-    StubState state;
+    static StubState state;
     instance.attach(&observer);
     instance.detach(&observer);
 
