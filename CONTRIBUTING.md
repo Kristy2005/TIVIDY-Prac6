@@ -233,7 +233,9 @@ make test
 	- The normal case (it works)
 	- The invalid case (it is rejected and nothing changes)
 	- The pointer-safety case (nothing is used after delete, nothing leaks)
-- Step 7: run the memory checks before pushing
+- Step 7: run the memory checks before pushing 
+-       : make valgrind for leak checks if CI pipeline fails please go back and run this command locally
+
 
 ```bash
 cmake -S . -B build-asan -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -g"
