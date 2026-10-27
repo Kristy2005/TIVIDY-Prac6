@@ -11,13 +11,6 @@ namespace tividy {
 
 WorkflowInstance::WorkflowInstance(WorkflowDefinition* definition)
     : currentState(nullptr), definition(definition) {
-
-    if (definition == nullptr) {
-        throw std::invalid_argument(
-            "WorkflowInstance: definition cannot be null"
-        );
-    }
-
     currentState = new SubmittedState();
 }
 
