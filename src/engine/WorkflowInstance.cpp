@@ -18,11 +18,16 @@ WorkflowInstance::WorkflowInstance(WorkflowDefinition* definition)
         );
     }
 
-    currentState = new SubmittedState();
+    static SubmittedState initial;
+    currentState = &initial;
 }
 
 WorkflowInstance::~WorkflowInstance() {
     // State pointers are retained by mementos as non-owning snapshots.
+	// if(this->currentState != nullptr){
+	// 	delete this->currentState;
+	// 	this->currentState = nullptr;
+	// }
 }
 
 WorkflowState* WorkflowInstance::getState() const {
