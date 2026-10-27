@@ -261,10 +261,10 @@ TEST_CASE("Attached observer is notified when the state changes") {
     WorkflowDefinition definition;
     WorkflowInstance instance(&definition);
     RecordingObserver observer;
-    StubState state;
+    StubState* state = new StubState();
     instance.attach(&observer);
 
-    instance.setState(&state);
+    instance.setState(state);
 
     CHECK(observer.updateCount == 1);
 }

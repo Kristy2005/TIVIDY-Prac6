@@ -11,7 +11,7 @@ namespace tividy {
 
 WorkflowInstance::WorkflowInstance(WorkflowDefinition* definition)
     : currentState(nullptr), definition(definition) {
-    currentState = new SubmittedState();
+    this->currentState = new SubmittedState();  // initial state	
 }
 
 WorkflowInstance::~WorkflowInstance() {
