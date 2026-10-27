@@ -22,16 +22,13 @@ using namespace tividy;
 /*
  * Observer pattern tests.
  *
- * Section 1: structure and polymorphism. These pass with the current headers.
- * Section 2: EmailAdapter and ExternalEmailService. These FAIL until the
- *            .cpp stubs are implemented. Output is checked by capturing std::cout,
- *            because ExternalEmailService::sendEmail prints to the console and
- *            is not virtual, so it cannot be replaced by a test double.
- * Section 3: ProgressObserver and NotificationObserver. These FAIL until
- *            their update() methods are implemented.
- * Section 4: observers working with WorkflowInstance. These need the
- *            WorkflowInstance constructor, destructor, attach, detach, setState,
- *            notifyObservers and getState to be defined. They FAIL until then.
+ * Section 1: structure and polymorphism.
+ * Section 2: EmailAdapter and ExternalEmailService. EmailAdapter requires
+ *            both a recipient and a configured service: a missing one is a
+ *            caller error and throws rather than silently doing nothing
+ *            (see EmailAdapter.h).
+ * Section 3: ProgressObserver and NotificationObserver.
+ * Section 4: observers working with WorkflowInstance.
  */
 
 namespace {
@@ -132,7 +129,7 @@ public:
 } // namespace
 
 // ---------------------------------------------------------------------------
-// Section 1: structure and polymorphism (passes now)
+// Section 1: structure and polymorphism
 // ---------------------------------------------------------------------------
 
 TEST_CASE("ProgressObserver and NotificationObserver implement WorkflowObserver") {
@@ -167,7 +164,7 @@ TEST_CASE("Observer receives the instance it is notified about through the base 
 }
 
 // ---------------------------------------------------------------------------
-// Section 2: EmailAdapter and ExternalEmailService (FAIL until implemented)
+// Section 2: EmailAdapter and ExternalEmailService
 // ---------------------------------------------------------------------------
 
 TEST_CASE("ExternalEmailService prints the address and body") {
@@ -198,33 +195,27 @@ TEST_CASE("EmailAdapter sends the message through the email service") {
     CHECK(run.text.find("Your case was resolved.") != std::string::npos);
 }
 
-TEST_CASE("EmailAdapter does nothing when there is no email service") {
+TEST_CASE("EmailAdapter throws when there is no email service") {
     EmailAdapter adapter;
     Participant recipient("Thandi Dlamini");
 
-    CapturedRun run = runCapturingCout([&] {
-        adapter.sendNotification(&recipient, "Your case was resolved.");
-    });
-
-    CHECK_FALSE(run.threw);
-    CHECK(run.text.empty());
+    CHECK_THROWS_AS(
+        adapter.sendNotification(&recipient, "Your case was resolved."),
+        std::logic_error);
 }
 
-TEST_CASE("EmailAdapter does nothing when the recipient is null") {
+TEST_CASE("EmailAdapter throws when the recipient is null") {
     ExternalEmailService service;
     EmailAdapter adapter;
     adapter.service = &service;
 
-    CapturedRun run = runCapturingCout([&] {
-        adapter.sendNotification(nullptr, "Your case was resolved.");
-    });
-
-    CHECK_FALSE(run.threw);
-    CHECK(run.text.empty());
+    CHECK_THROWS_AS(
+        adapter.sendNotification(nullptr, "Your case was resolved."),
+        std::invalid_argument);
 }
 
 // ---------------------------------------------------------------------------
-// Section 3: concrete observers (FAIL until implemented)
+// Section 3: concrete observers
 // ---------------------------------------------------------------------------
 
 TEST_CASE("ProgressObserver reports that the workflow state changed") {
@@ -254,7 +245,7 @@ TEST_CASE("NotificationObserver accepts an update without throwing") {
 }
 
 // ---------------------------------------------------------------------------
-// Section 4: observers working with WorkflowInstance (needs the instance)
+// Section 4: observers working with WorkflowInstance
 // ---------------------------------------------------------------------------
 
 TEST_CASE("Observer is not notified before any state change") {
