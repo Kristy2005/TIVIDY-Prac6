@@ -9,15 +9,16 @@
 #include "engine/Participant.h"
 #include "engine/RoleBasedAssignment.h"
 #include "engine/ProgressObserver.h"
+#include "engine/Console.h"
 
 void runHospitalAdmissionScenario() {
     using namespace tividy;
+    using namespace tividy::console;
 
-    std::cout << "\n========================================\n";
+    std::cout << CYAN << BOLD << "\n========================================\n";
     std::cout << " HOSPITAL: PATIENT ADMISSION WORKFLOW\n";
-    std::cout << "========================================\n";
+    std::cout << "========================================\n" << RESET;
 
-    // Work items are ordered by the WorkflowStage (Composite pattern).
     WorkItem registerPatient("Register patient", "Receptionist");
     WorkItem verifyDocuments("Verify admission documents", "Admissions Clerk");
     WorkItem verifyPayment("Verify medical aid/payment", "Billing Officer");
@@ -78,17 +79,17 @@ void runHospitalAdmissionScenario() {
             throw std::runtime_error("No staff member found for role: " + task->getRequiredRole());
         }
         assignee->assignWork(task);
-        std::cout << "[IN PROGRESS] " << task->getName()
-                  << " -> " << assignee->getName() << "\n";
+        std::cout << YELLOW << "[IN PROGRESS] " << task->getName()
+                  << " -> " << assignee->getName() << RESET << "\n";
         assignee->completeWork(task);
-        std::cout << "[COMPLETED]   " << task->getName() << "\n";
+        std::cout << GREEN << "[COMPLETED]   " << task->getName() << RESET << "\n";
     }
 
     if (admissionStage.isComplete()) {
         instance->resolve();
-        std::cout << "\nRESULT: Patient admission workflow resolved successfully.\n";
+        std::cout << GREEN << BOLD << "\nRESULT: Patient admission workflow resolved successfully.\n" << RESET;
     } else {
-        std::cout << "\nRESULT: Admission still has outstanding work.\n";
+        std::cout << RED << "\nRESULT: Admission still has outstanding work.\n" << RESET;
     }
 
     instance->detach(&progress);
