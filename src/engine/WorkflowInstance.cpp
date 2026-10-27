@@ -11,12 +11,11 @@ namespace tividy {
 
 WorkflowInstance::WorkflowInstance(WorkflowDefinition* definition)
     : currentState(nullptr), definition(definition) {
-    static SubmittedState initial;
-        this->currentState = &initial;
+    currentState = new SubmittedState();
 }
 
 WorkflowInstance::~WorkflowInstance() {
-    //MUST NOT DELETE SHARED POINTER
+    delete currentState;
 }
 
 WorkflowState* WorkflowInstance::getState() const {
