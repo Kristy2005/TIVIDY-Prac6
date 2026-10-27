@@ -71,6 +71,8 @@ public:
 	 * @param instance The instance to change. Must not be null.
 	 */
 	virtual void close(WorkflowInstance* instance) override;
+
+	virtual WorkflowState* clone() const override { return new InProgressState(); }
 };
 
 
