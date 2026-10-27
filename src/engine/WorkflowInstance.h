@@ -49,19 +49,9 @@ private:
     std::vector<WorkflowObserver*> observers;
 
 public:
-    /**
-     * @brief Creates an instance of a workflow definition.
-     *
-     * @param definition The blueprint to run. Must not be null, and must
-     *        outlive this instance.
-     */
-    explicit WorkflowInstance(WorkflowDefinition* definition);
-
-    /**
-     * @brief Destroys the instance.
-     *
-     * Does not delete the definition or the observers.
-     */
+    explicit WorkflowInstance(WorkflowDefinition* definition = nullptr);
+    WorkflowInstance(const WorkflowInstance&) = delete;
+    WorkflowInstance& operator=(const WorkflowInstance&) = delete;
     ~WorkflowInstance();
 
     /**

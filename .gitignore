@@ -27,3 +27,5 @@ docs/doxygen/
 # Valgrind / debug
 core
 vgcore.*
+tividy_tests.exe
+build/

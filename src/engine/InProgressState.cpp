@@ -10,7 +10,10 @@ void InProgressState::startProcessing(WorkflowInstance* instance) {
 }
 
 void InProgressState::close(WorkflowInstance* instance) {
-	throw std::logic_error("IN PROGRESS STATE: Cannot close an in-progress workflow instance");
+	if (instance == nullptr) {
+		throw std::invalid_argument("IN PROGRESS STATE: NULL PTR");
+	}
+	instance->setState(new ClosedState());       // retracted or rejected while in progress
 }
 
 void InProgressState::activate(WorkflowInstance* instance){
@@ -18,13 +21,11 @@ void InProgressState::activate(WorkflowInstance* instance){
 }
 
 
-void InProgressState::resolve(WorkflowInstance* instance){
-	if(instance != nullptr) {
-		//TODO - DISCUSS CHANGES ON HOW NOTIFY OBESVERS WORKS 
-		instance->setState(new ResolvedState());
-	}else{
+void InProgressState::resolve(WorkflowInstance* instance) {
+	if (instance == nullptr) {
 		throw std::invalid_argument("IN PROGRESS STATE: NULL PTR");
 	}
+	instance->setState(new ResolvedState());     // setState() notifies observers
 }
 
 

@@ -17,6 +17,11 @@ public:
 
     WorkflowState* getState() const;
 
+    ~WorkflowMemento();
+
+    WorkflowMemento(const WorkflowMemento&) = delete;
+    
+    WorkflowMemento& operator=(const WorkflowMemento&) = delete;
     };
 
 }

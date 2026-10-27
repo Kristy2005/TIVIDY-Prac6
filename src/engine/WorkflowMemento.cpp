@@ -1,4 +1,5 @@
 #include "WorkflowMemento.h"
+#include "WorkflowState.h"     // needed so delete can run the state's destructor
 
 namespace tividy {
 
@@ -8,6 +9,7 @@ WorkflowMemento::WorkflowMemento()
 
 }
 
+WorkflowMemento::~WorkflowMemento() { delete state; }
 
 void WorkflowMemento::setState(WorkflowState* state) {
     this->state = state;
