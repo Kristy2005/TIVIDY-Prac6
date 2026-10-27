@@ -11,18 +11,11 @@ namespace tividy {
 
 WorkflowInstance::WorkflowInstance(WorkflowDefinition* definition)
     : currentState(nullptr), definition(definition) {
-
-    if (definition == nullptr) {
-        throw std::invalid_argument(
-            "WorkflowInstance: definition cannot be null"
-        );
-    }
-
     currentState = new SubmittedState();
 }
 
 WorkflowInstance::~WorkflowInstance() {
-    // State pointers are retained by mementos as non-owning snapshots.
+    delete currentState;
 }
 
 WorkflowState* WorkflowInstance::getState() const {
@@ -31,12 +24,16 @@ WorkflowState* WorkflowInstance::getState() const {
 
 void WorkflowInstance::setState(WorkflowState* state) {
     if (state == nullptr) {
-        throw std::invalid_argument(
-            "WorkflowInstance: state cannot be null"
-        );
+        throw std::invalid_argument("WorkflowInstance: state cannot be null");
     }
 
+    if (state == currentState) {
+        return;
+    }
+    
+    WorkflowState* old = currentState;
     currentState = state;
+    delete old;              // safe: states have no data and don't touch `this` after setState()
     notifyObservers();
 }
 
@@ -61,21 +58,15 @@ void WorkflowInstance::escalate() {
 
 WorkflowMemento* WorkflowInstance::createMemento() {
     WorkflowMemento* memento = new WorkflowMemento();
-    memento->setState(currentState);
+    memento->setState(currentState->clone());   // the memento gets its own copy
     return memento;
 }
 
 void WorkflowInstance::restore(WorkflowMemento* memento) {
     if (memento == nullptr || memento->getState() == nullptr) {
-        throw std::invalid_argument(
-            "Cannot restore from an invalid memento."
-        );
+        throw std::invalid_argument("Cannot restore from an invalid memento.");
     }
-
-    // Restore the saved state pointer. States are not deleted so saved pointers remain valid.
-    currentState = memento->getState();
-
-    notifyObservers();
+    setState(memento->getState()->clone());     // deletes the old state and notifies
 }
 
 void WorkflowInstance::resolve() {
