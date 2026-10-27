@@ -1,4 +1,4 @@
-#include "engine/WorkflowStage.h"
+#include "WorkflowStage.h"
 
 namespace tividy {
 void WorkflowStage::add(WorkflowComponent* component) {

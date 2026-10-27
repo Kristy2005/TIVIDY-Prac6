@@ -1,9 +1,11 @@
 #include "HistoryObserver.h"
-
+#include "WorkflowInstance.h"
+#include "WorkflowHistory.h"
+#include <stdexcept>
 namespace tividy {
-
 void HistoryObserver::update(WorkflowInstance* instance) {
-	// TODO - implement HistoryObserver::update
-	throw "Not yet implemented";
+    if (!instance) throw std::invalid_argument("HistoryObserver: null instance");
+    static WorkflowHistory history;
+    history.save(instance->createMemento());
 }
 }

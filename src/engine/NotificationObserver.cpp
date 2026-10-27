@@ -1,9 +1,7 @@
 #include "NotificationObserver.h"
-
+#include <stdexcept>
 namespace tividy {
-
 void NotificationObserver::update(WorkflowInstance* instance) {
-	// TODO - implement NotificationObserver::update
-	throw "Not yet implemented";
+    if (!instance) throw std::invalid_argument("NotificationObserver: null instance");
 }
 }

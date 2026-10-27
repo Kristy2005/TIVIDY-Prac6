@@ -1,81 +1,121 @@
-// #include "WorkflowInstance.h"
-// #include "WorkflowDefinition.h"
-// #include <stdexcept>
-// #include "SubmittedState.h"
-// #include "WorkflowMemento.h"
-// #include "WorkflowObserver.h"
-// #include <algorithm>
+#include "WorkflowInstance.h"
+#include "WorkflowState.h"
+#include "SubmittedState.h"
+#include "InProgressState.h"
+#include "WorkflowObserver.h"
 
-// namespace tividy {
+#include <algorithm>
+#include <stdexcept>
 
-// 	void WorkflowInstance::setState(WorkflowState* state) {
-// 		if(state == nullptr) {
-// 			throw std::invalid_argument("WorkflowInstance::setState: state cannot be null");
-// 		}
-		
-// 		if(this->currentState)delete this->currentState;
-// 		this->currentState = state;
-// 	}
+namespace tividy {
 
-// 	void WorkflowInstance::submit() {
-// 		this->currentState = new SubmittedState();
-// 	}
+WorkflowInstance::WorkflowInstance(WorkflowDefinition* definition)
+    : currentState(nullptr), definition(definition) {
 
-// 	void WorkflowInstance::activate(){
-// 		this->currentState->activate(this);
-// 	}
+    if (definition == nullptr) {
+        throw std::invalid_argument(
+            "WorkflowInstance: definition cannot be null"
+        );
+    }
 
-// 	void WorkflowInstance::startProcessing() {
-// 		this->currentState->startProcessing(this);
-// 	}
+    currentState = new SubmittedState();
+}
 
-// 	void WorkflowInstance::escalate() {
-// 		this->definition->handleEscalation(this);
-// 	}
+WorkflowInstance::~WorkflowInstance() {
+    // State pointers are retained by mementos as non-owning snapshots.
+}
 
-// 	WorkflowMemento* WorkflowInstance::createMemento() {
-// 		WorkflowMemento* memento = new WorkflowMemento();
-// 		memento->setState(this->currentState);
-// 		return memento;
-// 	}
+WorkflowState* WorkflowInstance::getState() const {
+    return currentState;
+}
 
-// 	void WorkflowInstance::restore(WorkflowMemento* memento) {
-// 		if(memento == nullptr) {
-// 			throw std::invalid_argument("WorkflowInstance::restore: memento cannot be null");
-// 		}
-// 		this->setState(memento->getState());
-// 	}
+void WorkflowInstance::setState(WorkflowState* state) {
+    if (state == nullptr) {
+        throw std::invalid_argument(
+            "WorkflowInstance: state cannot be null"
+        );
+    }
 
-// 	void WorkflowInstance::resolve() {
-// 		this->currentState->resolve(this);
-// 	}
+    currentState = state;
+    notifyObservers();
+}
 
-// 	void WorkflowInstance::close() {
-// 		this->currentState->close(this);
-// 	}
+void WorkflowInstance::submit() {
+    // New instances begin in SubmittedState.
+}
 
-// 	void WorkflowInstance::notifyObservers() {
+void WorkflowInstance::activate() {
+    currentState->activate(this);
+}
 
-// 		if(this->observers.empty()) {
-// 			throw std::logic_error("WorkflowInstance::notifyObservers: no registered observers");
-// 		}
+void WorkflowInstance::startProcessing() {
+    currentState->startProcessing(this);
+}
 
-// 		// for(WorkflowObserver* observer : observers) {
-// 		// 	observer->update(this);
-// 		// }
-// 	}
+void WorkflowInstance::escalate() {
+    if (definition == nullptr) throw std::logic_error("Workflow definition is missing.");
+    if (dynamic_cast<InProgressState*>(currentState) == nullptr)
+        throw std::logic_error("Only in-progress workflows can be escalated.");
+    definition->handleEscalation(this);
+}
 
-// 	void WorkflowInstance::attach(WorkflowObserver* observer) {
-// 		// this->observers.push_back(observer);
-// 	}
+WorkflowMemento* WorkflowInstance::createMemento() {
+    WorkflowMemento* memento = new WorkflowMemento();
+    memento->setState(currentState);
+    return memento;
+}
 
-// 	void WorkflowInstance::detach(WorkflowObserver* observer) {
-// 		// auto it = std::find(observers.begin(), observers.end(), observer);
-// 		// if(it != observers.end()) {
-// 		// 	observers.erase(it);
-// 		// } else {
-// 		// 	throw std::invalid_argument("WorkflowInstance::detach: observer not found");
-// 		// }
-// 	}
+void WorkflowInstance::restore(WorkflowMemento* memento) {
+    if (memento == nullptr || memento->getState() == nullptr) {
+        throw std::invalid_argument(
+            "Cannot restore from an invalid memento."
+        );
+    }
 
-// } // namespace tividy
+    // Restore the saved state pointer. States are not deleted so saved pointers remain valid.
+    currentState = memento->getState();
+
+    notifyObservers();
+}
+
+void WorkflowInstance::resolve() {
+    currentState->resolve(this);
+}
+
+void WorkflowInstance::close() {
+    currentState->close(this);
+}
+
+void WorkflowInstance::notifyObservers() {
+    const std::vector<WorkflowObserver*> snapshot = observers;
+
+    for (WorkflowObserver* observer : snapshot) {
+        if (observer != nullptr &&
+            std::find(observers.begin(), observers.end(), observer)
+                != observers.end()) {
+            observer->update(this);
+        }
+    }
+}
+
+void WorkflowInstance::attach(WorkflowObserver* observer) {
+    if (observer == nullptr) {
+        throw std::invalid_argument(
+            "Cannot attach a null observer."
+        );
+    }
+
+    if (std::find(observers.begin(), observers.end(), observer)
+        == observers.end()) {
+        observers.push_back(observer);
+    }
+}
+
+void WorkflowInstance::detach(WorkflowObserver* observer) {
+    observers.erase(
+        std::remove(observers.begin(), observers.end(), observer),
+        observers.end()
+    );
+}
+
+}

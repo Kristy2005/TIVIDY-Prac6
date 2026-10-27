@@ -1,14 +1,14 @@
 #include "EscalateWorkCommand.h"
-
+#include "WorkflowInstance.h"
+#include <stdexcept>
 namespace tividy {
-
 void EscalateWorkCommand::execute() {
-	// TODO - implement EscalateWorkCommand::execute
-	throw "Not yet implemented";
+    if (receiver == nullptr) throw std::logic_error("EscalateWorkCommand: receiver is not set");
+    saveState();
+    receiver->escalate();
 }
-
 void EscalateWorkCommand::undo() {
-	// TODO - implement EscalateWorkCommand::undo
-	throw "Not yet implemented";
+    if (receiver == nullptr || previous == nullptr) throw std::logic_error("EscalateWorkCommand: nothing to undo");
+    receiver->restore(previous);
 }
 }

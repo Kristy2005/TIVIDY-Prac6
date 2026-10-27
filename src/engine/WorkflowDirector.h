@@ -1,8 +1,7 @@
 #ifndef WORKFLOWDIRECTOR_H
 #define WORKFLOWDIRECTOR_H
 
-// #include "WorkflowBuilder.h"
-class WorkflowBuilder;
+ #include "WorkflowBuilder.h"
 
 
 namespace tividy {
@@ -12,6 +11,7 @@ namespace tividy {
 		WorkflowBuilder* builder;
 
 	public:
+        WorkflowDirector();
 		void setBuilder(WorkflowBuilder* builder);
 
 		void constructWorkflow();

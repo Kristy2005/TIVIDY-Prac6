@@ -1,14 +1,14 @@
 #include "ApproveWorkCommand.h"
-
+#include "WorkflowInstance.h"
+#include <stdexcept>
 namespace tividy {
-
 void ApproveWorkCommand::execute() {
-	// TODO - implement ApproveWorkCommand::execute
-	throw "Not yet implemented";
+    if (receiver == nullptr) throw std::logic_error("ApproveWorkCommand: receiver is not set");
+    saveState();
+    receiver->activate();
 }
-
 void ApproveWorkCommand::undo() {
-	// TODO - implement ApproveWorkCommand::undo
-	throw "Not yet implemented";
+    if (receiver == nullptr || previous == nullptr) throw std::logic_error("ApproveWorkCommand: nothing to undo");
+    receiver->restore(previous);
 }
 }

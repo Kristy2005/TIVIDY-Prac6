@@ -9,7 +9,6 @@ void ActiveState::startProcessing(WorkflowInstance* instance) {
 	if(instance != nullptr) {
 		//TODO - DISCUSS CHANGES ON HOW NOTIFY OBESVERS WORKS 
 		instance->setState(new InProgressState());
-		instance->notifyObservers();
 	}else{
 		throw std::invalid_argument("ACTIVE STATE: NULL PTR");
 	}
@@ -19,7 +18,6 @@ void ActiveState::close(WorkflowInstance* instance) {
 	if(instance != nullptr) {
 		//TODO - DISCUSS CHANGES ON HOW NOTIFY OBESVERS WORKS 
 		instance->setState(new ClosedState());
-		instance->notifyObservers();
 	}else{	
 		throw std::invalid_argument("ACTIVE STATE: NULL PTR");
 	}
