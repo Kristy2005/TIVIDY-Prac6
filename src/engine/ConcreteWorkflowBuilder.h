@@ -2,7 +2,8 @@
 #define CONCRETEWORKFLOWBUILDER_H
 
 #include "WorkflowBuilder.h"
-#include "Role.h" // Include Role.h so the compiler knows what Role<T> is
+#include "Role.h"
+#include <stdexcept> // Include Role.h so the compiler knows what Role<T> is
 
 
 namespace tividy {
@@ -44,9 +45,7 @@ namespace tividy {
       //CLASSES THAT UTILIZE TEMPLATE CLASS OBJECTS MUST DEFINE A FUNCTION CONTAINING THE 
       // TEMPLATE CLASSES OBJECT IN THE HEADER FILE FOR THE C++11 COMPILER TO CORRECTLY LINK THE .H & .CPP
       //DO NOT REMOVE PLEASE 
-      // TODO - implement ConcreteWorkflowBuilder::addRole
-      (void)role;
-      throw "Not yet implemented";
+      if (role == nullptr) { throw std::invalid_argument("addRole: role cannot be null"); }
     }
 
     void addDependency(WorkItem* before, WorkItem* after);

@@ -1,18 +1,8 @@
 #include "Invoker.h"
-
+#include <stdexcept>
 namespace tividy {
-
-void Invoker::setCommand(Command* command) {
-	this->command = command;
-}
-
-void Invoker::executeCommand() {
-	// TODO - implement Invoker::executeCommand
-	throw "Not yet implemented";
-}
-
-void Invoker::undoCommand() {
-	// TODO - implement Invoker::undoCommand
-	throw "Not yet implemented";
-}
+Invoker::Invoker() : command(nullptr) {}
+void Invoker::setCommand(Command* value) { command = value; }
+void Invoker::executeCommand() { if (!command) throw std::logic_error("Invoker: no command set"); command->execute(); }
+void Invoker::undoCommand() { if (!command) throw std::logic_error("Invoker: no command set"); command->undo(); }
 }

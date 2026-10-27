@@ -11,6 +11,7 @@ namespace tividy {
 		Command* command;
 
 	public:
+        Invoker();
 		void setCommand(Command* command);
 
 		void executeCommand();

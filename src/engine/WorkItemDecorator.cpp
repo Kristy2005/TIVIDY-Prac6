@@ -9,5 +9,5 @@ WorkItemDecorator::WorkItemDecorator(WorkflowComponent* wrapped) : component(wra
 }
 WorkItemDecorator::~WorkItemDecorator() {
     // The wrapped component is non-owning and must not be deleted here.
-}
+    }
 }

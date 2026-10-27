@@ -1,14 +1,14 @@
 #include "CancelWorkCommand.h"
-
+#include "WorkflowInstance.h"
+#include <stdexcept>
 namespace tividy {
-
 void CancelWorkCommand::execute() {
-	// TODO - implement CancelWorkCommand::execute
-	throw "Not yet implemented";
+    if (receiver == nullptr) throw std::logic_error("CancelWorkCommand: receiver is not set");
+    saveState();
+    receiver->close();
 }
-
 void CancelWorkCommand::undo() {
-	// TODO - implement CancelWorkCommand::undo
-	throw "Not yet implemented";
+    if (receiver == nullptr || previous == nullptr) throw std::logic_error("CancelWorkCommand: nothing to undo");
+    receiver->restore(previous);
 }
 }
