@@ -11,11 +11,12 @@ namespace tividy {
 
 WorkflowInstance::WorkflowInstance(WorkflowDefinition* definition)
     : currentState(nullptr), definition(definition) {
-    this->currentState = new SubmittedState();  // initial state	
+    static SubmittedState s;
+    currentState = &s;  // initial state is SubmittedState	
 }
 
 WorkflowInstance::~WorkflowInstance() {
-    delete currentState;
+    // delete currentState;
 }
 
 WorkflowState* WorkflowInstance::getState() const {
@@ -31,9 +32,7 @@ void WorkflowInstance::setState(WorkflowState* state) {
         return;
     }
     
-    WorkflowState* old = currentState;
-    currentState = state;
-    delete old;              // safe: states have no data and don't touch `this` after setState()
+   currentState = state;
     notifyObservers();
 }
 
@@ -58,7 +57,7 @@ void WorkflowInstance::escalate() {
 
 WorkflowMemento* WorkflowInstance::createMemento() {
     WorkflowMemento* memento = new WorkflowMemento();
-    memento->setState(currentState->clone());   // the memento gets its own copy
+    memento->setState(currentState);   // the memento gets its own copy
     return memento;
 }
 
@@ -66,7 +65,7 @@ void WorkflowInstance::restore(WorkflowMemento* memento) {
     if (memento == nullptr || memento->getState() == nullptr) {
         throw std::invalid_argument("Cannot restore from an invalid memento.");
     }
-    setState(memento->getState()->clone());     // deletes the old state and notifies
+    setState(memento->getState());    
 }
 
 void WorkflowInstance::resolve() {
