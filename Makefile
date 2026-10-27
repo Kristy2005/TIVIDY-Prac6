@@ -17,6 +17,7 @@ run: build
 
 docs:
 	doxygen Doxyfile
+	@echo "Documentation generated: file://$(CURDIR)/html/index.html"
 
 clean:
 	rm -rf build html latex
