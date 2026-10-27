@@ -3,30 +3,33 @@
 
 #include "WorkflowObserver.h"
 
+namespace tividy {
+
 /**
- * @brief Observer pattern: ConcreteObserver. Tells a participant when an
- *        instance changes.
+ * @brief Observer pattern: ConcreteObserver. Intended to tell a participant
+ *        when an instance changes.
  *
- * Sends through the NotificationService interface only, so it never knows
- * whether the message goes out by email or any other channel (see
+ * It is meant to send through the NotificationService interface only, so it
+ * never knows whether the message goes out by email or any other channel (see
  * EmailAdapter).
  *
- * @par Ownership
- * Holds the recipient and the service but owns neither. The creator
- * deletes them, and must outlive this observer.
+ * @warning Notification delivery is not implemented yet. update() only checks
+ *          that the instance is not null. The class has no recipient and no
+ *          NotificationService, so nothing is sent.
  *
  * @see WorkflowObserver, NotificationService, EmailAdapter
  */
+class NotificationObserver : public WorkflowObserver {
 
+public:
+	/**
+	 * @brief Checks the instance. Does not send anything yet.
+	 *
+	 * @param instance The instance that changed. Not stored.
+	 */
+	virtual void update(WorkflowInstance* instance) override;
+};
 
-namespace tividy {
-	class NotificationObserver :public WorkflowObserver {
-
-
-	public:
-		virtual void update(WorkflowInstance* instance)override;
-	};
-
-}
+} // namespace tividy
 
 #endif // NOTIFICATIONOBSERVER_H

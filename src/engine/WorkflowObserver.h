@@ -4,55 +4,60 @@
 #include "WorkflowInstance.h"
 
 namespace tividy {
+
 class WorkflowInstance;
 
 /**
  * @brief Observer pattern: abstract Observer.
  *
- * Implemented by anything that needs to react when a WorkflowInstance
- * changes, such as logging, progress display or notifications. The instance
- * (the Subject) knows only this interface, never the concrete observers.
+ * Implemented by anything that reacts when a WorkflowInstance changes, such
+ * as recording history, showing progress or notifying a participant. The
+ * instance (the Subject) keeps a list of WorkflowObserver pointers and knows
+ * only this interface, never the concrete observers.
  *
  * @par Pull model
- * update() passes the instance, not the changed data. The observer reads
- * what it needs from the instance. The instance does not decide what each
- * observer sees.
+ * update() passes the instance itself and nothing else. An observer reads
+ * whatever it needs from the instance, for example getState().
  *
  * @par Ownership
- * WorkflowInstance keeps a list of observers but does not own them
- * (aggregation). Whoever creates an observer deletes it, and must detach it
- * from every instance first. The instance never deletes an observer.
+ * The instance keeps the pointers but does not own the observers. Whoever
+ * creates an observer deletes it, and should detach it from the instance
+ * first, otherwise the instance is left holding a dangling pointer.
  *
  * @par Concrete observers
- * NotificationObserver, HistoryObserver and ProgressObserver.
+ * ProgressObserver, HistoryObserver and NotificationObserver.
  *
- * @see WorkflowInstance
+ * @see WorkflowInstance::attach, WorkflowInstance::detach,
+ *      WorkflowInstance::notifyObservers
  */
-
 class WorkflowObserver {
 
 public:
-/**
- * @brief Called by the instance after it has changed.
- *
- * The change is already complete when this runs, so the observer sees the
- * new state.
- *
- * @param instance The instance that changed. Never null. Valid only for
- *        the duration of this call, so do not store the pointer.
- *
- * @note An observer may detach itself during update(). It must not delete
- *       the instance or modify the instance's state.
- * @note If an observer throws, the instance records the failure and still
- *       notifies the remaining observers. The state change is not undone.
- */
+	/**
+	 * @brief Called by the instance after its state has changed.
+	 *
+	 * The change is complete when this runs, so the observer sees the new
+	 * state.
+	 *
+	 * @param instance The instance that changed. Not null. Only valid during
+	 *        this call, so do not store the pointer.
+	 *
+	 * @note Do not change the instance's state from inside update().
+	 *       setState() notifies observers, so that would start another
+	 *       notification while this one is still running.
+	 * @note Do not delete the instance from inside update().
+	 * @todo An exception thrown here is not caught by the instance yet, so it
+	 *       can stop the remaining observers from being notified.
+	 */
 	virtual void update(WorkflowInstance* instance) = 0;
-/*
-*@brief Virtual destructor to allow for proper memory management 
-*/
-	virtual ~WorkflowObserver(){};
+
+	/**
+	 * @brief Virtual destructor so a concrete observer is destroyed
+	 *        correctly through a WorkflowObserver pointer.
+	 */
+	virtual ~WorkflowObserver() {}
 };
 
-#endif // WORKFLOWOBSERVER_H
-}
+} // namespace tividy
 
+#endif // WORKFLOWOBSERVER_H

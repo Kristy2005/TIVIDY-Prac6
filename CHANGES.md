@@ -9,41 +9,33 @@
 	- DECIDE: the team must pick an option before coding or editing
 
 ---
-# OBSERVER
+---
+# OBSERVER: DOCUMENTATION AND SIMPLE FIXES
 
-- CHANGE: subject
-	- "WorkflowInstance or WorkItem" becomes "WorkflowInstance" everywhere
-	- Remove the stray UML line from WorkItem to WorkflowObserver
-- REMOVE: "Check whether another work item can begin" as an observer reaction
-	- This is engine logic done by WorkflowInstance through the definition
-	- If it were an observer, the workflow would stop when nobody attached it
-- CHANGE: EmailAdapter is not an observer
-	- Chain is NotificationObserver, NotificationService, EmailAdapter, ExternalEmailService
-- CHANGE: "Command execution also notifies observers"
-	- The instance notifies, from one place
-	- Otherwise observers hear about one event twice
-- ADD: push or pull
-	- `update(instance)` is the pull model
-	- Observers read what they need from the instance
-- ADD: ownership
-	- The instance keeps the list, it does not own the observers (aggregation)
-- ADD: failure behaviour
-	- A failing observer is recorded
-	- Remaining observers still run
-	- The state change stays
-- ADD: HistoryObserver and WorkflowHistory are different
-	- HistoryObserver logs events for the audit trail
-	- WorkflowHistory stores mementos
-- ADD: getters the observers need
-	- State name
-	- Access to the definition
-- ADD: NotificationObserver needs a recipient and a NotificationService
-	- Show as an association, not only a dashed line
-- DECIDE: item-level events
-	- The problem text talks about "work item completed", but states only cover the whole instance
-	- Option A: add instance operations for item assigned and item completed that call `notifyObservers`
-	- Option B: limit Observer to state changes only
-
+- DONE: documentation
+	- Doxygen comments on WorkflowObserver, HistoryObserver, ProgressObserver, NotificationObserver
+	- Doxygen comments on NotificationService, EmailAdapter, ExternalEmailService
+	- Doxygen comments on the observer operations of WorkflowInstance
+	- Comments describe the current pull model and mark unfinished behaviour with `@todo` and `@warning`
+- DONE: header fixes
+	- WorkflowObserver.h: namespace closed before `#endif`, stray brace after the guard removed
+	- WorkflowObserver.h: destructor comment changed to `/** */`, extra `;` removed
+	- NotificationObserver.h: class comment moved inside the namespace, directly above the class
+	- NotificationService.h: virtual destructor added
+	- EmailAdapter.h: `override` added, default constructor sets `service` to null
+	- HistoryObserver.h: commented out include removed
+- CHANGE: comments that promised behaviour that does not exist
+	- "Instance records the failure and notifies the remaining observers" became a `@todo`
+	- "Holds the recipient and the service" became a `@warning`, the class has neither
+- NOT DONE: needs the team
+	- Push or pull, and what an observer is told about a change
+	- Failure handling when an observer throws
+	- Extracting a WorkflowSubject
+	- NotificationObserver recipient and service
+	- HistoryObserver as an audit trail of events, not mementos
+	- ProgressObserver reporting the state and the amount of work done
+	- Participant email address for EmailAdapter
+	- `sendNotification` taking the message by const reference
 ---
 # BUILDER
 
