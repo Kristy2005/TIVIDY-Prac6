@@ -13,7 +13,8 @@ void InProgressState::close(WorkflowInstance* instance) {
 	if (instance == nullptr) {
 		throw std::invalid_argument("IN PROGRESS STATE: NULL PTR");
 	}
-	instance->setState(new ClosedState());       // retracted or rejected while in progress
+	static ClosedState s;
+	instance->setState(&s);       // retracted or rejected while in progress
 }
 
 void InProgressState::activate(WorkflowInstance* instance){
@@ -25,7 +26,8 @@ void InProgressState::resolve(WorkflowInstance* instance) {
 	if (instance == nullptr) {
 		throw std::invalid_argument("IN PROGRESS STATE: NULL PTR");
 	}
-	instance->setState(new ResolvedState());     // setState() notifies observers
+	static ResolvedState s;
+	instance->setState(&s);     // setState() notifies observers
 }
 
 

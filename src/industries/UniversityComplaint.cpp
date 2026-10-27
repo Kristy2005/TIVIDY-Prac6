@@ -12,13 +12,15 @@
 #include "engine/ApprovalHandler.h"
 #include "engine/EscalationHandler.h"
 #include "engine/FinalDecisionHandler.h"
+#include "engine/Console.h"
 
 void runUniversityComplaintScenario() {
     using namespace tividy;
+    using namespace tividy::console;
 
-    std::cout << "\n========================================\n";
+    std::cout << MAGENTA << BOLD << "\n========================================\n";
     std::cout << " UNIVERSITY: STUDENT COMPLAINT WORKFLOW\n";
-    std::cout << "========================================\n";
+    std::cout << "========================================\n" << RESET;
 
     WorkItem recordComplaint("Record student complaint", "Faculty Administrator");
     WorkItem validateComplaint("Validate complaint and supporting evidence", "Faculty Administrator");
@@ -80,7 +82,6 @@ void runUniversityComplaintScenario() {
     std::cout << "The complaint is registered, validated and investigated.\n\n";
     complaintStage.execute();
 
-    // Complete the first three tasks before escalating the case for review.
     for (std::size_t i = 0; i < 3; ++i) {
         WorkItem* task = tasks[i];
         Participant* assignee = definition.selectAssignee(task, staff);
@@ -89,17 +90,17 @@ void runUniversityComplaintScenario() {
             throw std::runtime_error("No staff member found for role: " + task->getRequiredRole());
         }
         assignee->assignWork(task);
-        std::cout << "[IN PROGRESS] " << task->getName()
-                  << " -> " << assignee->getName() << "\n";
+        std::cout << YELLOW << "[IN PROGRESS] " << task->getName()
+                  << " -> " << assignee->getName() << RESET << "\n";
         assignee->completeWork(task);
-        std::cout << "[COMPLETED]   " << task->getName() << "\n";
+        std::cout << GREEN << "[COMPLETED]   " << task->getName() << RESET << "\n";
     }
 
-    std::cout << "\nThe investigation requires a manager's decision.\n";
-    std::cout << "Escalating through the configured Chain of Responsibility...\n";
+    std::cout << RED << "\nThe investigation requires a manager's decision.\n";
+    std::cout << "Escalating through the configured Chain of Responsibility...\n" << RESET;
     instance->escalate();
-    std::cout << "Escalation request passed through ApprovalHandler, "
-              << "EscalationHandler and FinalDecisionHandler.\n\n";
+    std::cout << RED << "Escalation request passed through ApprovalHandler, "
+              << "EscalationHandler and FinalDecisionHandler.\n\n" << RESET;
 
     for (std::size_t i = 3; i < tasks.size(); ++i) {
         WorkItem* task = tasks[i];
@@ -109,18 +110,18 @@ void runUniversityComplaintScenario() {
             throw std::runtime_error("No staff member found for role: " + task->getRequiredRole());
         }
         assignee->assignWork(task);
-        std::cout << "[IN PROGRESS] " << task->getName()
-                  << " -> " << assignee->getName() << "\n";
+        std::cout << YELLOW << "[IN PROGRESS] " << task->getName()
+                  << " -> " << assignee->getName() << RESET << "\n";
         assignee->completeWork(task);
-        std::cout << "[COMPLETED]   " << task->getName() << "\n";
+        std::cout << GREEN << "[COMPLETED]   " << task->getName() << RESET << "\n";
     }
 
     if (complaintStage.isComplete()) {
         instance->resolve();
-        std::cout << "\nRESULT: Complaint workflow resolved; outcome notification sent "
-                  << "as a simulated administrative step.\n";
+        std::cout << GREEN << BOLD << "\nRESULT: Complaint workflow resolved; outcome notification sent "
+                  << "as a simulated administrative step.\n" << RESET;
     } else {
-        std::cout << "\nRESULT: Complaint remains open because work is outstanding.\n";
+        std::cout << RED << "\nRESULT: Complaint remains open because work is outstanding.\n" << RESET;
     }
 
     instance->detach(&progress);

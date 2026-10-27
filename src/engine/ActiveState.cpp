@@ -8,7 +8,8 @@ namespace tividy {
 void ActiveState::startProcessing(WorkflowInstance* instance) {
 	if(instance != nullptr) {
 		//TODO - DISCUSS CHANGES ON HOW NOTIFY OBESVERS WORKS 
-		instance->setState(new InProgressState());
+		static InProgressState s;
+		instance->setState(&s); // setState() notifies observers
 	}else{
 		throw std::invalid_argument("ACTIVE STATE: NULL PTR");
 	}
@@ -17,7 +18,8 @@ void ActiveState::startProcessing(WorkflowInstance* instance) {
 void ActiveState::close(WorkflowInstance* instance) {
 	if(instance != nullptr) {
 		//TODO - DISCUSS CHANGES ON HOW NOTIFY OBESVERS WORKS 
-		instance->setState(new ClosedState());
+		static ClosedState s;
+		instance->setState(&s); // setState() notifies observers
 	}else{	
 		throw std::invalid_argument("ACTIVE STATE: NULL PTR");
 	}

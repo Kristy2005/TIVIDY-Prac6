@@ -72,7 +72,6 @@ public:
 	 */
 	virtual void close(WorkflowInstance* instance) override;
 
-	virtual WorkflowState* clone() const override { return new InProgressState(); }
 };
 
 

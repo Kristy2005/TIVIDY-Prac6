@@ -73,13 +73,6 @@ namespace tividy {
 		virtual void close(WorkflowInstance* instance) = 0;
 
 	/**
-	 * @brief Returns a new heap copy of this state. The caller owns it.
-	 *
-	 * Used by WorkflowMemento so a snapshot owns its own state object.
-	 */
-		virtual WorkflowState* clone() const = 0;
-
-	/**
 	 * @brief Virtual destructor so concrete classes can be deleted properly.
 	 */
 		virtual ~WorkflowState(){};
