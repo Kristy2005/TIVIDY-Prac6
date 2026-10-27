@@ -51,8 +51,6 @@ public:
 	 * @throws std::logic_error Always.
 	 */
 	virtual void close(WorkflowInstance* instance) override;
-
-	virtual WorkflowState* clone() const override { return new ResolvedState(); }
 };
 
 } // namespace tividy

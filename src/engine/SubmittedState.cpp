@@ -15,7 +15,8 @@ void SubmittedState::close(WorkflowInstance* instance) {
 void SubmittedState::activate(WorkflowInstance* instance){
 	if(instance != nullptr) {
 		//TODO - DISCUSS CHANGES ON HOW NOTIFY OBESVERS WORKS 
-		instance->setState(new ActiveState());
+		static ActiveState s;
+		instance->setState(&s); // setState() notifies observers
 	}else{
 		throw std::invalid_argument("SUBMITTED STATE: NULL PTR");
 	}
