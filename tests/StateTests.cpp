@@ -27,13 +27,13 @@
 #include <string>
 #include <stdexcept>
 
-#include "WorkflowInstance.h"
-#include "WorkflowObserver.h"
-#include "SubmittedState.h"
-#include "ActiveState.h"
-#include "InProgressState.h"
-#include "ResolvedState.h"
-#include "ClosedState.h"
+#include "engine/WorkflowInstance.h"
+#include "engine/WorkflowObserver.h"
+#include "engine/SubmittedState.h"
+#include "engine/ActiveState.h"
+#include "engine/InProgressState.h"
+#include "engine/ResolvedState.h"
+#include "engine/ClosedState.h"
 
 using namespace tividy;
 
