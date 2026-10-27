@@ -12,7 +12,7 @@ file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS src/*.cpp)
 list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 add_library(tividy_engine ${ENGINE_SRC})
-target_include_directories(tividy_engine PUBLIC src)
+target_include_directories(tividy_engine PUBLIC src src/engine)
 
 # The application (TUI)
 add_executable(tividy src/main.cpp)

@@ -20,8 +20,8 @@ void InProgressState::activate(WorkflowInstance* instance){
 
 void InProgressState::resolve(WorkflowInstance* instance){
 	if(instance != nullptr) {
-		//TODO - DISCUSS CHANGES ON HOW NOTIFY OBESVERS WORKS 
-		instance->setState(new ResolvedState());
+		instance->setState(new ClosedState());
+		instance->notifyObservers();
 	}else{
 		throw std::invalid_argument("IN PROGRESS STATE: NULL PTR");
 	}

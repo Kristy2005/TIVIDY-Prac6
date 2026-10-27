@@ -17,7 +17,7 @@ private:
     std::vector<WorkflowObserver*> observers;
 
 public:
-    explicit WorkflowInstance(WorkflowDefinition* definition);
+    explicit WorkflowInstance(WorkflowDefinition* definition = nullptr);
     ~WorkflowInstance();
 
     WorkflowState* getState() const;
