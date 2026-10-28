@@ -17,9 +17,11 @@ run: build
 
 docs:
 	doxygen Doxyfile
-	@echo "Documentation generated: file://$(CURDIR)/html/index.html"
+	@echo "----------------------------------------------------"
+	@echo "Documentation generated: file:TIVIDY-Prac6/html/index.html"
+	@echo "----------------------------------------------------"
 
 clean:
-	rm -rf build html latex
+	rm -rf build docs/html docs/latex
 
 rebuild: clean build

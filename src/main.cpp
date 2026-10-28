@@ -51,11 +51,14 @@
 
 #include <ncurses.h>
 
+#include <climits>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
 #include <string>
+#include <unistd.h>
 #include <vector>
 
 void runHospitalAdmissionScenario();
@@ -179,28 +182,59 @@ void runScenarioOutsideCurses(void (*scenario)()) {
     refresh();  // repaints the curses screen, resuming the TUI
 }
 
+/** Returns relativePath turned into an absolute path, using the process's cwd. */
+std::string toAbsolutePath(const std::string& relativePath) {
+    char buffer[PATH_MAX];
+    if (getcwd(buffer, sizeof(buffer)) != nullptr) {
+        return std::string(buffer) + "/" + relativePath;
+    }
+    return relativePath;  // fallback: print the relative path as-is
+}
+
 /**
- * Leaves curses mode and opens the Doxygen HTML docs (run `make docs`
- * first) in the default browser via xdg-open, then resumes curses.
+ * Leaves curses mode, builds the Doxygen docs if they don't exist yet,
+ * prints a clickable file:// link, and tries to open it in a browser.
+ * Assumes the process's working directory is the project root (true for
+ * `make run`, which always launches ./build/tividy from there).
  */
 void viewDocumentation() {
     endwin();
 
-    const std::string docsPath = "html/index.html";
+    const std::string docsPath = "docs/html/index.html";
     std::ifstream check(docsPath.c_str());
+
     if (!check.good()) {
         std::cout << "Documentation not found at " << docsPath << ".\n";
-        std::cout << "Run 'make docs' first, then try again.\n";
-    } else {
-        std::string command = "xdg-open " + docsPath + " >/dev/null 2>&1 &";
-        int result = std::system(command.c_str());
-        if (result != 0) {
-            std::cout << "Could not launch a browser automatically.\n";
-            std::cout << "Open it manually: file://" << docsPath << '\n';
-        } else {
-            std::cout << "Opening documentation in your browser...\n";
+        std::cout << "Building it now with Doxygen, this can take a moment...\n";
+        std::cout.flush();
+
+        int buildResult = std::system("doxygen Doxyfile");
+        if (buildResult != 0) {
+            std::cout << "\nDoxygen failed to build the documentation (exit code "
+                      << buildResult << ").\n";
+            std::cout << "Check that 'doxygen' is installed and Doxyfile is in this directory.\n";
+            waitForEnter();
+            refresh();
+            return;
         }
+
+        std::ifstream recheck(docsPath.c_str());
+        if (!recheck.good()) {
+            std::cout << "\nDoxygen ran, but " << docsPath << " still wasn't found.\n";
+            std::cout << "Check Doxyfile's OUTPUT_DIRECTORY is set to 'docs'.\n";
+            waitForEnter();
+            refresh();
+            return;
+        }
+
+        std::cout << "Documentation built.\n";
     }
+
+    std::string link = "file://" + toAbsolutePath(docsPath);
+    std::cout << "Documentation: " << link << '\n';
+
+    std::string command = "xdg-open \"" + toAbsolutePath(docsPath) + "\" >/dev/null 2>&1 &";
+    std::system(command.c_str());
 
     waitForEnter();
     refresh();
