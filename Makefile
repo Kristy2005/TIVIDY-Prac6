@@ -22,6 +22,6 @@ docs:
 	@echo "----------------------------------------------------"
 
 clean:
-	rm -rf build docs/html docs/latex
+	rm -rf build html 
 
 rebuild: clean build
