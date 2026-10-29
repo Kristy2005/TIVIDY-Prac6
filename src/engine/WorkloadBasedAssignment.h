@@ -13,9 +13,13 @@ namespace tividy{
    */
   class WorkloadBasedAssignment : public AssignmentStrategy {
   public:
-      /** @brief Select the least-loaded non-null participant. */
-      virtual Participant* assign(WorkItem* item,
-                                  std::vector<Participant*> participants);
+      /**
+       * @brief Select the least-loaded non-null participant for an incomplete item.
+       * @param item Work item to assign; null or completed items are rejected.
+       * @param participants Candidate participants; null entries are ignored.
+       * @return Participant with the smallest workload, or null when no candidate remains.
+       */      
+      virtual Participant* assign(WorkItem* item, std::vector<Participant*> participants);
   };
 }
 #endif // TIVIDY_WORKLOAD_BASED_ASSIGNMENT_H

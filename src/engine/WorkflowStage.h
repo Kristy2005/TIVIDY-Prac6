@@ -37,6 +37,7 @@ public:
     virtual bool isComplete() const;
 
 private:
+    /** @brief Child component pointers in execution order; not owned. */
     std::vector<WorkflowComponent*> components;
 };
 

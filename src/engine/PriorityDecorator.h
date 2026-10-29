@@ -26,13 +26,14 @@ namespace tividy {
         /** @brief Return this decorator's priority value. */
         int getPriority() const;
 
-        /** Execute the wrapped component */
+        /** @brief Execute the wrapped component */
         virtual void execute();
 
-        /** Return the wrapped components completion status */
+        /** @brief Return the wrapped components completion status */
         virtual bool isComplete() const;
 
     private:
+    /** @brief Priority data stored by this decorator. */
         int priority;
     };
 

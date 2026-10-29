@@ -4,20 +4,22 @@
 #include "Handler.h"
 #include "WorkflowInstance.h"
 
-/*
-*@brief 
-*/
+/**
+ * @brief Handler that validates a workflow request and forwards it.
+ *
+ * If no successor is configured, the valid request is accepted with no further
+ * action.
+ *
+ */
 
 namespace tividy {
 	class WorkHandler :public tividy::Handler{ 
-
-
 	public:
-	/*
-	*@brief Handle a workflow request.
-	*@param instance The workflow instance to handle. Must not be null.
-	*@throws std::invalid_argument If instance is null.
-	*/
+	/**
+     * @brief Validate and forward a workflow request.
+     * @param instance Workflow instance to handle; must not be null.
+     * @throws std::invalid_argument If @p instance is null.
+     */
 		void handleRequest(WorkflowInstance* instance);
 	};
 

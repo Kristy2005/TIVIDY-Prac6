@@ -11,6 +11,7 @@
  * task but does not perform the real-world work; completion is recorded
  * explicitly with complete(). The optional required role is used by
  * RoleBasedAssignment to route work without hard-coding roles in the strategy.
+ * 
  */
 
 namespace tividy {
@@ -54,8 +55,13 @@ public:
     const std::string& getRequiredRole() const;
 
 private:
+    /** @brief Task name. */
     std::string name;
+
+    /** @brief Whether complete() has been called. */
     bool completed;
+
+    /** @brief Required participant role name, or empty if unrestricted. */
     std::string requiredRole;
 };
 
