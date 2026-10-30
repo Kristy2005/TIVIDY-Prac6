@@ -15,8 +15,11 @@ add_library(tividy_engine ${ENGINE_SRC})
 target_include_directories(tividy_engine PUBLIC src src/engine)
 
 # The application (TUI)
+find_package(Curses REQUIRED)
 add_executable(tividy src/main.cpp)
-target_link_libraries(tividy tividy_engine)
+target_link_libraries(tividy PRIVATE tividy_engine)
+target_include_directories(tividy PRIVATE ${CURSES_INCLUDE_DIR})
+target_link_libraries(tividy PRIVATE ${CURSES_LIBRARIES})
 
 # Unit tests
 enable_testing()
