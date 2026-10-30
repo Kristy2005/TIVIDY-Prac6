@@ -2,6 +2,7 @@
 #define TIVIDY_WORK_ITEM_H
 
 #include <string>
+#include <vector>
 #include "WorkflowComponent.h"
 
 /**
@@ -41,6 +42,7 @@ public:
      * @return true after complete() has been called; otherwise false.
      */
     virtual bool isComplete() const;
+    virtual void collectWorkItems(std::vector<WorkItem*>& items);
 
     /** @brief Mark this work item as complete. */
     void complete();

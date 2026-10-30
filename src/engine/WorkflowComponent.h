@@ -1,36 +1,40 @@
 #ifndef TIVIDY_WORKFLOW_COMPONENT_H
 #define TIVIDY_WORKFLOW_COMPONENT_H
 
-/**
- * @brief Common interface for a work item or a composite workflow node.
- *
- * WorkflowComponent is the Component participant in the Composite pattern.
- * Clients can execute or query a WorkItem, WorkflowStage, SubProcess, or a
- * decorator without needing to know the concrete type.
- */
+#include <vector>
 
 namespace tividy {
-    class WorkflowComponent {
-    public:
-        /** @brief Virtual destructor. */
-        virtual ~WorkflowComponent() {}
 
-        /**
-         * @brief Execute this workflow component.
-         *
-         * Composite components delegate execution to their children. The engine
-         * coordinates work rather than performing the real-world task represented
-         * by a WorkItem, so WorkItem execution does not itself mark the item complete.
-         */
-        virtual void execute() = 0;
+class WorkItem;
 
-        /**
-         * @brief Check whether this component has completed its work.
-         * @return true when the component is complete; otherwise false.
-         */
-        virtual bool isComplete() const = 0;
-    };
+/**
+ * @brief Common interface for a work item or composite workflow node.
+ *
+ * WorkflowComponent is the Component participant in the Composite pattern.
+ */
+
+class WorkflowComponent {
+public:
+
+    virtual ~WorkflowComponent() {}
+
+    /**
+     * @brief Execute this workflow component.
+     */
+    virtual void execute() = 0;
+
+    /**
+     * @brief Check whether this component has completed its work.
+     */
+    virtual bool isComplete() const = 0;
+
+    /**
+     * @brief Collect all work items contained in this component.
+     * @param items Collection to populate with work item pointers.
+     */
+    virtual void collectWorkItems(std::vector<WorkItem*>& items) = 0;
+};
 
 }
 
-#endif // TIVIDY_WORKFLOW_COMPONENT_H
+#endif

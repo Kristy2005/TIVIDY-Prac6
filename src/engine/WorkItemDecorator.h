@@ -32,6 +32,7 @@ public:
      * @return Whether the decorated component is complete.
      */
     virtual bool isComplete() const = 0;
+    virtual void collectWorkItems(std::vector<WorkItem*>& items);
 
 protected:
     /** Non-owning pointer to the component wrapped by this decorator. */
