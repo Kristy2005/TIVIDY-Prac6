@@ -34,4 +34,9 @@ namespace tividy{
   const std::string& WorkItem::getRequiredRole() const {
       return requiredRole;
   }
+
+  void WorkItem::collectWorkItems(std::vector<WorkItem*>& items) {
+    items.push_back(this);
+}
+
 }

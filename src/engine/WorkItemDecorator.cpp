@@ -7,6 +7,11 @@ WorkItemDecorator::WorkItemDecorator(WorkflowComponent* wrapped) : component(wra
         throw std::invalid_argument("WorkItemDecorator requires a non-null component");
     }
 }
+
+void WorkItemDecorator::collectWorkItems(std::vector<WorkItem*>& items) {
+    component->collectWorkItems(items);
+}
+
 WorkItemDecorator::~WorkItemDecorator() {
     // The wrapped component is non-owning and must not be deleted here.
     }

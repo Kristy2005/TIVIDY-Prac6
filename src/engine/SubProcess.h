@@ -36,6 +36,7 @@ public:
      * @return true if every child is complete; an empty sub-process is complete.
      */
     virtual bool isComplete() const;
+    virtual void collectWorkItems(std::vector<WorkItem*>& items);
 
 private:
     /** @brief Child component pointers in execution order; not owned. */

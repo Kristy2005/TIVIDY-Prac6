@@ -1,4 +1,5 @@
 #include "WorkflowStage.h"
+#include "WorkItem.h"
 
 namespace tividy {
 void WorkflowStage::add(WorkflowComponent* component) {
@@ -36,5 +37,12 @@ bool WorkflowStage::isComplete() const {
         }
     }
     return true;
+}
+
+void WorkflowStage::collectWorkItems(std::vector<WorkItem*>& items) {
+    for (std::vector<WorkflowComponent*>::iterator it = components.begin();
+         it != components.end(); ++it) {
+        (*it)->collectWorkItems(items);
+    }
 }
 }
