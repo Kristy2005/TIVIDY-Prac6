@@ -39,6 +39,7 @@ namespace tividy{
       }
 
   private:
+        /** @brief Name used by role-based assignment. */
       std::string name;
   };
 }

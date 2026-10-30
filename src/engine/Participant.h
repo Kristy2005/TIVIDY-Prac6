@@ -79,9 +79,16 @@ namespace tividy{
       bool hasRole(const std::string& roleName) const;
 
   private:
+    /** @brief Participant name. */
       std::string name;
+
+    /** @brief Number of outstanding items tracked in assignedItems. */
       int workload;
+
+    /** @brief Pointers to outstanding work items; not owned. */
       std::vector<WorkItem*> assignedItems;
+      
+    /** @brief Unique role names retained by value. */
       std::vector<std::string> roles;
   };
 }

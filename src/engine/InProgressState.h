@@ -6,17 +6,17 @@
 /**
  * @brief State pattern: ConcreteState (In Progress).
  *
- * The state of a case that is being worked on. It is the busiest state,
- * and the only one that can reach Escalated, Resolved and Closed.
+ * The state of a case that is being worked on.
  *
  * @par Transitions
- * - escalate(): allowed, moves the instance to EscalatedState. Used when
- *   the case cannot be handled at the current level.
  * - resolve(): allowed, moves the instance to ResolvedState.
  * - close(): allowed, moves the instance to ClosedState. Used when the
  *   student retracts the complaint or the request is rejected.
  * - activate(), startProcessing(): not allowed in this state. Each throws
  *   std::logic_error and leaves the instance unchanged.
+ *
+ * Escalation is requested separately through WorkflowInstance::escalate().
+ * The current escalation-handler chain does not change the workflow state.
  *
  * @par Guards
  * The conditions in the state diagram (cannot handle at the current level,
@@ -58,6 +58,8 @@ public:
 	 *        to Resolved.
 	 *
 	 * @param instance The instance to change. Must not be null.
+	 * @throws std::invalid_argument If @p instance is null.
+	 * 
 	 */
 	virtual void resolve(WorkflowInstance* instance) override;
 
@@ -69,6 +71,7 @@ public:
 	 * rejected.
 	 *
 	 * @param instance The instance to change. Must not be null.
+	 * @throws std::invalid_argument If @p instance is null.
 	 */
 	virtual void close(WorkflowInstance* instance) override;
 
