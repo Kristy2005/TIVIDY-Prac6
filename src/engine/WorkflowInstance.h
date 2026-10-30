@@ -7,8 +7,18 @@
 
 namespace tividy {
 
+
 class WorkflowObserver;
 class WorkflowState;
+class WorkItem;
+
+ struct WorkItemProgress {
+    WorkItem* item;
+    bool completed;
+
+    explicit WorkItemProgress(WorkItem* workItem)
+        : item(workItem), completed(false) {}
+};
 
 /**
  * @brief One running execution of a WorkflowDefinition.
@@ -47,12 +57,30 @@ private:
 
     /** @brief Observers to notify on a state change. Not owned. */
     std::vector<WorkflowObserver*> observers;
+    std::vector<WorkItemProgress> workItemProgress;
 
 public:
     explicit WorkflowInstance(WorkflowDefinition* definition = nullptr);
     WorkflowInstance(const WorkflowInstance&) = delete;
     WorkflowInstance& operator=(const WorkflowInstance&) = delete;
     ~WorkflowInstance();
+
+    /**
+ * @brief Mark a work item as complete for this instance only.
+ * @throws std::invalid_argument If the item does not belong to this instance.
+ */
+void completeWorkItem(WorkItem* item);
+
+/**
+ * @brief Check whether a work item is complete in this instance.
+ * @throws std::invalid_argument If the item does not belong to this instance.
+ */
+bool isWorkItemComplete(WorkItem* item) const;
+
+/**
+ * @brief Return all work-item progress records for this instance.
+ */
+const std::vector<WorkItemProgress>& getWorkItemProgress() const;
 
     /**
      * @brief Returns the current state.

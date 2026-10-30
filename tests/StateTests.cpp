@@ -34,6 +34,9 @@
 #include "engine/InProgressState.h"
 #include "engine/ResolvedState.h"
 #include "engine/ClosedState.h"
+#include "engine/WorkflowDefinition.h"
+#include "engine/WorkflowStage.h"
+#include "engine/WorkItem.h"
 
 using namespace tividy;
 
@@ -312,4 +315,85 @@ TEST_CASE("InProgressState: escalate keeps the instance In Progress" * doctest::
 
 	CHECK_NOTHROW(instance->escalate());
 	CHECK(isIn<InProgressState>(*instance));
+}
+
+// ======================================================== instance work progress
+
+TEST_CASE("Workflow instances start with independent work item progress") {
+    WorkItem first("Review application");
+    WorkItem second("Verify documents");
+
+    WorkflowStage stage;
+    stage.add(&first);
+    stage.add(&second);
+
+    WorkflowDefinition definition;
+    definition.setRoot(&stage);
+
+    WorkflowInstance a(&definition);
+    WorkflowInstance b(&definition);
+
+    REQUIRE(a.getWorkItemProgress().size() == 2);
+    REQUIRE(b.getWorkItemProgress().size() == 2);
+
+    CHECK_FALSE(a.isWorkItemComplete(&first));
+    CHECK_FALSE(a.isWorkItemComplete(&second));
+    CHECK_FALSE(b.isWorkItemComplete(&first));
+    CHECK_FALSE(b.isWorkItemComplete(&second));
+}
+
+TEST_CASE("Completing work in one instance does not affect another") {
+    WorkItem item("Review application");
+
+    WorkflowStage stage;
+    stage.add(&item);
+
+    WorkflowDefinition definition;
+    definition.setRoot(&stage);
+
+    WorkflowInstance a(&definition);
+    WorkflowInstance b(&definition);
+
+    a.completeWorkItem(&item);
+
+    CHECK(a.isWorkItemComplete(&item));
+    CHECK_FALSE(b.isWorkItemComplete(&item));
+}
+
+TEST_CASE("WorkflowInstance rejects work items outside its definition") {
+    WorkItem included("Review application");
+    WorkItem external("Unrelated work");
+
+    WorkflowStage stage;
+    stage.add(&included);
+
+    WorkflowDefinition definition;
+    definition.setRoot(&stage);
+
+    WorkflowInstance instance(&definition);
+
+    CHECK_THROWS_AS(
+        instance.completeWorkItem(&external),
+        std::invalid_argument
+    );
+
+    CHECK_THROWS_AS(
+        instance.isWorkItemComplete(&external),
+        std::invalid_argument
+    );
+}
+
+TEST_CASE("WorkflowInstance rejects null work items") {
+    WorkflowDefinition definition;
+    WorkflowInstance instance(&definition);
+
+    CHECK_THROWS_AS(
+        instance.completeWorkItem(nullptr),
+        std::invalid_argument
+    );
+
+    CHECK_THROWS_AS(
+        instance.isWorkItemComplete(nullptr),
+        std::invalid_argument
+    );
 }
