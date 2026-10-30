@@ -32,7 +32,9 @@ public:
      * @brief Collect all work items contained in this component.
      * @param items Collection to populate with work item pointers.
      */
-    virtual void collectWorkItems(std::vector<WorkItem*>& items) = 0;
+    virtual void collectWorkItems(std::vector<WorkItem*>& items) {
+    (void)items;
+}
 };
 
 }
