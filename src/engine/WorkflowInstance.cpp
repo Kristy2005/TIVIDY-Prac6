@@ -3,16 +3,74 @@
 #include "SubmittedState.h"
 #include "InProgressState.h"
 #include "WorkflowObserver.h"
+#include "WorkItem.h"
+#include "WorkflowComponent.h"
+#include "WorkflowDefinition.h"
 
 #include <algorithm>
 #include <stdexcept>
+#include <vector>
 
 namespace tividy {
 
 WorkflowInstance::WorkflowInstance(WorkflowDefinition* definition)
     : currentState(nullptr), definition(definition) {
+
     static SubmittedState s;
-    currentState = &s;  // initial state is SubmittedState	
+    currentState = &s;
+
+    if (this->definition != nullptr &&
+        this->definition->getRoot() != nullptr) {
+
+        std::vector<WorkItem*> items;
+        this->definition->getRoot()->collectWorkItems(items);
+
+        for (std::size_t i = 0; i < items.size(); ++i) {
+            workItemProgress.push_back(WorkItemProgress(items[i]));
+        }
+    }
+}
+
+void WorkflowInstance::completeWorkItem(WorkItem* item) {
+    if (item == nullptr) {
+        throw std::invalid_argument(
+            "WorkflowInstance: work item cannot be null"
+        );
+    }
+
+    for (std::size_t i = 0; i < workItemProgress.size(); ++i) {
+        if (workItemProgress[i].item == item) {
+            workItemProgress[i].completed = true;
+            return;
+        }
+    }
+
+    throw std::invalid_argument(
+        "WorkflowInstance: work item does not belong to this instance"
+    );
+}
+
+bool WorkflowInstance::isWorkItemComplete(WorkItem* item) const {
+    if (item == nullptr) {
+        throw std::invalid_argument(
+            "WorkflowInstance: work item cannot be null"
+        );
+    }
+
+    for (std::size_t i = 0; i < workItemProgress.size(); ++i) {
+        if (workItemProgress[i].item == item) {
+            return workItemProgress[i].completed;
+        }
+    }
+
+    throw std::invalid_argument(
+        "WorkflowInstance: work item does not belong to this instance"
+    );
+}
+
+const std::vector<WorkItemProgress>&
+WorkflowInstance::getWorkItemProgress() const {
+    return workItemProgress;
 }
 
 WorkflowInstance::~WorkflowInstance() {

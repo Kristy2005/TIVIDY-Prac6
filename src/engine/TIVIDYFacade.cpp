@@ -1,6 +1,9 @@
 #include "TIVIDYFacade.h"
 #include "WorkItem.h"
+#include "WorkflowInstance.h"
+
 #include <stdexcept>
+#include <vector>
 
 namespace tividy {
 
@@ -32,18 +35,36 @@ void TIVIDYFacade::assignWork(WorkflowInstance* instance, WorkItem* item) {
     item->execute();
 }
 
-void TIVIDYFacade::completeWork(WorkflowInstance* instance, WorkItem* item) {
+void TIVIDYFacade::completeWork(
+    WorkflowInstance* instance,
+    WorkItem* item
+) {
     if (instance == nullptr || item == nullptr) {
         throw std::invalid_argument(
-            "completeWork: instance and item cannot be null"
+            "completeWork: null argument"
         );
     }
 
-    item->complete();
+    // Update progress for this instance only.
+    instance->completeWorkItem(item);
 
-    // Do not resolve the workflow here.
-    // A workflow may contain multiple work items, and the Facade
-    // currently has no mechanism to verify that all have completed.
+    // Check whether every work item in this instance is complete.
+    const std::vector<WorkItemProgress>& progress =
+        instance->getWorkItemProgress();
+
+    bool allCompleted = true;
+
+    for (std::size_t i = 0; i < progress.size(); ++i) {
+        if (!progress[i].completed) {
+            allCompleted = false;
+            break;
+        }
+    }
+
+    // Resolve the workflow only when all its work items are complete.
+    if (allCompleted && !progress.empty()) {
+        instance->resolve();
+    }
 }
 
 void TIVIDYFacade::escalateWork(WorkflowInstance* instance) {
