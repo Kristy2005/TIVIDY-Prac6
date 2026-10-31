@@ -18,11 +18,12 @@
  * std::logic_error and leaves the instance unchanged.
  *
  * @par Ownership
- * The instance OWNS its current state: setState() takes ownership of the
- * new state and deletes the previous one, and the destructor deletes the
- * last one. A state must therefore not touch itself or the instance after
- * calling instance->setState(). Mementos hold their own copy made with
- * clone(), so they never share a pointer with a live instance.
+ * WorkflowInstance stores a non-owning pointer to its current state and
+ * does not delete state objects. The concrete transitions currently use
+ * shared, function-local static state objects. WorkflowMemento stores the
+ * same non-owning state pointer; it does not clone or delete the state.
+ * Any state pointer passed to WorkflowInstance::setState() must therefore
+ * remain valid for as long as an instance or memento may refer to it.
  *
  * @par Concrete states
  * SubmittedState, ActiveState, InProgressState, ResolvedState and

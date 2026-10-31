@@ -9,7 +9,33 @@
 #include "engine/Participant.h"
 #include "engine/RoleBasedAssignment.h"
 #include "engine/ProgressObserver.h"
+#include "engine/TIVIDYFacade.h"
 #include "engine/Console.h"
+
+namespace {
+
+bool allWorkItemsCompleted(const tividy::WorkflowInstance* instance) {
+    if (instance == nullptr) {
+        return false;
+    }
+
+    const std::vector<tividy::WorkItemProgress>& progress =
+        instance->getWorkItemProgress();
+
+    if (progress.empty()) {
+        return false;
+    }
+
+    for (std::size_t i = 0; i < progress.size(); ++i) {
+        if (!progress[i].completed) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+} // namespace
 
 void runHospitalAdmissionScenario() {
     using namespace tividy;
@@ -42,6 +68,7 @@ void runHospitalAdmissionScenario() {
     admissionsManager.addRole("Admissions Manager");
     Participant wardCoordinator("Thabo - Ward Coordinator");
     wardCoordinator.addRole("Ward Coordinator");
+
     std::vector<Participant*> staff;
     staff.push_back(&receptionist);
     staff.push_back(&admissionsClerk);
@@ -54,10 +81,12 @@ void runHospitalAdmissionScenario() {
     definition.setRoot(&admissionStage);
     definition.setAssignmentStrategy(&roleAssignment);
 
-    WorkflowInstance* instance = definition.createInstance();
+    // Use the Facade so assignment and completion are recorded against this
+    // particular workflow instance and participant workload is maintained.
+    TIVIDYFacade facade;
+    WorkflowInstance* instance = facade.startWorkflow(&definition);
     ProgressObserver progress;
     instance->attach(&progress);
-    instance->activate();
     instance->startProcessing();
 
     std::vector<WorkItem*> tasks;
@@ -68,28 +97,36 @@ void runHospitalAdmissionScenario() {
     tasks.push_back(&allocateBed);
 
     std::cout << "\nCase: Patient P-1042 requires a planned admission.\n";
-    std::cout << "The engine executes the workflow stage in configured order.\n\n";
-    admissionStage.execute();
+    std::cout << "The workflow assigns and completes each task through the facade.\n\n";
 
     for (std::vector<WorkItem*>::iterator it = tasks.begin(); it != tasks.end(); ++it) {
         WorkItem* task = *it;
-        Participant* assignee = definition.selectAssignee(task, staff);
+        Participant* assignee = facade.assignWork(instance, task, staff);
+
         if (assignee == nullptr) {
+            instance->detach(&progress);
             delete instance;
-            throw std::runtime_error("No staff member found for role: " + task->getRequiredRole());
+            throw std::runtime_error(
+                "No staff member found for role: " + task->getRequiredRole()
+            );
         }
-        assignee->assignWork(task);
+
         std::cout << YELLOW << "[IN PROGRESS] " << task->getName()
                   << " -> " << assignee->getName() << RESET << "\n";
-        assignee->completeWork(task);
+
+        facade.completeWork(instance, task, assignee);
+
         std::cout << GREEN << "[COMPLETED]   " << task->getName() << RESET << "\n";
     }
 
-    if (admissionStage.isComplete()) {
-        instance->resolve();
-        std::cout << GREEN << BOLD << "\nRESULT: Patient admission workflow resolved successfully.\n" << RESET;
+    if (allWorkItemsCompleted(instance)) {
+        std::cout << GREEN << BOLD
+                  << "\nRESULT: Patient admission workflow resolved successfully.\n"
+                  << RESET;
     } else {
-        std::cout << RED << "\nRESULT: Admission still has outstanding work.\n" << RESET;
+        std::cout << RED
+                  << "\nRESULT: Admission still has outstanding work.\n"
+                  << RESET;
     }
 
     instance->detach(&progress);

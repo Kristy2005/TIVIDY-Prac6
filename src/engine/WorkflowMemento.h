@@ -4,51 +4,46 @@
 namespace tividy {
 
 class WorkflowState;
-/**
- * @brief Stores a workflow-state pointer for later restoration.
- *
- * The current implementation does not clone the state: setState() stores the
- * exact pointer, and the destructor deletes the stored pointer. Consequently,
- * the supplied state must be uniquely owned by the memento. Passing a shared
- * or static state pointer (as WorkflowInstance::createMemento() currently
- * does) can delete a state still in use and can cause double deletion.
- *
- */
 
+/**
+ * @brief Stores a non-owning reference to a workflow state for later restoration.
+ *
+ * WorkflowInstance uses shared, stateless state objects (currently function-
+ * local static objects in the concrete state transitions). A memento therefore
+ * keeps the same state pointer as the instance; it does not clone or own that
+ * object. Destroying a memento must never delete the state it references.
+ *
+ * @warning This snapshot contains only the WorkflowState pointer. It does not
+ *          preserve workflow work-item progress, observers, or the definition.
+ *
+ * @see WorkflowInstance, WorkflowState
+ */
 class WorkflowMemento {
 private:
-    /** @brief State pointer released by the destructor; ownership is assumed. */
+    /** @brief Non-owning pointer to the saved shared state. */
     WorkflowState* state;
 
 public:
-    /** @brief Construct a memento with no stored state. */
+    /** @brief Construct a memento with no saved state. */
     WorkflowMemento();
 
     /**
-     * @brief Store a state pointer without cloning it.
-     *
-     * This class assumes ownership of @p state and deletes it at destruction.
-     * Replacing an already stored pointer does not first delete the old one.
-     * @param state State pointer to retain; ownership must be compatible with
-     *        the destructor's delete operation.
+     * @brief Store a non-owning pointer to a state without cloning it.
+     * @param state State to remember; may be null to clear the snapshot.
+     *        The state must outlive any restoration that uses this memento.
      */
     void setState(WorkflowState* state);
 
     /**
-     * @brief Get the stored state pointer.
-     * @return The stored pointer, or null if none has been set; not a copy.
+     * @brief Get the saved state pointer.
+     * @return The original pointer, or null if no state has been saved.
      */
     WorkflowState* getState() const;
 
-    /** @brief Delete the state pointer currently stored by this memento. */
+    /** @brief Destroy the snapshot without deleting its non-owned state. */
     ~WorkflowMemento();
+};
 
-    // WorkflowMemento(const WorkflowMemento&) = delete;
-    
-    // WorkflowMemento& operator=(const WorkflowMemento&) = delete;
-    };
-
-}
+} // namespace tividy
 
 #endif // WORKFLOWMEMENTO_H
-
