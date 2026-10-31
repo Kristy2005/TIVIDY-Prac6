@@ -81,6 +81,10 @@ WorkflowState* WorkflowInstance::getState() const {
     return currentState;
 }
 
+WorkflowDefinition* WorkflowInstance::getDefinition() const {
+    return definition;
+}
+
 void WorkflowInstance::setState(WorkflowState* state) {
     if (state == nullptr) {
         throw std::invalid_argument("WorkflowInstance: state cannot be null");

@@ -3,6 +3,9 @@
 
 #include "WorkflowDefinition.h"
 #include "WorkflowInstance.h"
+#include "Participant.h"
+
+#include <vector>
 class WorkItem;
 
 namespace tividy {
@@ -67,6 +70,20 @@ namespace tividy {
      * @throws std::logic_error If the state rejects closure.
      */
 		void closeWorkflow(WorkflowInstance* instance);
+
+          // Instance-aware assignment with participant selection.
+Participant* assignWork(
+    WorkflowInstance* instance,
+    WorkItem* item,
+    std::vector<Participant*> participants
+);
+
+// Completion that also updates the assigned participant's workload.
+void completeWork(
+    WorkflowInstance* instance,
+    WorkItem* item,
+    Participant* participant
+);
 	};
 
 	

@@ -59,6 +59,12 @@ public:
      * @return Selected participant, or null if no strategy or suitable candidate exists.
      */
     Participant* selectAssignee(WorkItem* item, std::vector<Participant*> participants) const;
+
+    Participant* selectAssignee(
+    WorkflowInstance* instance,
+    WorkItem* item,
+    std::vector<Participant*> participants
+) const;
     
     /**
      * @brief Configure the handler that receives escalation requests.
