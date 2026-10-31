@@ -218,4 +218,22 @@ void WorkflowInstance::detach(WorkflowObserver* observer) {
     );
 }
 
+bool WorkflowInstance::areDependenciesComplete(WorkItem* item) const
+{
+    if (item == nullptr) {
+        return false;
+    }
+
+    const std::vector<WorkItem*>& dependencies =item->getDependencies();
+
+    for (std::size_t i = 0;i < dependencies.size();++i) {
+
+        if (!isWorkItemComplete(dependencies[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 }

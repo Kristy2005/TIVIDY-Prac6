@@ -25,12 +25,17 @@ namespace tividy{
       if (!role) throw std::invalid_argument("addRole: role cannot be null");
   }
 
-  void ConcreteWorkflowBuilder::addDependency(WorkItem* before, WorkItem* after) {
-      if (!before || !after) throw std::invalid_argument("addDependency: items cannot be null");
-      // The current WorkflowComponent model has no dependency metadata; both items are added to the workflow.
-      addWorkItem(before);
-      addWorkItem(after);
-  }
+    void ConcreteWorkflowBuilder::addDependency(WorkItem* before,WorkItem* after)
+    {
+        if (!before || !after) {
+            throw std::invalid_argument("addDependency: items cannot be null");
+        }
+
+        addWorkItem(before);
+        addWorkItem(after);
+
+        after->addDependency(before);
+    }
 
   void ConcreteWorkflowBuilder::setAssignmentStrategy(AssignmentStrategy* strategy) {
       if (definition == nullptr) {
