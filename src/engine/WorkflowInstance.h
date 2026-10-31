@@ -40,7 +40,8 @@ class WorkItem;
  *   every instance created from it.
  * - The instance does not own its observers. The creator deletes them and
  *   should detach them first.
- * - The instance never deletes a state it has replaced (see setState()).
+ * - State pointers are non-owning; the instance never deletes its current or
+ *   replaced state objects (see setState()).
  *
  * @warning Not safe to copy, because it holds raw pointers. Do not pass it
  *          by value or assign it.
@@ -87,7 +88,7 @@ const std::vector<WorkItemProgress>& getWorkItemProgress() const;
      *
      * Observers call this to read the new state when they are notified.
      *
-     * @return The current state. Owned by the engine, not by the caller.
+     * @return The current state pointer. It is non-owning and must not be deleted.
      */
     WorkflowState* getState() const;
 
@@ -105,10 +106,9 @@ WorkflowDefinition* getDefinition() const;
      *
      * @param state The new state. Must not be null.
      *
-     * @warning The previous state is not deleted. A saved memento may still
-     *          point at it, so deleting it would leave that memento dangling.
-     *          Until state ownership is redesigned, replaced states stay in
-     *          memory.
+     * @warning The supplied pointer is non-owning. It must remain valid while
+     *          this instance or any memento may refer to it. Current concrete
+     *          state transitions use shared, function-local static objects.
      */
     void setState(WorkflowState* state);
 
