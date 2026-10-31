@@ -23,6 +23,11 @@ public:
         }
     }
 
+    WorkflowComponent* clone() const override
+    {
+        return new RecordingComponent(*this);
+    }
+
     virtual bool isComplete() const {
         return complete;
     }
@@ -41,6 +46,11 @@ class DestructionTrackedComponent : public WorkflowComponent {
 public:
     explicit DestructionTrackedComponent(int* destructionCount)
         : destructionCount(destructionCount) {
+    }
+
+    WorkflowComponent* clone() const override
+    {
+        return new DestructionTrackedComponent(*this);
     }
 
     virtual ~DestructionTrackedComponent() {
