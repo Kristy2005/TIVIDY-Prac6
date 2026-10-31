@@ -56,6 +56,11 @@ public:
     /** @brief Return the role required to perform this work item, or an empty string. */
     const std::string& getRequiredRole() const;
 
+    /**
+     * @brief Creates an independent copy of this work item.
+     */
+    WorkflowComponent* clone() const override;
+
 private:
     /** @brief Task name. */
     std::string name;

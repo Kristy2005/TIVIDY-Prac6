@@ -13,6 +13,19 @@ void SubProcess::add(WorkflowComponent* component) {
     }
     components.push_back(component);
 }
+
+SubProcess::~SubProcess(){
+    if (!ownsComponents) {
+        return;
+    }
+
+    for (std::vector<WorkflowComponent*>::iterator it = components.begin();
+         it != components.end();
+         ++it) {
+        delete *it;
+    }
+}
+
 void SubProcess::remove(WorkflowComponent* component) {
     if (component == nullptr) {
         return;
@@ -45,5 +58,21 @@ void SubProcess::collectWorkItems(std::vector<WorkItem*>& items) {
          it != components.end(); ++it) {
         (*it)->collectWorkItems(items);
     }
+}
+
+WorkflowComponent* SubProcess::clone() const
+{
+    SubProcess* copy = new SubProcess();
+
+    copy->ownsComponents = true;
+
+    for (std::vector<WorkflowComponent*>::const_iterator it = components.begin();it != components.end();++it) {
+
+        if (*it != nullptr) {
+            copy->add((*it)->clone());
+        }
+    }
+
+    return copy;
 }
 }

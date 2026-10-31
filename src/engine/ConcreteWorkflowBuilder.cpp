@@ -9,28 +9,6 @@ namespace tividy{
       : definition(new WorkflowDefinition()) {
   }
 
-  ConcreteWorkflowBuilder::ConcreteWorkflowBuilder(const ConcreteWorkflowBuilder& other) : definition(nullptr) {
-      if (other.definition != nullptr) {
-          definition = new WorkflowDefinition(*other.definition);
-      }
-  }
-
-  ConcreteWorkflowBuilder& ConcreteWorkflowBuilder::operator=(
-      const ConcreteWorkflowBuilder& other) {
-      if (this == &other) {
-          return *this;
-      }
-
-      WorkflowDefinition* replacement = nullptr;
-      if (other.definition != nullptr) {
-          replacement = new WorkflowDefinition(*other.definition);
-      }
-
-      delete definition;
-      definition = replacement;
-      return *this;
-  }
-
   ConcreteWorkflowBuilder::~ConcreteWorkflowBuilder() {
       delete definition;
   }

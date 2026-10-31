@@ -11,4 +11,8 @@ void PriorityDecorator::execute(){
 bool PriorityDecorator::isComplete() const {
     return component->isComplete();
 }
+WorkflowComponent* PriorityDecorator::clone() const
+{
+    return new PriorityDecorator(component->clone(), priority);
+}
 }

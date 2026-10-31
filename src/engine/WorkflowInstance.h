@@ -4,9 +4,9 @@
 #include "WorkflowDefinition.h"
 #include "WorkflowMemento.h"
 #include <vector>
+#include <map>
 
 namespace tividy {
-
 
 class WorkflowObserver;
 class WorkflowState;
@@ -50,6 +50,11 @@ class WorkItem;
  */
 class WorkflowInstance {
 private:
+    /**
+     * @brief Maps definition WorkItems to their independent instance copies.
+     */
+    std::map<const WorkItem*, WorkItem*> prototypeToInstance;
+
     /** @brief The state the instance is in now. Never null after construction. */
     WorkflowState* currentState;
 
@@ -60,11 +65,20 @@ private:
     std::vector<WorkflowObserver*> observers;
     std::vector<WorkItemProgress> workItemProgress;
 
+    /**
+     * @brief Independent cloned work structure used by this workflow instance.
+     */
+    WorkflowComponent* workTree;
+
 public:
     explicit WorkflowInstance(WorkflowDefinition* definition = nullptr);
     WorkflowInstance(const WorkflowInstance&) = delete;
     WorkflowInstance& operator=(const WorkflowInstance&) = delete;
+    /**
+    * @brief Destroys the workflow instance and its owned cloned work tree.
+    */
     ~WorkflowInstance();
+   
 
     /**
  * @brief Mark a work item as complete for this instance only.

@@ -81,4 +81,12 @@ Participant* WorkflowDefinition::selectAssignee(
 
     return strategy->assign(instance, item, participants);
 }
+
+WorkflowComponent* WorkflowDefinition::createWorkTree() const {
+    if (root == nullptr) {
+        return nullptr;
+    }
+
+    return root->clone();
+}
 }

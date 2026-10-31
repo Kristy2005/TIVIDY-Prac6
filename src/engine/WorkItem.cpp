@@ -39,4 +39,8 @@ namespace tividy{
     items.push_back(this);
 }
 
+WorkflowComponent* WorkItem::clone() const {
+    return new WorkItem(*this);
+}
+
 }
