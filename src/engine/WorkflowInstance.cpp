@@ -119,7 +119,7 @@ void WorkflowInstance::escalate() {
 
 WorkflowMemento* WorkflowInstance::createMemento() {
     WorkflowMemento* memento = new WorkflowMemento();
-    memento->setState(currentState);   // the memento gets its own copy
+    memento->setState(currentState);   // the memento keeps the same non-owning state pointer
     return memento;
 }
 

@@ -6,7 +6,6 @@
 #include "Participant.h"
 
 #include <vector>
-class WorkItem;
 
 namespace tividy {
 /**
@@ -34,10 +33,13 @@ namespace tividy {
 		WorkflowInstance* startWorkflow(WorkflowDefinition* definition);
 
 	/**
-     * @brief Execute a work item's execute() operation.
+     * @brief Execute a work item without recording a participant assignment.
      *
-     * The instance is only checked for null; it is not otherwise used, and no
-     * participant assignment is performed here.
+     * This overload is useful when the caller manages assignment separately.
+     * It does not update participant workload. Use the overload that accepts
+     * candidate participants when the Facade should select and record an
+     * instance-aware assignment.
+     *
      * @param instance Workflow instance argument; must not be null.
      * @param item Work item to execute; must not be null.
      * @throws std::invalid_argument If either argument is null.
@@ -45,13 +47,18 @@ namespace tividy {
 		void assignWork(WorkflowInstance* instance, WorkItem* item);
 
 	/**
-     * @brief Mark a work item complete and request workflow resolution.
+     * @brief Mark an item complete for an instance without a participant.
      *
-     * The current implementation resolves the workflow immediately; it does
-     * not check whether every work item in the workflow has completed.
-     * @param instance Workflow instance to resolve; must not be null.
-     * @param item Work item to mark complete; must not be null.
-     * @throws std::invalid_argument If either argument is null.
+     * Completion is recorded in the instance's progress records. The workflow
+     * is resolved only when all tracked items in that instance are complete.
+     * Because no participant is supplied, this overload cannot update any
+     * participant's workload. Use the overload that accepts a participant
+     * when completing a recorded assignment.
+     *
+     * @param instance Workflow instance; must not be null.
+     * @param item Work item to mark complete; must belong to the instance.
+     * @throws std::invalid_argument If either argument is null or the item
+     *         does not belong to the instance.
      */
 		void completeWork(WorkflowInstance* instance, WorkItem* item);
 
@@ -71,22 +78,36 @@ namespace tividy {
      */
 		void closeWorkflow(WorkflowInstance* instance);
 
-          // Instance-aware assignment with participant selection.
-Participant* assignWork(
-    WorkflowInstance* instance,
-    WorkItem* item,
-    std::vector<Participant*> participants
-);
+        /**
+         * @brief Select and record an instance-aware participant assignment.
+         * @param instance Workflow instance to which the item belongs.
+         * @param item Work item to assign.
+         * @param participants Candidate participants passed to the configured strategy.
+         * @return Selected participant, or nullptr when no suitable candidate exists.
+         * @throws std::invalid_argument If the instance or item is null.
+         * @throws std::logic_error If the instance has no workflow definition.
+         */
+        Participant* assignWork(
+            WorkflowInstance* instance,
+            WorkItem* item,
+            std::vector<Participant*> participants
+        );
 
-// Completion that also updates the assigned participant's workload.
-void completeWork(
-    WorkflowInstance* instance,
-    WorkItem* item,
-    Participant* participant
-);
+        /**
+         * @brief Complete an instance-aware assignment and update participant workload.
+         * @param instance Workflow instance associated with the assignment.
+         * @param item Work item being completed.
+         * @param participant Participant who holds the assignment.
+         * @throws std::invalid_argument If any argument is null.
+         */
+        void completeWork(
+            WorkflowInstance* instance,
+            WorkItem* item,
+            Participant* participant
+        );
 	};
 
-	
+
 } // namespace tividy
 
 #endif // TIVIDYFACADE_H
