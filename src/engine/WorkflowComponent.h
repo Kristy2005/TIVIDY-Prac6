@@ -15,6 +15,10 @@ class WorkItem;
 
 class WorkflowComponent {
 public:
+    /**
+     * @brief Creates an independent copy of this workflow component.
+     */
+    virtual WorkflowComponent* clone() const = 0;
 
     virtual ~WorkflowComponent() {}
 

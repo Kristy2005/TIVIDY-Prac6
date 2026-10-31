@@ -22,6 +22,11 @@ public:
     RecordingComponent() : calls(0), complete(false) {
     }
 
+    WorkflowComponent* clone() const override
+    {
+        return new RecordingComponent(*this);
+    }
+
     virtual void execute() {
         ++calls;
     }
@@ -44,6 +49,11 @@ public:
         ++(*destructionCount);
     }
 
+    WorkflowComponent* clone() const override
+    {
+        return new DestructionTrackedComponent(*this);
+    }
+
     virtual void execute() {
     }
 
@@ -54,8 +64,7 @@ public:
 private:
     int* destructionCount;
 };
-
-} 
+}
 
 TEST_CASE("WorkItemDecorator is an abstract base class") {
     CHECK(IsAbstract<WorkItemDecorator>::value);

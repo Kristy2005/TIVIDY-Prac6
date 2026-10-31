@@ -14,32 +14,69 @@
 namespace tividy {
 
 WorkflowInstance::WorkflowInstance(WorkflowDefinition* definition)
-    : currentState(nullptr), definition(definition) {
-
+    : currentState(nullptr),definition(definition),workTree(nullptr)
+{
     static SubmittedState s;
     currentState = &s;
 
-    if (this->definition != nullptr &&
-        this->definition->getRoot() != nullptr) {
+    // If there is no definition or no workflow tree,
+    // there is nothing to clone.
+    if (this->definition == nullptr ||
+        this->definition->getRoot() == nullptr) {
+        return;
+    }
 
-        std::vector<WorkItem*> items;
-        this->definition->getRoot()->collectWorkItems(items);
+    // Prototype pattern:
+    // create an independent copy of the workflow tree.
+    workTree = this->definition->createWorkTree();
 
-        for (std::size_t i = 0; i < items.size(); ++i) {
-            workItemProgress.push_back(WorkItemProgress(items[i]));
-        }
+    if (workTree == nullptr) {
+        return;
+    }
+
+    std::vector<WorkItem*> prototypeItems;
+    std::vector<WorkItem*> instanceItems;
+
+    // Original items from the WorkflowDefinition.
+    this->definition->getRoot()->collectWorkItems(prototypeItems);
+
+    // Independent cloned items owned by this instance.
+    workTree->collectWorkItems(instanceItems);
+
+    for (std::size_t i = 0;
+         i < prototypeItems.size() && i < instanceItems.size();
+         ++i) {
+
+        prototypeToInstance[prototypeItems[i]] = instanceItems[i];
+
+        workItemProgress.push_back(
+            WorkItemProgress(instanceItems[i])
+        );
     }
 }
 
-void WorkflowInstance::completeWorkItem(WorkItem* item) {
+void WorkflowInstance::completeWorkItem(WorkItem* item)
+{
     if (item == nullptr) {
         throw std::invalid_argument(
             "WorkflowInstance: work item cannot be null"
         );
     }
 
+    WorkItem* actualItem = item;
+
+    // If the caller supplied a WorkItem from the definition,
+    // use this instance's independent cloned version instead.
+    std::map<const WorkItem*, WorkItem*>::iterator mapped =
+        prototypeToInstance.find(item);
+
+    if (mapped != prototypeToInstance.end()) {
+        actualItem = mapped->second;
+    }
+
     for (std::size_t i = 0; i < workItemProgress.size(); ++i) {
-        if (workItemProgress[i].item == item) {
+
+        if (workItemProgress[i].item == actualItem) {
             workItemProgress[i].completed = true;
             return;
         }
@@ -50,15 +87,26 @@ void WorkflowInstance::completeWorkItem(WorkItem* item) {
     );
 }
 
-bool WorkflowInstance::isWorkItemComplete(WorkItem* item) const {
+bool WorkflowInstance::isWorkItemComplete(WorkItem* item) const
+{
     if (item == nullptr) {
         throw std::invalid_argument(
             "WorkflowInstance: work item cannot be null"
         );
     }
 
+    WorkItem* actualItem = item;
+
+    std::map<const WorkItem*, WorkItem*>::const_iterator mapped =
+        prototypeToInstance.find(item);
+
+    if (mapped != prototypeToInstance.end()) {
+        actualItem = mapped->second;
+    }
+
     for (std::size_t i = 0; i < workItemProgress.size(); ++i) {
-        if (workItemProgress[i].item == item) {
+
+        if (workItemProgress[i].item == actualItem) {
             return workItemProgress[i].completed;
         }
     }
@@ -74,7 +122,7 @@ WorkflowInstance::getWorkItemProgress() const {
 }
 
 WorkflowInstance::~WorkflowInstance() {
-    // delete currentState;
+    delete workTree;
 }
 
 WorkflowState* WorkflowInstance::getState() const {
