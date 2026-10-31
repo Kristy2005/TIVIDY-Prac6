@@ -4,7 +4,6 @@
 
 #include "engine/WorkflowDefinition.h"
 #include "engine/WorkflowInstance.h"
-#include "engine/WorkflowStage.h"
 #include "engine/WorkItem.h"
 #include "engine/Participant.h"
 #include "engine/RoleBasedAssignment.h"
@@ -14,10 +13,12 @@
 #include "engine/FinalDecisionHandler.h"
 #include "engine/TIVIDYFacade.h"
 #include "engine/Console.h"
+#include "engine/ConcreteWorkflowBuilder.h"
 
 namespace {
 
-bool allWorkItemsCompleted(const tividy::WorkflowInstance* instance) {
+bool allWorkItemsCompleted(const tividy::WorkflowInstance* instance)
+{
     if (instance == nullptr) {
         return false;
     }
@@ -40,35 +41,31 @@ bool allWorkItemsCompleted(const tividy::WorkflowInstance* instance) {
 
 } // namespace
 
-void runUniversityComplaintScenario() {
+void runUniversityComplaintScenario()
+{
     using namespace tividy;
     using namespace tividy::console;
 
-    std::cout << MAGENTA << BOLD << "\n========================================\n";
+    std::cout << MAGENTA << BOLD<< "\n========================================\n";
     std::cout << " UNIVERSITY: STUDENT COMPLAINT WORKFLOW\n";
-    std::cout << "========================================\n" << RESET;
+    std::cout << "========================================\n"<< RESET;
 
-    WorkItem recordComplaint("Record student complaint", "Faculty Administrator");
-    WorkItem validateComplaint("Validate complaint and supporting evidence", "Faculty Administrator");
-    WorkItem investigateComplaint("Investigate disputed mark", "Department Representative");
-    WorkItem reviewOutcome("Review investigation outcome", "Faculty Manager");
-    WorkItem notifyStudent("Notify student of outcome", "Student Support Officer");
-    WorkItem closeCase("Close complaint case", "Faculty Administrator");
-
-    WorkflowStage complaintStage;
-    complaintStage.add(&recordComplaint);
-    complaintStage.add(&validateComplaint);
-    complaintStage.add(&investigateComplaint);
-    complaintStage.add(&reviewOutcome);
-    complaintStage.add(&notifyStudent);
-    complaintStage.add(&closeCase);
+    WorkItem recordComplaint( "Record student complaint","Faculty Administrator");
+    WorkItem validateComplaint("Validate complaint and supporting evidence","Faculty Administrator");
+    WorkItem investigateComplaint("Investigate disputed mark","Department Representative");
+    WorkItem reviewOutcome("Review investigation outcome","Faculty Manager");
+    WorkItem notifyStudent("Notify student of outcome","Student Support Officer");
+    WorkItem closeCase("Close complaint case","Faculty Administrator");
 
     Participant administrator("Lerato - Faculty Office");
     administrator.addRole("Faculty Administrator");
+
     Participant departmentRep("Mr Dlamini - Department");
     departmentRep.addRole("Department Representative");
+
     Participant facultyManager("Ms Naidoo - Faculty Manager");
     facultyManager.addRole("Faculty Manager");
+
     Participant studentSupport("Kabelo - Student Support");
     studentSupport.addRole("Student Support Officer");
 
@@ -79,96 +76,140 @@ void runUniversityComplaintScenario() {
     staff.push_back(&studentSupport);
 
     RoleBasedAssignment roleAssignment;
+
     ApprovalHandler initialReview;
     EscalationHandler managerEscalation;
     FinalDecisionHandler finalReview;
+
     initialReview.setSuccessor(&managerEscalation);
     managerEscalation.setSuccessor(&finalReview);
 
-    WorkflowDefinition definition;
-    definition.setRoot(&complaintStage);
-    definition.setAssignmentStrategy(&roleAssignment);
-    definition.setEscalationHandler(&initialReview);
+    ConcreteWorkflowBuilder builder;
 
-    // Use the Facade for the same instance-aware assignment/completion path
-    // used by other clients of the workflow engine.
-    TIVIDYFacade facade;
-    WorkflowInstance* instance = facade.startWorkflow(&definition);
-    ProgressObserver progress;
-    instance->attach(&progress);
-    instance->startProcessing();
+    // Required dependency order.
+    builder.addDependency(&recordComplaint,&validateComplaint);
+    builder.addDependency(&validateComplaint,&investigateComplaint);
+    builder.addDependency(&investigateComplaint,&reviewOutcome);
+    builder.addDependency(&reviewOutcome,&notifyStudent);
+    builder.addDependency(&notifyStudent,&closeCase
+    );
 
-    std::vector<WorkItem*> tasks;
-    tasks.push_back(&recordComplaint);
-    tasks.push_back(&validateComplaint);
-    tasks.push_back(&investigateComplaint);
-    tasks.push_back(&reviewOutcome);
-    tasks.push_back(&notifyStudent);
-    tasks.push_back(&closeCase);
+    builder.setAssignmentStrategy(&roleAssignment);
+    builder.setEscalationHandler(&initialReview);
 
-    std::cout << "\nCase: Student U-2081 disputes a recorded mark.\n";
-    std::cout << "The complaint is registered, validated and investigated.\n\n";
+    WorkflowDefinition* definition = builder.getResult();
 
-    for (std::size_t i = 0; i < 3; ++i) {
-        WorkItem* task = tasks[i];
-        Participant* assignee = facade.assignWork(instance, task, staff);
-
-        if (assignee == nullptr) {
-            instance->detach(&progress);
-            delete instance;
-            throw std::runtime_error(
-                "No staff member found for role: " + task->getRequiredRole()
-            );
-        }
-
-        std::cout << YELLOW << "[IN PROGRESS] " << task->getName()
-                  << " -> " << assignee->getName() << RESET << "\n";
-
-        facade.completeWork(instance, task, assignee);
-
-        std::cout << GREEN << "[COMPLETED]   " << task->getName() << RESET << "\n";
+    if (definition == nullptr) {
+        throw std::runtime_error("University complaint workflow definition could not be created");
     }
 
-    std::cout << RED << "\nThe investigation requires a manager's decision.\n";
-    std::cout << "Escalating through the configured Chain of Responsibility...\n"
-              << RESET;
-    facade.escalateWork(instance);
-    std::cout << RED
-              << "Escalation request passed through ApprovalHandler, "
-              << "EscalationHandler and FinalDecisionHandler.\n\n"
-              << RESET;
+    TIVIDYFacade facade;
 
-    for (std::size_t i = 3; i < tasks.size(); ++i) {
-        WorkItem* task = tasks[i];
-        Participant* assignee = facade.assignWork(instance, task, staff);
+    WorkflowInstance* instance =facade.startWorkflow(definition);
+
+    ProgressObserver progress;
+    instance->attach(&progress);
+
+    instance->startProcessing();
+
+    std::cout<< "\nCase: Student U-2081 disputes a recorded mark.\n";
+    std::cout<< "The complaint is registered, validated and investigated.\n\n";
+
+    // Work completed before the routing decision.
+    std::vector<WorkItem*> initialTasks;
+    initialTasks.push_back(&recordComplaint);
+    initialTasks.push_back(&validateComplaint);
+    initialTasks.push_back(&investigateComplaint);
+
+    for (std::vector<WorkItem*>::iterator it = initialTasks.begin();it != initialTasks.end();++it) {
+
+        WorkItem* task = *it;
+
+        Participant* assignee =facade.assignWork(instance,task,staff);
 
         if (assignee == nullptr) {
             instance->detach(&progress);
             delete instance;
+            delete definition;
+
             throw std::runtime_error(
-                "No staff member found for role: " + task->getRequiredRole()
+                "No staff member found for role or task dependency "
+                "is incomplete: "
+                + task->getRequiredRole()
             );
         }
 
-        std::cout << YELLOW << "[IN PROGRESS] " << task->getName()
-                  << " -> " << assignee->getName() << RESET << "\n";
+        std::cout << YELLOW<< "[IN PROGRESS] "<< task->getName()<< " -> "<< assignee->getName()<< RESET<< "\n";
+        facade.completeWork(instance,task,assignee);
+        std::cout << GREEN << "[COMPLETED]   "<< task->getName()<< RESET<< "\n";
+    }
 
-        facade.completeWork(instance, task, assignee);
+    // Decision branch.
+    char escalationChoice;
 
-        std::cout << GREEN << "[COMPLETED]   " << task->getName() << RESET << "\n";
+    std::cout
+        << "\nDoes this complaint require senior review? (y/n): ";
+
+    std::cin >> escalationChoice;
+
+    bool requiresEscalation =escalationChoice == 'y' ||escalationChoice == 'Y';
+
+    if (requiresEscalation) {
+
+        std::cout << RED<< "\nDECISION: Senior review is required.\n"<< "EXCEPTION PATH: Escalating through the "<< "Chain of Responsibility...\n"<< RESET;
+
+        facade.escalateWork(instance);
+
+        std::cout << RED << "Escalation request passed through "<< "ApprovalHandler, EscalationHandler and "<< "FinalDecisionHandler.\n\n"<< RESET;
+    }
+    else {
+
+        std::cout << GREEN<< "\nDECISION: Senior review is not required.\n"<< "NORMAL PATH: Continue directly to outcome review.\n\n"<< RESET;
+    }
+
+    // Both branches eventually return to the normal completion path.
+    std::vector<WorkItem*> finalTasks;
+    finalTasks.push_back(&reviewOutcome);
+    finalTasks.push_back(&notifyStudent);
+    finalTasks.push_back(&closeCase);
+
+    for (std::vector<WorkItem*>::iterator it = finalTasks.begin();it != finalTasks.end();++it) {
+
+        WorkItem* task = *it;
+
+        Participant* assignee =
+            facade.assignWork(instance,task,staff);
+
+        if (assignee == nullptr) {
+            instance->detach(&progress);
+            delete instance;
+            delete definition;
+
+            throw std::runtime_error(
+                "No staff member found for role or task dependency "
+                "is incomplete: "
+                + task->getRequiredRole()
+            );
+        }
+
+        std::cout << YELLOW<< "[IN PROGRESS] " << task->getName()<< " -> "<< assignee->getName()<< RESET<< "\n";
+
+        facade.completeWork(instance,task,assignee);
+
+        std::cout << GREEN << "[COMPLETED]   " << task->getName()<< RESET<< "\n";
     }
 
     if (allWorkItemsCompleted(instance)) {
-        std::cout << GREEN << BOLD
-                  << "\nRESULT: Complaint workflow resolved; outcome notification sent "
-                  << "as a simulated administrative step.\n"
-                  << RESET;
-    } else {
-        std::cout << RED
-                  << "\nRESULT: Complaint remains open because work is outstanding.\n"
-                  << RESET;
+
+        std::cout << GREEN << BOLD << "\nRESULT: Complaint workflow resolved successfully.\n"<< RESET;
+    }
+    else {
+
+        std::cout << RED<< "\nRESULT: Complaint remains open because "<< "work is outstanding.\n"<< RESET;
     }
 
     instance->detach(&progress);
+
     delete instance;
+    delete definition;
 }
