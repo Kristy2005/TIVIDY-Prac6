@@ -37,9 +37,25 @@ public:
     virtual bool isComplete() const;
     virtual void collectWorkItems(std::vector<WorkItem*>& items);
 
+    /**
+     * @brief Destroys the workflow stage and its owned child components.
+     */
+    ~WorkflowStage();
+
+    /**
+     * @brief Creates a deep copy of this workflow stage and all child components.
+     */
+    WorkflowComponent* clone() const override;
+
+
 private:
     /** @brief Child component pointers in execution order; not owned. */
     std::vector<WorkflowComponent*> components;
+
+    /**
+     * @brief Indicates whether this stage owns its child components.
+     */
+    bool ownsComponents = false;
 };
 
 #endif // TIVIDY_WORKFLOW_STAGE_H

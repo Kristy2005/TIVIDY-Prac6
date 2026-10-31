@@ -38,9 +38,24 @@ public:
     virtual bool isComplete() const;
     virtual void collectWorkItems(std::vector<WorkItem*>& items);
 
+    /**
+     * @brief Destroys the subprocess and its owned child components.
+     */
+    ~SubProcess();
+
+    /**
+     * @brief Creates a deep copy of this subprocess and all child components.
+     */
+    WorkflowComponent* clone() const override;
+
 private:
     /** @brief Child component pointers in execution order; not owned. */
     std::vector<WorkflowComponent*> components;
+
+    /**
+    * @brief Indicates whether this subprocess owns its child components.
+    */
+    bool ownsComponents = false;
 };
 
 #endif // TIVIDY_SUB_PROCESS_H

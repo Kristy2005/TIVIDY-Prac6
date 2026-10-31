@@ -32,6 +32,11 @@ namespace tividy {
         /** @brief Return the wrapped components completion status */
         virtual bool isComplete() const;
 
+        /**
+         * @brief Creates an independent copy of this priority-decorated component.
+         */
+        WorkflowComponent* clone() const override;
+
     private:
     /** @brief Priority data stored by this decorator. */
         int priority;

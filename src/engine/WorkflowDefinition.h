@@ -97,6 +97,11 @@ public:
      * @throws std::logic_error If no escalation handler is configured.
      */
     void handleEscalation(WorkflowInstance* instance);
+
+    /**
+     * @brief Creates a cloned work tree for a new independent workflow instance.
+     */
+    WorkflowComponent* createWorkTree() const;
 private:
     /** @brief Definition name */
     std::string name;
