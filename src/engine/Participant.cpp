@@ -135,17 +135,21 @@ const std::string& Participant::getName() const {
 
 
 void Participant::addRole(const std::string& roleName) {
+    if (roleName.empty()) {
+        return;
+    }
 
     if (!hasRole(roleName)) {
         roles.push_back(roleName);
     }
 }
 
-
 bool Participant::hasRole(const std::string& roleName) const {
+    if (roleName.empty()) {
+        return false;
+    }
 
     for (std::size_t i = 0; i < roles.size(); ++i) {
-
         if (roles[i] == roleName) {
             return true;
         }
