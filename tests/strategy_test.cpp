@@ -11,6 +11,8 @@
 #include "engine/WorkloadBasedAssignment.h"
 #include "engine/WorkflowBuilder.h"
 #include "engine/WorkflowDefinition.h"
+#include "engine/WorkflowInstance.h"
+#include "engine/WorkflowStage.h"
 
 TEST_CASE("Assignment strategies can be used polymorphically") {
     tividy::WorkItem item("Review complaint", "Administrator");
@@ -240,4 +242,113 @@ TEST_CASE("ConcreteWorkflowBuilder configures the definition through the builder
     CHECK(definition->getAssignmentStrategy() == &strategy);
     delete definition;
     delete builder;
+}
+
+TEST_CASE("Role-based assignment checks completion per workflow instance") {
+    tividy::Role<void> adminRole("Administrator");
+
+    tividy::Participant administrator("Administrator");
+    administrator.addRole(&adminRole);
+
+    tividy::WorkItem item("Review complaint", "Administrator");
+
+    tividy::WorkflowStage stage;
+    stage.add(&item);
+
+    tividy::WorkflowDefinition definition;
+    definition.setRoot(&stage);
+
+    tividy::WorkflowInstance first(&definition);
+    tividy::WorkflowInstance second(&definition);
+
+    std::vector<tividy::Participant*> candidates;
+    candidates.push_back(&administrator);
+
+    tividy::RoleBasedAssignment strategy;
+
+    CHECK(strategy.assign(&first, &item, candidates) == &administrator);
+    CHECK(strategy.assign(&second, &item, candidates) == &administrator);
+
+    first.completeWorkItem(&item);
+
+    CHECK(strategy.assign(&first, &item, candidates) == nullptr);
+    CHECK(strategy.assign(&second, &item, candidates) == &administrator);
+}
+
+TEST_CASE("Workload-based assignment checks completion per workflow instance") {
+    tividy::Participant firstParticipant("First");
+    tividy::Participant secondParticipant("Second");
+
+    tividy::WorkItem item("Investigate complaint");
+
+    tividy::WorkflowStage stage;
+    stage.add(&item);
+
+    tividy::WorkflowDefinition definition;
+    definition.setRoot(&stage);
+
+    tividy::WorkflowInstance firstInstance(&definition);
+    tividy::WorkflowInstance secondInstance(&definition);
+
+    std::vector<tividy::Participant*> candidates;
+    candidates.push_back(&firstParticipant);
+    candidates.push_back(&secondParticipant);
+
+    tividy::WorkloadBasedAssignment strategy;
+
+    CHECK(strategy.assign(
+        &firstInstance,
+        &item,
+        candidates
+    ) == &firstParticipant);
+
+    CHECK(strategy.assign(
+        &secondInstance,
+        &item,
+        candidates
+    ) == &firstParticipant);
+
+    firstInstance.completeWorkItem(&item);
+
+    CHECK(strategy.assign(
+        &firstInstance,
+        &item,
+        candidates
+    ) == nullptr);
+
+    CHECK(strategy.assign(
+        &secondInstance,
+        &item,
+        candidates
+    ) == &firstParticipant);
+}
+TEST_CASE("Participant keeps assignments separate between workflow instances") {
+    tividy::Participant participant("Investigator");
+
+    tividy::WorkItem item("Investigate");
+
+    tividy::WorkflowStage stage;
+    stage.add(&item);
+
+    tividy::WorkflowDefinition definition;
+    definition.setRoot(&stage);
+
+    tividy::WorkflowInstance first(&definition);
+    tividy::WorkflowInstance second(&definition);
+
+    participant.assignWork(&first, &item);
+    participant.assignWork(&second, &item);
+
+    CHECK(participant.getWorkload() == 2);
+
+    participant.completeWork(&first, &item);
+
+    CHECK(participant.getWorkload() == 1);
+    CHECK(first.isWorkItemComplete(&item));
+    CHECK_FALSE(second.isWorkItemComplete(&item));
+
+    participant.completeWork(&second, &item);
+
+    CHECK(participant.getWorkload() == 0);
+    CHECK(second.isWorkItemComplete(&item));
 }
