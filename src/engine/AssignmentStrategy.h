@@ -31,12 +31,17 @@ namespace tividy {
        */
       virtual Participant* assign(WorkItem* item, std::vector<Participant*> participants) = 0;
 
-      // Instance-aware interface
-        virtual Participant* assign(
-            WorkflowInstance* instance,
-            WorkItem* item,
-            std::vector<Participant*> participants
-        );
+      // Instance-aware assignment interface
+    virtual Participant* assign(
+        WorkflowInstance* instance,
+        WorkItem* item,
+        std::vector<Participant*> participants
+    ) {
+        (void)instance;
+        (void)item;
+        (void)participants;
+        return nullptr;
+    }
    };
 }
 #endif 
