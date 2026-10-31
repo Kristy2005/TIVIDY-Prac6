@@ -68,4 +68,17 @@ void WorkflowDefinition::handleEscalation(WorkflowInstance* instance) {
 
     escalationHandler->handleRequest(instance);
 }
+
+Participant* WorkflowDefinition::selectAssignee(
+    WorkflowInstance* instance,
+    WorkItem* item,
+    std::vector<Participant*> participants
+) const {
+
+    if (strategy == nullptr || instance == nullptr || item == nullptr) {
+        return nullptr;
+    }
+
+    return strategy->assign(instance, item, participants);
+}
 }

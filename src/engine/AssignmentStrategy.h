@@ -8,6 +8,7 @@
 namespace tividy {
   class Participant;
   class WorkItem;
+  class WorkflowInstance;
 
   /**
    * @brief Interface for interchangeable work-assignment algorithms.
@@ -29,6 +30,18 @@ namespace tividy {
        * @return Selected participant, or nullptr when no candidate is suitable.
        */
       virtual Participant* assign(WorkItem* item, std::vector<Participant*> participants) = 0;
+
+      // Instance-aware assignment interface
+    virtual Participant* assign(
+        WorkflowInstance* instance,
+        WorkItem* item,
+        std::vector<Participant*> participants
+    ) {
+        (void)instance;
+        (void)item;
+        (void)participants;
+        return nullptr;
+    }
    };
 }
 #endif 

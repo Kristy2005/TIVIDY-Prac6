@@ -4,6 +4,9 @@
 #include "AssignmentStrategy.h"
 
 namespace tividy{
+
+  class WorkflowInstance;
+
   /**
    * @brief Assignment strategy that selects the participant with the smallest workload.
    *
@@ -19,7 +22,16 @@ namespace tividy{
        * @param participants Candidate participants; null entries are ignored.
        * @return Participant with the smallest workload, or null when no candidate remains.
        */      
-      virtual Participant* assign(WorkItem* item, std::vector<Participant*> participants);
+      virtual Participant* assign(
+        WorkItem* item,
+        std::vector<Participant*> participants
+    );
+
+    virtual Participant* assign(
+        WorkflowInstance* instance,
+        WorkItem* item,
+        std::vector<Participant*> participants
+    );
   };
 }
 #endif // TIVIDY_WORKLOAD_BASED_ASSIGNMENT_H

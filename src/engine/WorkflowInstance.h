@@ -92,6 +92,12 @@ const std::vector<WorkItemProgress>& getWorkItemProgress() const;
     WorkflowState* getState() const;
 
     /**
+ * @brief Returns the workflow definition associated with this instance.
+ * @return The non-owning workflow definition pointer.
+ */
+WorkflowDefinition* getDefinition() const;
+
+    /**
      * @brief Replaces the current state and notifies the observers.
      *
      * Called by the state classes to make a transition. The observers are
