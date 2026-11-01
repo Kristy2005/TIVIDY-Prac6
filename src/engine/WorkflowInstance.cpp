@@ -242,4 +242,18 @@ const WorkflowHistory& WorkflowInstance::getHistory() const
     return history;
 }
 
+const std::vector<std::string> WorkflowInstance::getParticipants() const
+{
+    std::vector<std::string> participantListAndRoles;
+
+    for (const auto& participant : participants) {
+        participantListAndRoles.push_back(participant->getName());
+        for(const auto& role : participant->getRoles()) {
+            participantListAndRoles.push_back(role);
+        }
+    }
+
+    return participantListAndRoles;
+}
+
 }

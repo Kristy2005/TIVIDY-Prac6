@@ -3,6 +3,7 @@
 
 #include "WorkflowMemento.h"
 
+#include <sstream>
 #include <vector>
 #include <string>
 
@@ -81,6 +82,6 @@ public:
      std::string describeEvents() const;
 };
 
-}
+} // namespace tividy
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "WorkflowDefinition.h"
 #include "WorkflowMemento.h"
+#include "WorkflowHistory.h"
 #include <vector>
 #include <map>
 #include "WorkflowHistory.h"
@@ -72,6 +73,9 @@ private:
      * @brief Independent cloned work structure used by this workflow instance.
      */
     WorkflowComponent* workTree;
+
+    /** @brief Candidate participants for work assignment. Not owned. */
+    std::vector<Participant*> participants;
 
 public:
 
@@ -228,6 +232,15 @@ public:
      * @param observer The observer to remove.
      */
     void detach(WorkflowObserver* observer);
+
+    /**
+     * @brief Returns the list of participants registered with this instance.
+     *
+     * The returned pointers are non-owning and must not be deleted.
+     *
+     * @return Vector of participant pointers.
+     */
+    const std::vector<std::string> getParticipants() const;
 };
 
 } // namespace tividy

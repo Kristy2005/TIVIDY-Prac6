@@ -7,8 +7,11 @@
 
 namespace tividy {
 
+WorkflowDefinition::WorkflowDefinition(const std::string& name)
+    : name(name),root(nullptr),strategy(nullptr),escalationHandler(nullptr),ownsRoot(false),roles(){}
+
 WorkflowDefinition::WorkflowDefinition()
-    : name(),root(nullptr),strategy(nullptr),escalationHandler(nullptr),ownsRoot(false){}
+    : name(""),root(nullptr),strategy(nullptr),escalationHandler(nullptr),ownsRoot(false),roles(){}
 
 void WorkflowDefinition::setRoot(WorkflowComponent* component)
 {
@@ -98,4 +101,17 @@ WorkflowComponent* WorkflowDefinition::createWorkTree() const {
 
     return root->clone();
 }
+
+void WorkflowDefinition::addRole(Role<void>* role) {
+    if (role == nullptr) {
+        throw std::invalid_argument("addRole: role cannot be null");
+    }
+
+    roles.push_back(role);
+}
+
+std::vector<Role<void>*> WorkflowDefinition::getRoles() const {
+    return roles;   
+}
+
 }

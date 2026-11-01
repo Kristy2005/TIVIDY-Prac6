@@ -158,4 +158,9 @@ bool Participant::hasRole(const std::string& roleName) const {
     return false;
 }
 
+const std::vector<std::string>& Participant::getRoles() const {
+    return roles;
+
+}
+
 }

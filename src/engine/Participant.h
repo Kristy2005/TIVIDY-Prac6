@@ -38,6 +38,8 @@ public:
 
     bool hasRole(const std::string& roleName) const;
 
+    const std::vector<std::string>& getRoles() const;
+
 private:
 
     // Represents an assignment belonging to a particular workflow instance.
