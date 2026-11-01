@@ -16,6 +16,10 @@
 #include "engine/WorkflowInstance.h"
 #include "engine/WorkflowObserver.h"
 #include "engine/WorkflowState.h"
+#include "engine/HistoryObserver.h"
+#include "engine/WorkflowHistory.h"
+#include "engine/WorkItem.h"
+#include "engine/WorkflowStage.h"
 
 using namespace tividy;
 
@@ -224,7 +228,7 @@ TEST_CASE("ProgressObserver reports that the workflow state changed") {
     CapturedRun run = runCapturingCout([&] { observer.update(dummyInstance()); });
 
     CHECK_FALSE(run.threw);
-    CHECK(run.text.find("Workflow state changed.") != std::string::npos);
+    CHECK(run.text.find("Workflow state changed to") != std::string::npos);
 }
 
 TEST_CASE("ProgressObserver prints exactly one message per notification") {
@@ -236,7 +240,7 @@ TEST_CASE("ProgressObserver prints exactly one message per notification") {
     });
 
     CHECK_FALSE(run.threw);
-    CHECK(countOccurrences(run.text, "Workflow state changed.") == 2);
+    CHECK(countOccurrences(run.text, "Workflow state changed to") == 2);
 }
 
 TEST_CASE("NotificationObserver accepts an update without throwing") {
@@ -377,5 +381,71 @@ TEST_CASE("ProgressObserver reports a state change of an attached instance") {
     CapturedRun run = runCapturingCout([&] { instance.setState(&state); });
 
     CHECK_FALSE(run.threw);
-    CHECK(run.text.find("Workflow state changed.") != std::string::npos);
+    CHECK(run.text.find("Workflow state changed to") != std::string::npos);
+}
+
+TEST_CASE("HistoryObserver records a workflow state change")
+{
+    WorkflowDefinition definition;
+    WorkflowInstance instance(&definition);
+
+    WorkflowHistory history;
+    HistoryObserver observer(&history);
+
+    instance.attach(&observer);
+
+    static StubState state;
+    instance.setState(&state);
+
+    REQUIRE(history.getEvents().size() == 1);
+
+    CHECK(history.getEvents()[0].action.find("State changed")!= std::string::npos);
+}
+
+TEST_CASE("Workflow instances keep separate audit histories")
+{
+    WorkflowDefinition definition;
+
+    WorkflowInstance first(&definition);
+    WorkflowInstance second(&definition);
+
+    WorkflowHistory firstHistory;
+    WorkflowHistory secondHistory;
+
+    HistoryObserver firstObserver(&firstHistory);
+    HistoryObserver secondObserver(&secondHistory);
+
+    first.attach(&firstObserver);
+    second.attach(&secondObserver);
+
+    static StubState state;
+
+    first.setState(&state);
+
+    CHECK(firstHistory.getEvents().size() == 1);
+    CHECK(secondHistory.getEvents().empty());
+}
+
+TEST_CASE("WorkflowHistory records work completion for the correct instance")
+{
+    WorkItem item("Review complaint");
+
+    WorkflowStage stage;
+    stage.add(&item);
+
+    WorkflowDefinition definition;
+    definition.setRoot(&stage);
+
+    WorkflowInstance first(&definition);
+    WorkflowInstance second(&definition);
+
+    first.completeWorkItem(&item);
+
+    REQUIRE(first.getHistory().getEvents().size() == 1);
+
+    CHECK(first.getHistory().getEvents()[0].action== "Work completed");
+
+    CHECK(first.getHistory().getEvents()[0].workItem== "Review complaint");
+
+    CHECK(second.getHistory().getEvents().empty());
 }
