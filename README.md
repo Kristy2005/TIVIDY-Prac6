@@ -203,6 +203,7 @@ The generated documentation is placed in the configured documentation output dir
 
 The repository is organised approximately as follows:
 
+```text
 TIVIDY-Prac6/
 |
 |-- .github/
@@ -259,8 +260,7 @@ TIVIDY-Prac6/
 |-- PROJECT_BREAKDOWN.md
 |   Project breakdown and supporting planning
 
----
-
+```
 ## Design Patterns
 
 TIVIDY uses GoF design patterns to keep workflow structure, behaviour and integrations separate.
