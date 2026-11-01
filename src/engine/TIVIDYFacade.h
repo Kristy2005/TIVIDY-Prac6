@@ -165,13 +165,8 @@ namespace tividy {
         std::vector<WorkflowDefinition*> getAllDefinitions() const;
 
      private:
-        struct WorkflowRecord{
-          WorkflowDefinition* definition;
-          std::vector<WorkflowInstance*> instances;
-          std::vector<WorkflowHistory*> histories;
-        };
-
-        std::map<std::string, WorkflowRecord> workflowRecords;
+        std::vector<WorkflowDefinition*> definitions;
+        
 	};
 
 
