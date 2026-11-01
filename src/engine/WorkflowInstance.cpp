@@ -78,6 +78,7 @@ void WorkflowInstance::completeWorkItem(WorkItem* item)
 
         if (workItemProgress[i].item == actualItem) {
             workItemProgress[i].completed = true;
+            history.recordEvent("Work completed",actualItem->getName());
             return;
         }
     }
@@ -234,6 +235,11 @@ bool WorkflowInstance::areDependenciesComplete(WorkItem* item) const
     }
 
     return true;
+}
+
+const WorkflowHistory& WorkflowInstance::getHistory() const
+{
+    return history;
 }
 
 }
