@@ -14,6 +14,7 @@
 #include <sstream>
 
 #include <vector>
+#include <string>
 
 
 namespace tividy {
@@ -24,10 +25,31 @@ namespace tividy {
  * caller's responsibility. getLast() returns the stored pointer, not a copy.
  *
  */
+
+
+/**
+ * @brief One readable audit event belonging to a workflow instance.
+ */
+struct AuditEvent {
+    std::string time;
+    std::string action;
+    std::string workItem;
+    std::string participant;
+
+    AuditEvent(const std::string& eventTime,const std::string& eventAction,const std::string& eventWorkItem = "",const std::string& eventParticipant = "")
+        : time(eventTime),action(eventAction),workItem(eventWorkItem),participant(eventParticipant) {}
+};
+
+
 class WorkflowHistory {
 private:
     /** @brief Saved memento pointers in insertion order; */
 	std::vector<WorkflowMemento*> mementos;
+
+     /**
+      * @brief Readable audit events recorded for one workflow instance.
+      */
+     std::vector<AuditEvent> events;
 
 public:
 	/**
@@ -45,10 +67,28 @@ public:
 	WorkflowMemento* getLast();
 
      /**
-      * @brief Retrieve the history of state changes.
-      * @return Vector of strings representing the history.
+      * @brief Records a readable event in this workflow history.
+      * @param action Description of what happened.
+      * @param workItem Related work item name, or empty if not applicable.
+      * @param participant Related participant name, or empty if not applicable.
       */
-     std::vector<std::string> getHistory() const;
+     void recordEvent(
+     const std::string& action,
+     const std::string& workItem = "",
+     const std::string& participant = ""
+     );
+
+     /**
+      * @brief Returns all audit events in the order they occurred.
+      * @return Read-only list of recorded audit events.
+      */
+     const std::vector<AuditEvent>& getEvents() const;
+
+     /**
+      * @brief Produces readable multi-line audit history.
+      * @return Formatted audit history text.
+      */
+     std::string describeEvents() const;
 };
 
 }

@@ -78,6 +78,7 @@ void WorkflowInstance::completeWorkItem(WorkItem* item)
 
         if (workItemProgress[i].item == actualItem) {
             workItemProgress[i].completed = true;
+            history.recordEvent("Work completed",actualItem->getName());
             return;
         }
     }
@@ -236,23 +237,9 @@ bool WorkflowInstance::areDependenciesComplete(WorkItem* item) const
     return true;
 }
 
-void WorkflowInstance::addParticipant(Participant* participant) {
-    if (participant == nullptr) {
-        throw std::invalid_argument(
-            "Cannot add a null participant."
-        );
-    }
-
-    if (std::find(participants.begin(), participants.end(), participant)
-        == participants.end()) {
-        participants.push_back(participant);
-    }
+const WorkflowHistory& WorkflowInstance::getHistory() const
+{
+    return history;
 }
-
-const std::vector<Participant*> WorkflowInstance::getParticipants() const {
-    return participants;           
-}
-
-
 
 }

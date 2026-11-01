@@ -1,4 +1,7 @@
 #include "WorkflowHistory.h"
+#include <stdexcept>
+#include <ctime>
+#include <sstream>
 
 namespace tividy {
 
@@ -16,43 +19,60 @@ WorkflowMemento* WorkflowHistory::getLast() {
 	return this->mementos.back();
 	}
 
-std::vector<std::string> WorkflowHistory::getHistory() const {
-	std::vector<std::string> history;
+	void WorkflowHistory::recordEvent(
+    const std::string& action,
+    const std::string& workItem,
+    const std::string& participant)
+{
+    std::time_t now = std::time(nullptr);
 
-	for (const auto& memento : mementos) {
-		if (memento == nullptr || memento->getState() == nullptr) {
-			continue;
-		}
+    char buffer[20];
+    std::strftime(
+        buffer,
+        sizeof(buffer),
+        "%Y-%m-%d %H:%M:%S",
+        std::localtime(&now)
+    );
 
-		std::time_t t = memento->getTimestamp();
-		char buffer[32];
-		std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", std::localtime(&t));
-
-		WorkflowState* state = memento->getState();
-		std::ostringstream line;
-
-		std::string label;
-
-		if (dynamic_cast<SubmittedState*>(state) != nullptr) {
-			label = "Submitted";
-		} else if (dynamic_cast<ActiveState*>(state) != nullptr) {
-			label = "Active";
-		} else if (dynamic_cast<InProgressState*>(state) != nullptr) {
-			label = "In Progress";
-		} else if (dynamic_cast<ResolvedState*>(state) != nullptr) {
-			label = "Resolved";
-		} else if (dynamic_cast<ClosedState*>(state) != nullptr) {
-			label = "Closed";
-		} else {
-			label = "Unknown";
-		}
-
-		line << "[" << buffer << "]" << "State :" << label;
-		history.push_back(line.str());
-		
-	}
-
-	return history;
+    events.push_back(
+        AuditEvent(
+            buffer,
+            action,
+            workItem,
+            participant
+        )
+    );
 }
 
+const std::vector<AuditEvent>&
+WorkflowHistory::getEvents() const
+{
+    return events;
+}
+
+std::string WorkflowHistory::describeEvents() const
+{
+    std::ostringstream output;
+
+    for (std::size_t i = 0; i < events.size(); ++i) {
+
+        output << events[i].time
+               << " - "
+               << events[i].action;
+
+        if (!events[i].workItem.empty()) {
+            output << " | Work item: "
+                   << events[i].workItem;
+        }
+
+        if (!events[i].participant.empty()) {
+            output << " | Participant: "
+                   << events[i].participant;
+        }
+
+        output << "\n";
+    }
+
+    return output.str();
+}
 }

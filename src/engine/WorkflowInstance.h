@@ -5,6 +5,7 @@
 #include "WorkflowMemento.h"
 #include <vector>
 #include <map>
+#include "WorkflowHistory.h"
 
 namespace tividy {
 
@@ -12,11 +13,7 @@ class WorkflowObserver;
 class WorkflowState;
 class WorkItem;
 
- struct WorkItemProgress {
-    WorkItem* item;
-    bool completed;
-
-    explicit WorkItemProgress(WorkItem* workItem)
+struct WorkItemProgress {WorkItem* item;bool completed;explicit WorkItemProgress(WorkItem* workItem)
         : item(workItem), completed(false) {}
 };
 
@@ -50,6 +47,12 @@ class WorkItem;
  */
 class WorkflowInstance {
 private:
+
+    /**
+     * @brief Audit and memento history belonging only to this workflow instance.
+     */
+    WorkflowHistory history;
+
     /**
      * @brief Maps definition WorkItems to their independent instance copies.
      */
@@ -74,6 +77,13 @@ private:
     std::vector<Participant*> participants;
 
 public:
+
+    /**
+     * @brief Returns this instance's execution history.
+     * @return Read-only reference to this instance's history.
+     */
+    const WorkflowHistory& getHistory() const;
+    
     explicit WorkflowInstance(WorkflowDefinition* definition = nullptr);
     WorkflowInstance(const WorkflowInstance&) = delete;
     WorkflowInstance& operator=(const WorkflowInstance&) = delete;
