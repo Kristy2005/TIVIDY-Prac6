@@ -3,9 +3,9 @@
 
 #include "WorkflowDefinition.h"
 #include "WorkflowMemento.h"
+#include "WorkflowHistory.h"
 #include <vector>
 #include <map>
-#include "WorkflowHistory.h"
 
 namespace tividy {
 

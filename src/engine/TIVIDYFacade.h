@@ -114,10 +114,10 @@ namespace tividy {
             /**
           * @brief Return the history of state changes for a workflow instance.
           * @param instance Workflow instance to query; must not be null.
-          * @return Vector of state names in chronological order.
+          * @return String describing the history of state changes and events.
           * @throws std::invalid_argument If @p instance is null.
           */
-        std::vector<std::string> getHistory(WorkflowHistory* history);
+        std::string getHistory(WorkflowInstance* instance);
 
             /**
           * @brief Return the progress of a workflow instance as a percentage.

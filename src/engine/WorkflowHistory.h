@@ -2,17 +2,8 @@
 #define WORKFLOWHISTORY_H
 
 #include "WorkflowMemento.h"
-#include "WorkflowState.h"
-#include "SubmittedState.h"
-#include "ActiveState.h"
-#include "InProgressState.h"
-#include "ResolvedState.h"
-#include "ClosedState.h"
-#include "Console.h"
-#include <stdexcept>
-#include <string>
-#include <sstream>
 
+#include <sstream>
 #include <vector>
 #include <string>
 
@@ -91,6 +82,6 @@ public:
      std::string describeEvents() const;
 };
 
-}
+} // namespace tividy
 
 #endif

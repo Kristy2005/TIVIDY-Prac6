@@ -159,14 +159,14 @@ void TIVIDYFacade::completeWork(
     }
 }
 
-std::vector<std::string> TIVIDYFacade::getHistory(WorkflowHistory* history) {
-    if (history == nullptr) {
+std::string TIVIDYFacade::getHistory(WorkflowInstance* instance) {
+    if (instance == nullptr) {
         throw std::invalid_argument(
-            "getHistory: history cannot be null"
+            "getHistory: instance cannot be null"
         );
     }
 
-    return history->getHistory();
+    return instance->getHistory().describeEvents();
 }
 
 double TIVIDYFacade::getProgress(WorkflowInstance* instance){
