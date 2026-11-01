@@ -6,6 +6,7 @@
 #include "WorkflowHistory.h"
 #include <vector>
 #include <map>
+#include "WorkflowHistory.h"
 
 namespace tividy {
 

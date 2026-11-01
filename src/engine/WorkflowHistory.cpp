@@ -75,5 +75,6 @@ std::string WorkflowHistory::describeEvents() const
 
     return output.str();
 }
+}
 
 } // namespace tividy
