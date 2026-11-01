@@ -2,6 +2,16 @@
 #define WORKFLOWHISTORY_H
 
 #include "WorkflowMemento.h"
+#include "WorkflowState.h"
+#include "SubmittedState.h"
+#include "ActiveState.h"
+#include "InProgressState.h"
+#include "ResolvedState.h"
+#include "ClosedState.h"
+#include "Console.h"
+#include <stdexcept>
+#include <string>
+#include <sstream>
 
 #include <vector>
 
@@ -33,6 +43,12 @@ public:
      * @throws std::logic_error If the history is empty.
      */
 	WorkflowMemento* getLast();
+
+     /**
+      * @brief Retrieve the history of state changes.
+      * @return Vector of strings representing the history.
+      */
+     std::vector<std::string> getHistory() const;
 };
 
 }

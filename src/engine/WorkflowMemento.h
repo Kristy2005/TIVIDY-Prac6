@@ -1,6 +1,8 @@
 #ifndef WORKFLOWMEMENTO_H
 #define WORKFLOWMEMENTO_H
 
+#include <ctime>
+
 namespace tividy {
 
 class WorkflowState;
@@ -22,6 +24,8 @@ class WorkflowMemento {
 private:
     /** @brief Non-owning pointer to the saved shared state. */
     WorkflowState* state;
+    /** @brief The time at which this memento was created. */
+    std::time_t timestamp;
 
 public:
     /** @brief Construct a memento with no saved state. */
@@ -39,6 +43,12 @@ public:
      * @return The original pointer, or null if no state has been saved.
      */
     WorkflowState* getState() const;
+
+    /**
+     * @brief Get the timestamp of when this memento was created.
+     * @return The time at which the memento was constructed.
+     */
+    std::time_t getTimestamp() const;
 
     /** @brief Destroy the snapshot without deleting its non-owned state. */
     ~WorkflowMemento();

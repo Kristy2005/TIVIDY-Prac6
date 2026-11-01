@@ -70,6 +70,9 @@ private:
      */
     WorkflowComponent* workTree;
 
+    /** @brief Candidate participants for work assignment. Not owned. */
+    std::vector<Participant*> participants;
+
 public:
     explicit WorkflowInstance(WorkflowDefinition* definition = nullptr);
     WorkflowInstance(const WorkflowInstance&) = delete;
@@ -218,6 +221,24 @@ public:
      * @param observer The observer to remove.
      */
     void detach(WorkflowObserver* observer);
+
+    /**
+     * @brief Adds a participant to the list of candidates for work assignment.
+     *
+     * The instance does not take ownership of the participant.
+     *
+     * @param participant The participant to add. Must not be null.
+     */
+    void addParticipant(Participant* participant);
+
+    /**
+     * @brief Returns the list of participants registered with this instance.
+     *
+     * The returned pointers are non-owning and must not be deleted.
+     *
+     * @return Vector of participant pointers.
+     */
+    const std::vector<Participant*> getParticipants() const;
 };
 
 } // namespace tividy

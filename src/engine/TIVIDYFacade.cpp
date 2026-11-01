@@ -159,4 +159,41 @@ void TIVIDYFacade::completeWork(
     }
 }
 
+std::vector<std::string> TIVIDYFacade::getHistory(WorkflowHistory* history) {
+    if (history == nullptr) {
+        throw std::invalid_argument(
+            "getHistory: history cannot be null"
+        );
+    }
+
+    return history->getHistory();
+}
+
+double TIVIDYFacade::getProgress(WorkflowInstance* instance){
+    
+    if (instance == nullptr) {
+        throw std::invalid_argument(
+            "getProgress: instance cannot be null"
+        );
+    }
+
+    const std::vector<WorkItemProgress>& progress =
+        instance->getWorkItemProgress();
+
+    if (progress.empty()) {
+        return 0.0;
+    }
+
+    int completedCount = 0;
+
+    for (const auto& itemProgress : progress) {
+        if (itemProgress.completed) {
+            ++completedCount;
+        }
+    }
+
+    return (static_cast<double>(completedCount) / progress.size()) * 100.0;
+}
+
+
 }

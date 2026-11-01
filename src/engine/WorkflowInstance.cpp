@@ -236,4 +236,23 @@ bool WorkflowInstance::areDependenciesComplete(WorkItem* item) const
     return true;
 }
 
+void WorkflowInstance::addParticipant(Participant* participant) {
+    if (participant == nullptr) {
+        throw std::invalid_argument(
+            "Cannot add a null participant."
+        );
+    }
+
+    if (std::find(participants.begin(), participants.end(), participant)
+        == participants.end()) {
+        participants.push_back(participant);
+    }
+}
+
+const std::vector<Participant*> WorkflowInstance::getParticipants() const {
+    return participants;           
+}
+
+
+
 }

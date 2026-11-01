@@ -4,6 +4,7 @@
 #include "WorkflowDefinition.h"
 #include "WorkflowInstance.h"
 #include "Participant.h"
+#include "WorkflowHistory.h"
 
 #include <vector>
 
@@ -14,7 +15,11 @@ namespace tividy {
  * The facade does not own the definitions, instances, or work items supplied
  * by callers. createWorkflow() and startWorkflow() return allocated objects
  * that the caller must delete.
- *
+ * The facade does not manage the lifetime of any other objects. It is the
+ * caller's responsibility to ensure that any definitions, instances, or work
+ * The facade allows the client to create and manage all of the workflow instances created and definitions
+ * Allowing clients to switch between different workflow definitions and instances without needing to know the underlying implementation details.
+ * items supplied to it remain valid for the duration of their use.
  */
 	class TIVIDYFacade {
 	public:
@@ -105,6 +110,68 @@ namespace tividy {
             WorkItem* item,
             Participant* participant
         );
+
+            /**
+          * @brief Return the history of state changes for a workflow instance.
+          * @param instance Workflow instance to query; must not be null.
+          * @return Vector of state names in chronological order.
+          * @throws std::invalid_argument If @p instance is null.
+          */
+        std::vector<std::string> getHistory(WorkflowHistory* history);
+
+            /**
+          * @brief Return the progress of a workflow instance as a percentage.
+          * @param instance Workflow instance to query; must not be null.
+          * @return Progress percentage (0.0 to 100.0).
+          * @throws std::invalid_argument If @p instance is null.
+          */
+        double getProgress(WorkflowInstance* instance);
+
+            /**
+          * @brief Return the incomplete work items for a workflow instance.
+          * @param instance Workflow instance to query; must not be null.
+          * @return Vector of pointers to incomplete work items.
+          * @throws std::invalid_argument If @p instance is null.
+          */
+        std::vector<WorkItem*> getIncompleteWorkItems(WorkflowInstance* instance);
+
+        
+        /**
+         * @brief Return the complete work items for a workflow instance.
+         * @param instance Workflow instance to query; must not be null.
+         * @return Vector of pointers to complete work items.
+         * @throws std::invalid_argument If @p instance is null.
+         */
+        std::vector<std::string> getParticipants(WorkflowInstance* instance);
+
+        /**
+          * @brief Return all work items for a workflow instance.
+          * @param instance Workflow instance to query; must not be null.
+          * @return Vector of pointers to work items.
+          * @throws std::invalid_argument If @p instance is null.
+          */
+        std::vector<WorkItem*> getAllWorkItems(WorkflowInstance* instance);
+
+            /**
+           * @brief Return all workflow definitions created by the facade.
+           * @return Vector of pointers to workflow definitions.
+           */
+        std::vector<WorkflowInstance*> getAllInstances() const;
+
+        /**
+          * @brief Return all workflow definitions created by the facade.
+          * @return Vector of pointers to workflow definitions.
+          */
+        std::vector<WorkflowDefinition*> getAllDefinitions() const;
+
+     private:
+        struct WorkflowRecord{
+          WorkflowDefinition* definition;
+          std::vector<WorkflowInstance*> instances;
+          std::vector<WorkflowHistory*> histories;
+        };
+
+        std::map<std::string, WorkflowRecord> workflowRecords;
 	};
 
 
