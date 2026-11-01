@@ -116,8 +116,8 @@ sudo apt install doxygen graphviz valgrind
 Clone the repository and move into the project directory:
 
 ```bash
-git clone <repository-url>
-cd TIVIDY-Prac6-main
+git clone https://github.com/Kristy2005/TIVIDY-Prac6.git
+cd TIVIDY-Prac6
 ```
 
 Build the project with:
@@ -140,7 +140,27 @@ make run
 
 TIVIDY provides an interactive terminal interface from which the available workflow demonstrations can be selected.
 
-The detailed TUI controls and menu instructions are documented separately once the final interface configuration is complete.
+### TUI Menu and Controls
+
+The main menu has four entries:
+
+| Key | Menu entry | What it does |
+|---|---|---|
+| `1` | Hospital admission | Runs the Hospital Patient Admission workflow |
+| `2` | University complaint | Runs the University Student Complaint workflow |
+| `3` | View documentation | Opens the generated Doxygen documentation (runs Doxygen first if needed) |
+| `4` | Exit | Closes the demo |
+
+| Key | Action |
+|---|---|
+| `Up` / `Down` (or `k` / `j`) | Move the selection |
+| `Enter` | Run the selected entry |
+| `1` to `4` | Jump to that entry and run it immediately |
+| `q` / `Q` | Quit |
+
+Each scenario asks for a decision while it runs (for example, whether the hospital patient is an urgent admission, or whether the university complaint needs escalation). Answer `y` or `n` and press `Enter`. When a scenario ends, press `Enter` to return to the menu.
+
+The terminal must be at least 72 columns by 20 rows. If it is smaller, the interface asks you to resize it.
 
 ---
 
@@ -195,7 +215,7 @@ make docs
 
 Doxygen and Graphviz must be installed for documentation generation.
 
-The generated documentation is placed in the configured documentation output directory.
+The generated HTML documentation is placed in the `html/` folder in the project root. Open `html/index.html` in a browser, or choose **View documentation** from the TUI menu. `make clean` removes the `html/` folder.
 
 ---
 
@@ -366,7 +386,9 @@ The repository uses GitHub Actions to automatically build and test the project w
 
 The CI workflow should remain green before code is merged into the main branch.
 
-A repository CI status badge can be placed here once the final workflow and repository URL are confirmed.
+[![CI](https://github.com/Kristy2005/TIVIDY-Prac6/actions/workflows/ci.yml/badge.svg)](https://github.com/Kristy2005/TIVIDY-Prac6/actions/workflows/ci.yml)
+
+The workflow (`.github/workflows/ci.yml`) builds the project, runs the tests, runs the tests under Valgrind and builds the Doxygen documentation on every push to `main` and on every pull request.
 
 ---
 
@@ -481,7 +503,7 @@ make docs
 
 Both the University Student Complaint workflow and Hospital Patient Admission workflow should run successfully.
 
-Every command in this README should be copy-pasted and tested before final submission.
+The commands above were copy-pasted and run from a fresh clone on Ubuntu 24.04 (commit `28d9a27`) on 1 November 2026: `make build`, `make test`, `ctest --test-dir build --output-on-failure`, `make valgrind` and `make docs` all succeeded, and `make run` started the TUI and ran a scenario. Re-run them from a fresh clone after the last merge before submission.
 
 ---
 
