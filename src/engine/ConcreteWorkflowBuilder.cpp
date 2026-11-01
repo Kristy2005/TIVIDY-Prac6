@@ -14,23 +14,32 @@ namespace tividy{
   }
 
   void ConcreteWorkflowBuilder::addWorkItem(WorkItem* item) {
-      if (!item) throw std::invalid_argument("addWorkItem: item cannot be null");
-      if (!definition) definition = new WorkflowDefinition();
-      WorkflowStage* stage = dynamic_cast<WorkflowStage*>(definition->getRoot());
-      if (!stage) { stage = new WorkflowStage(); definition->setRoot(stage); }
-      stage->add(item);
+    if (!item) throw std::invalid_argument("addWorkItem: item cannot be null");
+    if (!definition) definition = new WorkflowDefinition();
+    WorkflowStage* stage = dynamic_cast<WorkflowStage*>(definition->getRoot());
+      
+    if (!stage) {
+        stage = new WorkflowStage();
+        definition->setOwnedRoot(stage);
+    }
+    stage->add(item);
   }
 
   void ConcreteWorkflowBuilder::addRole(Role<void>* role) {
       if (!role) throw std::invalid_argument("addRole: role cannot be null");
   }
 
-  void ConcreteWorkflowBuilder::addDependency(WorkItem* before, WorkItem* after) {
-      if (!before || !after) throw std::invalid_argument("addDependency: items cannot be null");
-      // The current WorkflowComponent model has no dependency metadata; both items are added to the workflow.
-      addWorkItem(before);
-      addWorkItem(after);
-  }
+    void ConcreteWorkflowBuilder::addDependency(WorkItem* before,WorkItem* after)
+    {
+        if (!before || !after) {
+            throw std::invalid_argument("addDependency: items cannot be null");
+        }
+
+        addWorkItem(before);
+        addWorkItem(after);
+
+        after->addDependency(before);
+    }
 
   void ConcreteWorkflowBuilder::setAssignmentStrategy(AssignmentStrategy* strategy) {
       if (definition == nullptr) {

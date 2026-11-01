@@ -42,5 +42,23 @@ namespace tividy{
 WorkflowComponent* WorkItem::clone() const {
     return new WorkItem(*this);
 }
+void WorkItem::addDependency(WorkItem* item)
+{
+    if (item == nullptr || item == this) {
+        return;
+    }
 
+    for (std::size_t i = 0; i < dependencies.size(); ++i) {
+        if (dependencies[i] == item) {
+            return;
+        }
+    }
+
+    dependencies.push_back(item);
+}
+
+const std::vector<WorkItem*>& WorkItem::getDependencies() const
+{
+    return dependencies;
+}
 }

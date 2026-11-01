@@ -13,6 +13,7 @@
 #include "engine/WorkflowDefinition.h"
 #include "engine/WorkflowInstance.h"
 #include "engine/WorkflowStage.h"
+#include "engine/TIVIDYFacade.h"
 
 TEST_CASE("Assignment strategies can be used polymorphically") {
     tividy::WorkItem item("Review complaint", "Administrator");
@@ -351,4 +352,67 @@ TEST_CASE("Participant keeps assignments separate between workflow instances") {
 
     CHECK(participant.getWorkload() == 0);
     CHECK(second.isWorkItemComplete(&item));
+}
+
+TEST_CASE("Dependencies prevent assignment until prerequisite work is complete") {
+    tividy::Role<void> staffRole("Staff");
+
+    tividy::Participant staff("Staff member");
+    staff.addRole(&staffRole);
+
+    tividy::WorkItem first("First task", "Staff");
+    tividy::WorkItem second("Second task", "Staff");
+
+    tividy::ConcreteWorkflowBuilder builder;
+    builder.addDependency(&first, &second);
+
+    tividy::RoleBasedAssignment strategy;
+    builder.setAssignmentStrategy(&strategy);
+
+    tividy::WorkflowDefinition* definition = builder.getResult();
+    REQUIRE(definition != nullptr);
+
+    tividy::WorkflowInstance instance(definition);
+    tividy::TIVIDYFacade facade;
+
+    std::vector<tividy::Participant*> participants;
+    participants.push_back(&staff);
+
+    // Second depends on first, so it cannot be assigned yet.
+    CHECK(
+        facade.assignWork(
+            &instance,
+            &second,
+            participants
+        ) == nullptr
+    );
+
+    // First has no dependency, so it can be assigned.
+    tividy::Participant* firstAssignee =
+        facade.assignWork(
+            &instance,
+            &first,
+            participants
+        );
+
+    REQUIRE(firstAssignee == &staff);
+
+    facade.completeWork(
+        &instance,
+        &first,
+        firstAssignee
+    );
+
+    CHECK(instance.isWorkItemComplete(&first));
+
+    // Now that first is complete, second becomes available.
+    CHECK(
+        facade.assignWork(
+            &instance,
+            &second,
+            participants
+        ) == &staff
+    );
+
+    delete definition;
 }
