@@ -26,7 +26,7 @@ class WorkflowInstance;
 class WorkflowDefinition {
 public:
     /** @brief Construct a definition with no root, assignment strategy or handler. */
-    WorkflowDefinition(const std::string& name = "");
+    WorkflowDefinition(const std::string& name);
 
     /*@brief default constructor*/
     WorkflowDefinition();

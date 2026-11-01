@@ -5,6 +5,7 @@
 #include "WorkflowInstance.h"
 #include "Participant.h"
 #include "WorkflowHistory.h"
+#include "WorkflowBuilder.h"
 
 #include <vector>
 
@@ -28,6 +29,11 @@ namespace tividy {
      * @return Newly allocated definition; caller owns the returned pointer.
      */
 		WorkflowDefinition* createWorkflow(const std::string& name);
+
+  /*
+  *@brief Default constructor
+  */
+    WorkflowDefinition* createWorkflow();
 
 	/**
      * @brief Create an instance from a definition, then submit and activate it.
@@ -180,21 +186,13 @@ namespace tividy {
           */
         std::vector<Role<void>*> getRolesForDefinition(WorkflowDefinition* definition) const;
 
-        /**
-          * @brief Add a participant to a specific workflow definition.
-          * @param definition Workflow definition to which the participant will be added; must not be null.
-          * @param participant Participant to add; must not be null.
-          * @throws std::invalid_argument If either argument is null.
-          */
-        void addParticipantToDefinition(WorkflowDefinition* definition, Participant* participant);
-
-        /**
-          * @brief Remove a participant from a specific workflow definition.
-          * @param definition Workflow definition from which the participant will be removed; must not be null.
-          * @param participant Participant to remove; must not be null.
-          * @throws std::invalid_argument If either argument is null.
-          */
-        void removeParticipantFromDefinition(WorkflowDefinition* definition, Participant* participant);
+        // /**
+        //   * @brief Add a participant to a specific workflow definition.
+        //   * @param definition Workflow definition to which the participant will be added; must not be null.
+        //   * @param participant Participant to add; must not be null.
+        //   * @throws std::invalid_argument If either argument is null.
+        //   */
+        // void addParticipantToDefinition(WorkflowDefinition* definition, Participant* participant);
 
         /**
           * @brief Configure the assignment strategy for a specific workflow definition.
@@ -218,7 +216,7 @@ namespace tividy {
           * @param roleName Name of the role to add; must not be empty.
           * @throws std::invalid_argument If @p definition is null or @p roleName is empty.
           */
-       void addRoleToDefinition(WorkflowDefinition* definition, const std::string& roleName);
+       void addRoleToDefinition(WorkflowDefinition* definition,Role<void>* role);
 
        /**
           * @brief Add a work item to a specific workflow definition.
@@ -250,6 +248,7 @@ namespace tividy {
      private:
         std::vector<WorkflowDefinition*> definitions;
         std::vector<WorkflowInstance*> instances;
+        WorkflowBuilder* builder;
         
 	};
 

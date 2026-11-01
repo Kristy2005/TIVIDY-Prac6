@@ -10,6 +10,9 @@ namespace tividy {
 WorkflowDefinition::WorkflowDefinition(const std::string& name)
     : name(name),root(nullptr),strategy(nullptr),escalationHandler(nullptr),ownsRoot(false),roles(){}
 
+WorkflowDefinition::WorkflowDefinition()
+    : name(""),root(nullptr),strategy(nullptr),escalationHandler(nullptr),ownsRoot(false),roles(){}
+
 void WorkflowDefinition::setRoot(WorkflowComponent* component)
 {
     if (ownsRoot && root != nullptr && root != component) {
