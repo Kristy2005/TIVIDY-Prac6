@@ -25,11 +25,13 @@ WorkflowInstance* TIVIDYFacade::startWorkflow(WorkflowDefinition* definition) {
     return instance;
 }
 
-void TIVIDYFacade::assignWork(WorkflowInstance* instance, WorkItem* item) {
+void TIVIDYFacade::assignWork(WorkflowInstance* instance,WorkItem* item)
+{
     if (instance == nullptr || item == nullptr) {
-        throw std::invalid_argument(
-            "assignWork: instance and item cannot be null"
-        );
+        throw std::invalid_argument("assignWork: instance and item cannot be null");
+    }
+
+    if (!instance->areDependenciesComplete(item)) {throw std::logic_error("assignWork: work item dependencies are not complete");
     }
 
     item->execute();
@@ -87,23 +89,20 @@ void TIVIDYFacade::closeWorkflow(WorkflowInstance* instance) {
     instance->close();
 }
 
-Participant* TIVIDYFacade::assignWork(
-    WorkflowInstance* instance,
-    WorkItem* item,
-    std::vector<Participant*> participants) {
-
+Participant* TIVIDYFacade::assignWork(WorkflowInstance* instance,WorkItem* item,std::vector<Participant*> participants)
+{
     if (instance == nullptr || item == nullptr) {
-        throw std::invalid_argument(
-            "assignWork: instance and item cannot be null"
-        );
+        throw std::invalid_argument("assignWork: instance and item cannot be null");
+    }
+
+    if (!instance->areDependenciesComplete(item)) {
+        return nullptr;
     }
 
     WorkflowDefinition* definition = instance->getDefinition();
 
     if (definition == nullptr) {
-        throw std::logic_error(
-            "assignWork: workflow definition is not configured"
-        );
+        throw std::logic_error("assignWork: workflow definition is not configured");
     }
 
     // Ask the definition's strategy to select a participant.

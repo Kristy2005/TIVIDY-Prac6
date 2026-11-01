@@ -22,12 +22,6 @@ namespace tividy {
     /** @brief Construct a builder with a new empty definition. */
       ConcreteWorkflowBuilder();
 
-      /** @brief Deep-copy the in-progress definition; strategy dependencies remain non-owning. */
-      ConcreteWorkflowBuilder(const ConcreteWorkflowBuilder& other);
-
-      /** @brief Copy assignment with safe replacement of the owned definition. */
-      ConcreteWorkflowBuilder& operator=(const ConcreteWorkflowBuilder& other);
-
       /** @brief Destroy any definition that has not been transferred by getResult(). */
       virtual ~ConcreteWorkflowBuilder();
 

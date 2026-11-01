@@ -13,6 +13,16 @@ void WorkflowStage::add(WorkflowComponent* component) {
     }
     components.push_back(component);
 }
+
+WorkflowStage::~WorkflowStage(){
+    if (!ownsComponents) {
+        return;
+    }
+
+    for (std::vector<WorkflowComponent*>::iterator it = components.begin(); it != components.end();++it) {
+        delete *it;
+    }
+}
 void WorkflowStage::remove(WorkflowComponent* component) {
     if (component == nullptr) {
         return;
@@ -44,5 +54,21 @@ void WorkflowStage::collectWorkItems(std::vector<WorkItem*>& items) {
          it != components.end(); ++it) {
         (*it)->collectWorkItems(items);
     }
+}
+
+WorkflowComponent* WorkflowStage::clone() const
+{
+    WorkflowStage* copy = new WorkflowStage();
+
+    copy->ownsComponents = true;
+
+    for (std::vector<WorkflowComponent*>::const_iterator it = components.begin();it != components.end();++it) {
+
+        if (*it != nullptr) {
+            copy->add((*it)->clone());
+        }
+    }
+
+    return copy;
 }
 }

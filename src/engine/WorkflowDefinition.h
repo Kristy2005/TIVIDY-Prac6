@@ -97,7 +97,27 @@ public:
      * @throws std::logic_error If no escalation handler is configured.
      */
     void handleEscalation(WorkflowInstance* instance);
+
+    /**
+     * @brief Creates a cloned work tree for a new independent workflow instance.
+     */
+    WorkflowComponent* createWorkTree() const;
+
+    /**
+     * @brief Sets a root component that is owned by this workflow definition.
+     * @param component Root workflow component whose ownership is transferred to this definition.
+     */
+    void setOwnedRoot(WorkflowComponent* component);
+    /**
+     * @brief Destructor deleting root.
+     */
+    ~WorkflowDefinition();
 private:
+    /**
+     * @brief Indicates whether this definition owns and must delete its root component.
+     */
+    bool ownsRoot;
+
     /** @brief Definition name */
     std::string name;
 

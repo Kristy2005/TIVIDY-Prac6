@@ -18,6 +18,19 @@
 namespace tividy {
 class WorkItem : public WorkflowComponent {
 public:
+
+    /**
+     * @brief Adds another work item that must be completed before this item can proceed.
+     * @param item Work item that this item depends on.
+     */
+    void addDependency(WorkItem* item);
+
+    /**
+     * @brief Returns the work items that must be completed before this item can proceed.
+     * @return List of dependency work items.
+     */
+    const std::vector<WorkItem*>& getDependencies() const;
+
     /** @brief Construct an unnamed, incomplete work item. */
     WorkItem();
 
@@ -56,6 +69,11 @@ public:
     /** @brief Return the role required to perform this work item, or an empty string. */
     const std::string& getRequiredRole() const;
 
+    /**
+     * @brief Creates an independent copy of this work item.
+     */
+    WorkflowComponent* clone() const override;
+
 private:
     /** @brief Task name. */
     std::string name;
@@ -65,6 +83,11 @@ private:
 
     /** @brief Required participant role name, or empty if unrestricted. */
     std::string requiredRole;
+
+    /**
+     * @brief Work items that must be completed before this item can proceed.
+     */
+    std::vector<WorkItem*> dependencies;
 };
 
 

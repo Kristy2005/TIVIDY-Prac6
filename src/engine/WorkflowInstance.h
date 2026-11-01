@@ -4,9 +4,9 @@
 #include "WorkflowDefinition.h"
 #include "WorkflowMemento.h"
 #include <vector>
+#include <map>
 
 namespace tividy {
-
 
 class WorkflowObserver;
 class WorkflowState;
@@ -50,6 +50,11 @@ class WorkItem;
  */
 class WorkflowInstance {
 private:
+    /**
+     * @brief Maps definition WorkItems to their independent instance copies.
+     */
+    std::map<const WorkItem*, WorkItem*> prototypeToInstance;
+
     /** @brief The state the instance is in now. Never null after construction. */
     WorkflowState* currentState;
 
@@ -60,28 +65,37 @@ private:
     std::vector<WorkflowObserver*> observers;
     std::vector<WorkItemProgress> workItemProgress;
 
+    /**
+     * @brief Independent cloned work structure used by this workflow instance.
+     */
+    WorkflowComponent* workTree;
+
 public:
     explicit WorkflowInstance(WorkflowDefinition* definition = nullptr);
     WorkflowInstance(const WorkflowInstance&) = delete;
     WorkflowInstance& operator=(const WorkflowInstance&) = delete;
+    /**
+    * @brief Destroys the workflow instance and its owned cloned work tree.
+    */
     ~WorkflowInstance();
+   
 
     /**
- * @brief Mark a work item as complete for this instance only.
- * @throws std::invalid_argument If the item does not belong to this instance.
- */
-void completeWorkItem(WorkItem* item);
+     * @brief Mark a work item as complete for this instance only.
+     * @throws std::invalid_argument If the item does not belong to this instance.
+     */
+    void completeWorkItem(WorkItem* item);
 
-/**
- * @brief Check whether a work item is complete in this instance.
- * @throws std::invalid_argument If the item does not belong to this instance.
- */
-bool isWorkItemComplete(WorkItem* item) const;
+    /**
+     * @brief Check whether a work item is complete in this instance.
+     * @throws std::invalid_argument If the item does not belong to this instance.
+     */
+    bool isWorkItemComplete(WorkItem* item) const;
 
-/**
- * @brief Return all work-item progress records for this instance.
- */
-const std::vector<WorkItemProgress>& getWorkItemProgress() const;
+    /**
+     * @brief Return all work-item progress records for this instance.
+     */
+    const std::vector<WorkItemProgress>& getWorkItemProgress() const;
 
     /**
      * @brief Returns the current state.
@@ -93,10 +107,17 @@ const std::vector<WorkItemProgress>& getWorkItemProgress() const;
     WorkflowState* getState() const;
 
     /**
- * @brief Returns the workflow definition associated with this instance.
- * @return The non-owning workflow definition pointer.
- */
-WorkflowDefinition* getDefinition() const;
+     * @brief Returns the workflow definition associated with this instance.
+     * @return The non-owning workflow definition pointer.
+     */
+    WorkflowDefinition* getDefinition() const;
+
+    /**
+     * @brief Checks whether all dependencies for a work item are complete in this workflow instance.
+     * @param item Work item whose dependencies should be checked.
+     * @return true if all dependencies are complete; otherwise false.
+     */
+    bool areDependenciesComplete(WorkItem* item) const;
 
     /**
      * @brief Replaces the current state and notifies the observers.

@@ -8,14 +8,31 @@
 namespace tividy {
 
 WorkflowDefinition::WorkflowDefinition()
-: name(),
-root(nullptr),
-strategy(nullptr),
-escalationHandler(nullptr) {
+    : name(),root(nullptr),strategy(nullptr),escalationHandler(nullptr),ownsRoot(false){}
+
+void WorkflowDefinition::setRoot(WorkflowComponent* component)
+{
+    if (ownsRoot && root != nullptr && root != component) {
+        delete root;
+    }
+
+    root = component;
+    ownsRoot = false;
 }
 
-void WorkflowDefinition::setRoot(WorkflowComponent* component) {
+WorkflowDefinition::~WorkflowDefinition(){
+    if (ownsRoot) {
+        delete root;
+    }
+}
+void WorkflowDefinition::setOwnedRoot(WorkflowComponent* component)
+{
+    if (ownsRoot && root != nullptr && root != component) {
+        delete root;
+    }
+
     root = component;
+    ownsRoot = true;
 }
 
 WorkflowComponent* WorkflowDefinition::getRoot() const {
@@ -31,17 +48,13 @@ AssignmentStrategy* WorkflowDefinition::getAssignmentStrategy() const {
 return strategy;
 }
 
-Participant* WorkflowDefinition::selectAssignee(
-WorkItem* item,
-std::vector<Participant*> participants) const {
+Participant* WorkflowDefinition::selectAssignee(WorkItem* item,std::vector<Participant*> participants) const {
 
- 
-if (strategy == nullptr) {
-    return nullptr;
-}
+    if (strategy == nullptr) {
+        return nullptr;
+    }
 
-return strategy->assign(item, participants);
- 
+    return strategy->assign(item, participants);
 
 }
 
@@ -69,16 +82,20 @@ void WorkflowDefinition::handleEscalation(WorkflowInstance* instance) {
     escalationHandler->handleRequest(instance);
 }
 
-Participant* WorkflowDefinition::selectAssignee(
-    WorkflowInstance* instance,
-    WorkItem* item,
-    std::vector<Participant*> participants
-) const {
+Participant* WorkflowDefinition::selectAssignee(WorkflowInstance* instance,WorkItem* item,std::vector<Participant*> participants) const {
 
     if (strategy == nullptr || instance == nullptr || item == nullptr) {
         return nullptr;
     }
 
     return strategy->assign(instance, item, participants);
+}
+
+WorkflowComponent* WorkflowDefinition::createWorkTree() const {
+    if (root == nullptr) {
+        return nullptr;
+    }
+
+    return root->clone();
 }
 }
