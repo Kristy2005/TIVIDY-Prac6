@@ -2,6 +2,7 @@
 
 namespace tividy {
 PriorityDecorator::PriorityDecorator(WorkflowComponent* wrapped, int value) : WorkItemDecorator(wrapped), priority(value){}
+
 int PriorityDecorator::getPriority() const {
     return priority;
 }
@@ -15,4 +16,5 @@ WorkflowComponent* PriorityDecorator::clone() const
 {
     return new PriorityDecorator(component->clone(), priority);
 }
+
 }

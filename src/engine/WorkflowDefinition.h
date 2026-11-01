@@ -26,6 +26,9 @@ class WorkflowInstance;
 class WorkflowDefinition {
 public:
     /** @brief Construct a definition with no root, assignment strategy or handler. */
+    WorkflowDefinition(const std::string& name = "");
+
+    /*@brief default constructor*/
     WorkflowDefinition();
 
     /**
@@ -108,10 +111,23 @@ public:
      * @param component Root workflow component whose ownership is transferred to this definition.
      */
     void setOwnedRoot(WorkflowComponent* component);
+
+    /**
+     * @brief Add a role to the workflow definition.
+     * @param role Role pointer; must not be null.
+     * @throws std::invalid_argument If @p role is null.
+     */
+    void addRole(Role<void>* role);
     /**
      * @brief Destructor deleting root.
      */
     ~WorkflowDefinition();
+
+    /**
+     * @brief Return the roles associated with this workflow definition.
+     * @return Vector of role pointers; non-owning and may be empty.
+     */
+    std::vector<Role<void>*> getRoles() const;
 private:
     /**
      * @brief Indicates whether this definition owns and must delete its root component.
@@ -129,6 +145,9 @@ private:
 
     /** @brief First escalation handler; non-owning. */
     Handler* escalationHandler;
+
+    /** @brief Configured roles; non-owning. */
+    std::vector<Role<void>*> roles;
 };
 }
 #endif

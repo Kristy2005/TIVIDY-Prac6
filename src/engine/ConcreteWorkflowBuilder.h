@@ -22,6 +22,9 @@ namespace tividy {
     /** @brief Construct a builder with a new empty definition. */
       ConcreteWorkflowBuilder();
 
+    /*@brief Constructor with name */
+      ConcreteWorkflowBuilder(const std::string& name);
+
       /** @brief Destroy any definition that has not been transferred by getResult(). */
       virtual ~ConcreteWorkflowBuilder();
 
@@ -53,14 +56,6 @@ namespace tividy {
      * @param role Role pointer; must not be null.
      * @throws std::invalid_argument If @p role is null.
      */
-    template <typename T>
-    void addRole(Role<T>* role) {
-      // Because it's a template, define it right here in the header!
-      //CLASSES THAT UTILIZE TEMPLATE CLASS OBJECTS MUST DEFINE A FUNCTION CONTAINING THE 
-      // TEMPLATE CLASSES OBJECT IN THE HEADER FILE FOR THE C++11 COMPILER TO CORRECTLY LINK THE .H & .CPP
-      //DO NOT REMOVE PLEASE 
-      if (role == nullptr) { throw std::invalid_argument("addRole: role cannot be null"); }
-    }
 
     /**
      * @brief Add both work items to the workflow in the requested order.

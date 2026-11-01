@@ -5,12 +5,19 @@
 #include <stdexcept>
 
 namespace tividy{
-  ConcreteWorkflowBuilder::ConcreteWorkflowBuilder()
-      : definition(new WorkflowDefinition()) {
+  ConcreteWorkflowBuilder::ConcreteWorkflowBuilder(): definition(new WorkflowDefinition()) {
+
+  }
+
+  ConcreteWorkflowBuilder::ConcreteWorkflowBuilder(const std::string& name): definition(new WorkflowDefinition(name)) {
+
   }
 
   ConcreteWorkflowBuilder::~ConcreteWorkflowBuilder() {
-      delete definition;
+      if(this->definition){
+        delete definition;
+        this->definition = nullptr;
+      }
   }
 
   void ConcreteWorkflowBuilder::addWorkItem(WorkItem* item) {
@@ -27,6 +34,8 @@ namespace tividy{
 
   void ConcreteWorkflowBuilder::addRole(Role<void>* role) {
       if (!role) throw std::invalid_argument("addRole: role cannot be null");
+
+      definition->addRole(role);
   }
 
     void ConcreteWorkflowBuilder::addDependency(WorkItem* before,WorkItem* after)
@@ -58,11 +67,13 @@ namespace tividy{
       if (priority < 0) throw std::invalid_argument("addPriority: priority cannot be negative");
       // PriorityDecorator is available for callers that need priority metadata.
       (void)priority;
+
+      new PriorityDecorator(item, priority);
   }
 
   WorkflowDefinition* ConcreteWorkflowBuilder::getResult() {
-      WorkflowDefinition* result = definition;
-      definition = nullptr;
+      WorkflowDefinition* result = this->definition;
+      this->definition = nullptr;
       return result;
   }
 }

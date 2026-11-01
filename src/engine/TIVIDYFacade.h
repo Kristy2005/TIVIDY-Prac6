@@ -27,7 +27,7 @@ namespace tividy {
      * @brief Allocate an empty workflow definition.
      * @return Newly allocated definition; caller owns the returned pointer.
      */
-		WorkflowDefinition* createWorkflow();
+		WorkflowDefinition* createWorkflow(const std::string& name);
 
 	/**
      * @brief Create an instance from a definition, then submit and activate it.
@@ -164,8 +164,92 @@ namespace tividy {
           */
         std::vector<WorkflowDefinition*> getAllDefinitions() const;
 
+        /**
+          * @brief Return all workflow instances associated with a specific definition.
+          * @param definition Workflow definition to query; must not be null.
+          * @return Vector of pointers to workflow instances associated with the definition.
+          * @throws std::invalid_argument If @p definition is null.
+          */
+        std::vector<WorkflowInstance*> getInstancesForDefinition(WorkflowDefinition* definition) const;
+
+        /**
+          * @brief Return all roles associated with a specific workflow definition.
+          * @param definition Workflow definition to query; must not be null.
+          * @return Vector of role names associated with the definition.
+          * @throws std::invalid_argument If @p definition is null.
+          */
+        std::vector<Role<void>*> getRolesForDefinition(WorkflowDefinition* definition) const;
+
+        /**
+          * @brief Add a participant to a specific workflow definition.
+          * @param definition Workflow definition to which the participant will be added; must not be null.
+          * @param participant Participant to add; must not be null.
+          * @throws std::invalid_argument If either argument is null.
+          */
+        void addParticipantToDefinition(WorkflowDefinition* definition, Participant* participant);
+
+        /**
+          * @brief Remove a participant from a specific workflow definition.
+          * @param definition Workflow definition from which the participant will be removed; must not be null.
+          * @param participant Participant to remove; must not be null.
+          * @throws std::invalid_argument If either argument is null.
+          */
+        void removeParticipantFromDefinition(WorkflowDefinition* definition, Participant* participant);
+
+        /**
+          * @brief Configure the assignment strategy for a specific workflow definition.
+          * @param definition Workflow definition for which to configure the strategy; must not be null.
+          * @param strategy Assignment strategy to configure; must not be null.
+          * @throws std::invalid_argument If either argument is null.
+          */
+        void configureAssignmentStrategy(WorkflowDefinition* definition, AssignmentStrategy* strategy);
+
+        /**
+          * @brief Configure the escalation handler for a specific workflow definition.
+          * @param definition Workflow definition for which to configure the handler; must not be null.
+          * @param handler Escalation handler to configure; must not be null.
+          * @throws std::invalid_argument If either argument is null.
+          */
+        void configureEscalationHandler(WorkflowDefinition* definition, Handler* handler);
+
+        /**
+          * @brief Add a role to a specific workflow definition.
+          * @param definition Workflow definition to which the role will be added; must not be null.
+          * @param roleName Name of the role to add; must not be empty.
+          * @throws std::invalid_argument If @p definition is null or @p roleName is empty.
+          */
+       void addRoleToDefinition(WorkflowDefinition* definition, const std::string& roleName);
+
+       /**
+          * @brief Add a work item to a specific workflow definition.
+          * @param definition Workflow definition to which the work item will be added; must not be null.
+          * @param item Work item to add; must not be null.
+          * @throws std::invalid_argument If either argument is null.
+          */
+       void addWorkItemToDefinition(WorkflowDefinition* definition, WorkItem* item);
+
+       /**
+          * @brief Add a dependency to a specific work item within a workflow definition.
+          * @param definition Workflow definition containing the work item; must not be null.
+          * @param item Work item to which the dependency will be added; must not be null.
+          * @param dependency Dependency to add; must not be null.
+          * @throws std::invalid_argument If any argument is null.
+          */
+       void addDependencyToWorkItem(WorkflowDefinition* definition, WorkItem* item, WorkItem* dependency);
+
+       /**
+          * @brief Add a priority to a specific work item within a workflow definition.
+          * @param definition Workflow definition containing the work item; must not be null.
+          * @param item Work item to which the priority will be added; must not be null.
+          * @param priority Priority to add; must be a valid integer.
+          * @throws std::invalid_argument If any argument is null.
+          */
+       void addPriorityToWorkItem(WorkflowDefinition* definition, WorkItem* item, int priority);
+
+       
      private:
         std::vector<WorkflowDefinition*> definitions;
+        std::vector<WorkflowInstance*> instances;
         
 	};
 
