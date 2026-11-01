@@ -3,6 +3,7 @@
 #include <memory>
 #include <stdexcept>
 #include <vector>
+#include <string>
 
 #include "engine/ActiveState.h"
 #include "engine/ApprovalHandler.h"
@@ -172,4 +173,112 @@ TEST_CASE("Facade validates null arguments and missing workflow definitions") {
     CHECK_THROWS_AS(facade.completeWork(nullptr, &item, &participant), std::invalid_argument);
     CHECK_THROWS_AS(facade.completeWork(&instance, nullptr, &participant), std::invalid_argument);
     CHECK_THROWS_AS(facade.completeWork(&instance, &item, nullptr), std::invalid_argument);
+}
+
+TEST_CASE("Facade tracks created definitions and instances")
+{
+    TIVIDYFacade facade;
+
+    WorkflowDefinition* definition =
+        facade.createWorkflow();
+
+    REQUIRE(definition != nullptr);
+
+    WorkflowInstance* instance =
+        facade.startWorkflow(definition);
+
+    REQUIRE(instance != nullptr);
+
+    std::vector<WorkflowDefinition*> definitions =
+        facade.getAllDefinitions();
+
+    std::vector<WorkflowInstance*> instances =
+        facade.getAllInstances();
+
+    REQUIRE(definitions.size() == 1);
+    REQUIRE(instances.size() == 1);
+
+    CHECK(definitions[0] == definition);
+    CHECK(instances[0] == instance);
+
+    std::vector<WorkflowInstance*> matching =
+        facade.getInstancesForDefinition(definition);
+
+    REQUIRE(matching.size() == 1);
+    CHECK(matching[0] == instance);
+
+    delete instance;
+    delete definition;
+}
+
+TEST_CASE("Facade reports workflow progress and work items")
+{
+    TIVIDYFacade facade;
+
+    WorkflowDefinition definition;
+    WorkflowStage root;
+
+    WorkItem first("First");
+    WorkItem second("Second");
+
+    root.add(&first);
+    root.add(&second);
+
+    definition.setRoot(&root);
+
+    std::unique_ptr<WorkflowInstance> instance(
+        facade.startWorkflow(&definition)
+    );
+
+    CHECK(facade.getProgress(instance.get()) == 0.0);
+
+    std::vector<WorkItem*> all =
+        facade.getAllWorkItems(instance.get());
+
+    std::vector<WorkItem*> incomplete =
+        facade.getIncompleteWorkItems(instance.get());
+
+    CHECK(all.size() == 2);
+    CHECK(incomplete.size() == 2);
+
+    facade.completeWork(instance.get(), &first);
+
+    CHECK(facade.getProgress(instance.get()) == 50.0);
+
+    incomplete =
+        facade.getIncompleteWorkItems(instance.get());
+
+    CHECK(incomplete.size() == 1);
+}
+
+TEST_CASE("Facade exposes workflow history")
+{
+    TIVIDYFacade facade;
+
+    WorkflowDefinition definition;
+    WorkflowStage root;
+    WorkItem item("Review complaint");
+
+    root.add(&item);
+    definition.setRoot(&root);
+
+    std::unique_ptr<WorkflowInstance> instance(
+        facade.startWorkflow(&definition)
+    );
+
+    instance->startProcessing();
+
+    facade.completeWork(
+        instance.get(),
+        &item
+    );
+
+    std::string history =
+        facade.getHistory(instance.get());
+
+    CHECK_FALSE(history.empty());
+    CHECK(
+        history.find("Work completed")
+        != std::string::npos
+    );
 }
