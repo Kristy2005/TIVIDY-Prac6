@@ -58,3 +58,54 @@ The team documented the major design decisions and revisions made throughout the
 **Contributors:** Entire Team
 
 The team contributed to the GitHub repository and project documentation, including the research, UML diagrams, design decisions, README and supporting project material.
+
+
+## Running TIVIDY with Docker
+
+TIVIDY can be built and executed inside a Docker container using Ubuntu 24.04 LTS. Docker provides the required build tools and dependencies, including CMake, ncurses, Doxygen, Graphviz and Valgrind.
+
+### Prerequisites
+
+* Docker Desktop installed and running.
+* Git installed to clone the repository.
+
+### 1. Build the Docker image
+
+From the root directory of the repository, run:
+
+```bash
+docker build -t tividy .
+```
+
+This builds the TIVIDY application inside an Ubuntu 24.04 container and creates an image named `tividy`.
+
+### 2. Run TIVIDY
+
+To launch the interactive terminal application, run:
+
+```bash
+docker run --rm -it tividy
+```
+
+The `-it` flags enable interactive terminal input and output, which are required by the ncurses interface.
+
+### 3. Run the automated tests
+
+To execute the project's automated test suite inside the container, run:
+
+```bash
+docker run --rm tividy ctest --test-dir build --output-on-failure
+```
+
+CTest runs the tests and displays their results, including any failures.
+
+### Docker Configuration
+
+The repository includes:
+
+* `Dockerfile` – Defines the Ubuntu environment, installs dependencies and builds the application.
+* `.dockerignore` – Excludes unnecessary files and generated build artefacts from the Docker build context.
+
+### Notes
+
+The Docker image builds the application during the image creation process. The interactive application starts by default when the container is launched without an additional command.
