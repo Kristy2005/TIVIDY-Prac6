@@ -117,6 +117,64 @@ namespace tividy {
             Participant* participant
         );
 
+        /**
+         * @brief Add a new work item to one running instance only.
+         * @param instance Running workflow instance.
+         * @param name Unique work-item name.
+         * @param requiredRole Role required for the new item.
+         * @param dependency Optional existing prerequisite in the same instance.
+         * @return The new instance-owned work item.
+         */
+        WorkItem* addWorkItemToInstance(
+            WorkflowInstance* instance,
+            const std::string& name,
+            const std::string& requiredRole,
+            WorkItem* dependency = nullptr
+        );
+
+        /** @brief Cancel an incomplete item in one workflow instance. */
+        void cancelWorkItem(WorkflowInstance* instance, WorkItem* item);
+
+        /** @brief Reassign an incomplete item to a participant in that instance. */
+        void reassignWorkItem(
+            WorkflowInstance* instance,
+            WorkItem* item,
+            Participant* participant
+        );
+
+        /** @brief Change an incomplete item's required role in one instance. */
+        void changeWorkItemRole(
+            WorkflowInstance* instance,
+            WorkItem* item,
+            const std::string& requiredRole
+        );
+
+        /** @brief Change an incomplete item's priority in one instance. */
+        void changeWorkItemPriority(
+            WorkflowInstance* instance,
+            WorkItem* item,
+            int priority
+        );
+
+        /**
+         * @brief Add a participant to one workflow instance.
+         * @param takeOwnership If true, the instance deletes the participant.
+         */
+        void addParticipantToInstance(
+            WorkflowInstance* instance,
+            Participant* participant,
+            bool takeOwnership = false
+        );
+
+        /** @brief Return the current assignee of an item, or nullptr. */
+        Participant* getAssignee(WorkflowInstance* instance, WorkItem* item) const;
+
+        /** @brief Return participants available to one workflow instance. */
+        std::vector<Participant*> getParticipantObjects(WorkflowInstance* instance) const;
+
+        /** @brief Return incomplete work currently assigned in one instance. */
+        std::vector<WorkItem*> getAssignedWorkItems(WorkflowInstance* instance) const;
+
             /**
           * @brief Return the history of state changes for a workflow instance.
           * @param instance Workflow instance to query; must not be null.
