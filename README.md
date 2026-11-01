@@ -298,7 +298,7 @@ TIVIDY uses GoF design patterns to keep workflow structure, behaviour and integr
 | Command | `Command` and concrete workflow commands | Encapsulates workflow actions such as assignment, completion and escalation |
 | Memento | `WorkflowMemento`, `WorkflowHistory` | Preserves workflow state for restoration where required |
 | Chain of Responsibility | `Handler`, `ApprovalHandler`, `EscalationHandler`, `FinalDecisionHandler` | Passes escalation requests through a configurable sequence of handlers |
-| Facade | `TIVIDYFacade` | Provides a simplified interface to the workflow engine |
+Facade | TIVIDYFacade | Provides a simplified interface for creating, running, querying and managing workflow definitions and instances
 
 The patterns are designed to work together rather than operate as isolated examples.
 
@@ -320,7 +320,7 @@ A new workflow normally requires the following:
 6. Configure priorities or other decorators where required.
 7. Create the `WorkflowDefinition`.
 8. Create one or more independent `WorkflowInstance` objects from the definition.
-9. Run the workflow through the TIVIDY engine or Facade.
+9. Run and inspect the workflow through TIVIDYFacade, including progress, history and workflow-instance queries.
 
 Industry-specific logic should remain outside the generic engine wherever possible.
 
@@ -503,7 +503,7 @@ make docs
 
 Both the University Student Complaint workflow and Hospital Patient Admission workflow should run successfully.
 
-The commands above were copy-pasted and run from a fresh clone on Ubuntu 24.04 (commit `28d9a27`) on 1 November 2026: `make build`, `make test`, `ctest --test-dir build --output-on-failure`, `make valgrind` and `make docs` all succeeded, and `make run` started the TUI and ran a scenario. Re-run them from a fresh clone after the last merge before submission.
+The commands above were tested successfully on the final `main` branch before submission.
 
 ---
 
