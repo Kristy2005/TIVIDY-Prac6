@@ -46,11 +46,15 @@ void TIVIDYFacade::assignWork(WorkflowInstance* instance, WorkItem* item) {
         throw std::invalid_argument("assignWork: instance and item cannot be null");
     }
 
-    if (!instance->areDependenciesComplete(item)) {
+    WorkItem* actualItem = instance->getInstanceWorkItem(item);
+    if (instance->isWorkItemCancelled(actualItem)) {
+        throw std::logic_error("assignWork: cancelled work items cannot be assigned");
+    }
+    if (!instance->areDependenciesComplete(actualItem)) {
         throw std::logic_error("assignWork: work item dependencies are not complete");
     }
 
-    item->execute();
+    actualItem->execute();
 }
 
 void TIVIDYFacade::completeWork(WorkflowInstance* instance, WorkItem* item) {
@@ -60,17 +64,7 @@ void TIVIDYFacade::completeWork(WorkflowInstance* instance, WorkItem* item) {
 
     instance->completeWorkItem(item);
 
-    const std::vector<WorkItemProgress>& progress = instance->getWorkItemProgress();
-    bool allCompleted = true;
-
-    for (std::size_t i = 0; i < progress.size(); ++i) {
-        if (!progress[i].completed) {
-            allCompleted = false;
-            break;
-        }
-    }
-
-    if (allCompleted && !progress.empty()) {
+    if (instance->areAllWorkItemsComplete()) {
         instance->resolve();
     }
 }
@@ -100,7 +94,12 @@ Participant* TIVIDYFacade::assignWork(
         throw std::invalid_argument("assignWork: instance and item cannot be null");
     }
 
-    if (!instance->areDependenciesComplete(item)) {
+    WorkItem* actualItem = instance->getInstanceWorkItem(item);
+    if (instance->isWorkItemCancelled(actualItem) ||
+        instance->isWorkItemComplete(actualItem)) {
+        return nullptr;
+    }
+    if (!instance->areDependenciesComplete(actualItem)) {
         return nullptr;
     }
 
@@ -109,13 +108,13 @@ Participant* TIVIDYFacade::assignWork(
         throw std::logic_error("assignWork: workflow definition is not configured");
     }
 
-    Participant* selected = definition->selectAssignee(instance, item, participants);
+    Participant* selected = definition->selectAssignee(instance, actualItem, participants);
     if (selected == nullptr) {
         return nullptr;
     }
 
-    selected->assignWork(instance, item);
-    item->execute();
+    instance->assignParticipant(actualItem, selected);
+    actualItem->execute();
 
     return selected;
 }
@@ -129,19 +128,16 @@ void TIVIDYFacade::completeWork(
         throw std::invalid_argument("completeWork: null argument");
     }
 
-    participant->completeWork(instance, item);
-
-    const std::vector<WorkItemProgress>& progress = instance->getWorkItemProgress();
-    bool allCompleted = !progress.empty();
-
-    for (std::size_t i = 0; i < progress.size(); ++i) {
-        if (!progress[i].completed) {
-            allCompleted = false;
-            break;
-        }
+    WorkItem* actualItem = instance->getInstanceWorkItem(item);
+    if (instance->getAssignee(actualItem) != participant) {
+        throw std::logic_error(
+            "completeWork: participant is not assigned to this work item in this instance"
+        );
     }
 
-    if (allCompleted) {
+    participant->completeWork(instance, actualItem);
+
+    if (instance->areAllWorkItemsComplete()) {
         instance->resolve();
     }
 }
@@ -160,18 +156,22 @@ double TIVIDYFacade::getProgress(WorkflowInstance* instance) {
     }
 
     const std::vector<WorkItemProgress>& progress = instance->getWorkItemProgress();
-    if (progress.empty()) {
-        return 0.0;
-    }
-
-    int completedCount = 0;
-    for (const auto& itemProgress : progress) {
-        if (itemProgress.completed) {
+    std::size_t activeCount = 0;
+    std::size_t completedCount = 0;
+    for (std::size_t i = 0; i < progress.size(); ++i) {
+        if (progress[i].cancelled) {
+            continue;
+        }
+        ++activeCount;
+        if (progress[i].completed) {
             ++completedCount;
         }
     }
 
-    return (static_cast<double>(completedCount) / progress.size()) * 100.0;
+    if (activeCount == 0) {
+        return 0.0;
+    }
+    return (static_cast<double>(completedCount) / activeCount) * 100.0;
 }
 
 std::vector<WorkItem*> TIVIDYFacade::getIncompleteWorkItems(WorkflowInstance* instance) {
@@ -183,7 +183,7 @@ std::vector<WorkItem*> TIVIDYFacade::getIncompleteWorkItems(WorkflowInstance* in
     const std::vector<WorkItemProgress>& progress = instance->getWorkItemProgress();
 
     for (const auto& itemProgress : progress) {
-        if (!itemProgress.completed) {
+        if (!itemProgress.completed && !itemProgress.cancelled) {
             incompleteItems.push_back(itemProgress.item);
         }
     }
@@ -199,8 +199,10 @@ std::vector<WorkItem*> TIVIDYFacade::getAllWorkItems(WorkflowInstance* instance)
     std::vector<WorkItem*> allItems;
     const std::vector<WorkItemProgress>& progress = instance->getWorkItemProgress();
 
-    for (const auto& itemProgress : progress) {
-        allItems.push_back(itemProgress.item);
+    for (std::size_t i = 0; i < progress.size(); ++i) {
+        if (!progress[i].cancelled) {
+            allItems.push_back(progress[i].item);
+        }
     }
 
     return allItems;
@@ -212,6 +214,101 @@ std::vector<std::string> TIVIDYFacade::getParticipants(WorkflowInstance* instanc
     }
 
     return instance->getParticipants();
+}
+
+WorkItem* TIVIDYFacade::addWorkItemToInstance(
+    WorkflowInstance* instance,
+    const std::string& name,
+    const std::string& requiredRole,
+    WorkItem* dependency) {
+    if (instance == nullptr) {
+        throw std::invalid_argument("addWorkItemToInstance: instance cannot be null");
+    }
+    return instance->addWorkItem(name, requiredRole, dependency);
+}
+
+void TIVIDYFacade::cancelWorkItem(WorkflowInstance* instance, WorkItem* item) {
+    if (instance == nullptr || item == nullptr) {
+        throw std::invalid_argument("cancelWorkItem: instance and item cannot be null");
+    }
+    instance->cancelWorkItem(item);
+    if (instance->areAllWorkItemsComplete()) {
+        instance->resolve();
+    }
+}
+
+void TIVIDYFacade::reassignWorkItem(
+    WorkflowInstance* instance,
+    WorkItem* item,
+    Participant* participant) {
+    if (instance == nullptr || item == nullptr || participant == nullptr) {
+        throw std::invalid_argument("reassignWorkItem: arguments cannot be null");
+    }
+    instance->assignParticipant(item, participant);
+}
+
+void TIVIDYFacade::changeWorkItemRole(
+    WorkflowInstance* instance,
+    WorkItem* item,
+    const std::string& requiredRole) {
+    if (instance == nullptr || item == nullptr) {
+        throw std::invalid_argument("changeWorkItemRole: instance and item cannot be null");
+    }
+    instance->changeWorkItemRole(item, requiredRole);
+}
+
+void TIVIDYFacade::changeWorkItemPriority(
+    WorkflowInstance* instance,
+    WorkItem* item,
+    int priority) {
+    if (instance == nullptr || item == nullptr) {
+        throw std::invalid_argument("changeWorkItemPriority: instance and item cannot be null");
+    }
+    instance->changeWorkItemPriority(item, priority);
+}
+
+void TIVIDYFacade::addParticipantToInstance(
+    WorkflowInstance* instance,
+    Participant* participant,
+    bool takeOwnership) {
+    if (instance == nullptr || participant == nullptr) {
+        throw std::invalid_argument("addParticipantToInstance: instance and participant cannot be null");
+    }
+    instance->addParticipant(participant, takeOwnership);
+}
+
+Participant* TIVIDYFacade::getAssignee(
+    WorkflowInstance* instance,
+    WorkItem* item) const {
+    if (instance == nullptr || item == nullptr) {
+        throw std::invalid_argument("getAssignee: instance and item cannot be null");
+    }
+    return instance->getAssignee(item);
+}
+
+std::vector<Participant*> TIVIDYFacade::getParticipantObjects(
+    WorkflowInstance* instance) const {
+    if (instance == nullptr) {
+        throw std::invalid_argument("getParticipantObjects: instance cannot be null");
+    }
+    return instance->getParticipantPointers();
+}
+
+std::vector<WorkItem*> TIVIDYFacade::getAssignedWorkItems(
+    WorkflowInstance* instance) const {
+    if (instance == nullptr) {
+        throw std::invalid_argument("getAssignedWorkItems: instance cannot be null");
+    }
+
+    std::vector<WorkItem*> assignedItems;
+    const std::vector<WorkItemProgress>& progress = instance->getWorkItemProgress();
+    for (std::size_t i = 0; i < progress.size(); ++i) {
+        if (!progress[i].completed && !progress[i].cancelled &&
+            instance->getAssignee(progress[i].item) != nullptr) {
+            assignedItems.push_back(progress[i].item);
+        }
+    }
+    return assignedItems;
 }
 
 std::vector<WorkflowInstance*> TIVIDYFacade::getAllInstances() const {

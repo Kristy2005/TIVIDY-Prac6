@@ -24,6 +24,15 @@ public:
     void assignWork(WorkflowInstance* instance, WorkItem* item);
     void completeWork(WorkflowInstance* instance, WorkItem* item);
 
+    /**
+     * @brief Release an instance-specific assignment without completing it.
+     * @return true if an assignment was removed; otherwise false.
+     */
+    bool unassignWork(WorkflowInstance* instance, WorkItem* item);
+
+    /** @brief Remove all assignments associated with an instance being destroyed. */
+    void clearAssignmentsForInstance(WorkflowInstance* instance);
+
     int getWorkload() const;
     const std::string& getName() const;
 

@@ -69,6 +69,12 @@ public:
     /** @brief Return the role required to perform this work item, or an empty string. */
     const std::string& getRequiredRole() const;
 
+    /** @brief Set the numeric priority for this work item (higher means more urgent). */
+    void setPriority(int priority);
+
+    /** @brief Return this work item's priority. The default is zero. */
+    int getPriority() const;
+
     /**
      * @brief Creates an independent copy of this work item.
      */
@@ -83,6 +89,9 @@ private:
 
     /** @brief Required participant role name, or empty if unrestricted. */
     std::string requiredRole;
+
+    /** @brief Numeric priority; larger values indicate more urgent work. */
+    int priority;
 
     /**
      * @brief Work items that must be completed before this item can proceed.

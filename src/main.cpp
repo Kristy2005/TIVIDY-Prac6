@@ -1,7 +1,7 @@
 /**
  * @file main.cpp
- * @brief TIVIDY mock TUI: a two-panel ncurses menu that runs the two industry
- *        scenarios and opens the generated documentation.
+ * @brief TIVIDY mock TUI with automatic and interactive modes for both
+ *        industry scenarios, plus generated documentation access.
  */
 #include <ncurses.h>
 
@@ -19,7 +19,9 @@
 #include <vector>
 
 void runHospitalAdmissionScenario();
+void runHospitalAdmissionInteractiveScenario();
 void runUniversityComplaintScenario();
+void runUniversityComplaintInteractiveScenario();
 
 namespace {
 
@@ -35,7 +37,14 @@ enum Accent {
     ACCENT_WHITE
 };
 
-enum Action { ACTION_HOSPITAL, ACTION_UNIVERSITY, ACTION_DOCS, ACTION_EXIT };
+enum Action {
+    ACTION_HOSPITAL_AUTOMATIC,
+    ACTION_HOSPITAL_INTERACTIVE,
+    ACTION_UNIVERSITY_AUTOMATIC,
+    ACTION_UNIVERSITY_INTERACTIVE,
+    ACTION_DOCS,
+    ACTION_EXIT
+};
 
 struct MenuItem {
     std::string label;                  // shown in the menu and as the panel title
@@ -203,11 +212,11 @@ void drawScreen(const std::vector<MenuItem>& items, std::size_t selected,
     // Body: menu on the left, details on the right
     const int top = 4;
     const int bodyH = rows - top - 2;
-    const int leftW = 32;
+    const int leftW = 34;
     drawFrame(top, 1, bodyH, leftW, pairAttr(current.accent), "Menu");
 
     for (std::size_t i = 0; i < items.size(); ++i) {
-        const int y = top + 2 + static_cast<int>(i) * 2;
+        const int y = top + 1 + static_cast<int>(i) * 2;
         const bool isSelected = (i == selected);
         std::string line = std::string(isSelected ? "> " : "  ") + std::to_string(i + 1) +
                            "  " + items[i].label;
@@ -243,41 +252,56 @@ void drawScreen(const std::vector<MenuItem>& items, std::size_t selected,
 
     // Footer
     putText(rows - 2, 2, status.text, pairAttr(status.accent) | A_BOLD);
-    drawStatusBar(rows, cols, " UP/DOWN move | ENTER select | 1-4 jump | Q quit", tick);
+    drawStatusBar(rows, cols, " UP/DOWN move | ENTER select | 1-6 jump | Q quit", tick);
     refresh();
 }
 
 std::vector<MenuItem> buildMenu() {
     std::vector<MenuItem> items;
 
-    MenuItem hospital;
-    hospital.label = "Hospital admission";
-    hospital.tag = "HEALTHCARE";
-    hospital.verb = "run this scenario";
-    hospital.accent = ACCENT_CYAN;
-    hospital.action = ACTION_HOSPITAL;
-    hospital.details.push_back("Planned patient admission (case P-1042).");
-    hospital.details.push_back("Participants: Receptionist, Admissions Clerk, Billing Officer, "
-                               "Admissions Manager, Ward Coordinator.");
-    hospital.details.push_back("Flow: register, verify documents, verify payment, approve, "
-                               "allocate a bed. Each task is assigned by role.");
-    hospital.details.push_back("Ends in the Resolved state.");
-    items.push_back(hospital);
+    MenuItem hospitalAutomatic;
+    hospitalAutomatic.label = "Hospital - automatic";
+    hospitalAutomatic.tag = "HEALTHCARE | AUTO";
+    hospitalAutomatic.verb = "run the complete hospital scenario";
+    hospitalAutomatic.accent = ACCENT_CYAN;
+    hospitalAutomatic.action = ACTION_HOSPITAL_AUTOMATIC;
+    hospitalAutomatic.details.push_back("Runs the original patient admission demonstration automatically.");
+    hospitalAutomatic.details.push_back("You answer the urgent-admission question; the engine then assigns and completes the planned work.");
+    hospitalAutomatic.details.push_back("Shows the normal or urgent dependency path and the final resolved result.");
+    items.push_back(hospitalAutomatic);
 
-    MenuItem university;
-    university.label = "University complaint";
-    university.tag = "EDUCATION";
-    university.verb = "run this scenario";
-    university.accent = ACCENT_MAGENTA;
-    university.action = ACTION_UNIVERSITY;
-    university.details.push_back("A student disputes a recorded mark (case U-2081).");
-    university.details.push_back("Participants: Faculty Administrator, Department "
-                                 "Representative, Faculty Manager, Student Support Officer.");
-    university.details.push_back("Flow: record, validate, investigate, escalate to a manager, "
-                                 "review, notify the student, close.");
-    university.details.push_back("Escalation goes through the approval, escalation and "
-                                 "final-decision handler chain.");
-    items.push_back(university);
+    MenuItem hospitalInteractive;
+    hospitalInteractive.label = "Hospital - interactive";
+    hospitalInteractive.tag = "HEALTHCARE | LIVE";
+    hospitalInteractive.verb = "create an editable hospital instance";
+    hospitalInteractive.accent = ACCENT_CYAN;
+    hospitalInteractive.action = ACTION_HOSPITAL_INTERACTIVE;
+    hospitalInteractive.details.push_back("Creates a hospital admission instance but leaves its work available for live management.");
+    hospitalInteractive.details.push_back("Add, cancel and alter work; add participants; assign and complete tasks.");
+    hospitalInteractive.details.push_back("Start additional independent instances and inspect each instance's audit history.");
+    items.push_back(hospitalInteractive);
+
+    MenuItem universityAutomatic;
+    universityAutomatic.label = "University - automatic";
+    universityAutomatic.tag = "EDUCATION | AUTO";
+    universityAutomatic.verb = "run the complete university scenario";
+    universityAutomatic.accent = ACCENT_MAGENTA;
+    universityAutomatic.action = ACTION_UNIVERSITY_AUTOMATIC;
+    universityAutomatic.details.push_back("Runs the original student complaint demonstration automatically.");
+    universityAutomatic.details.push_back("The first three tasks are completed before you choose whether senior review is required.");
+    universityAutomatic.details.push_back("Shows the normal path or handler-chain escalation, then completes the case.");
+    items.push_back(universityAutomatic);
+
+    MenuItem universityInteractive;
+    universityInteractive.label = "University - interactive";
+    universityInteractive.tag = "EDUCATION | LIVE";
+    universityInteractive.verb = "create an editable university instance";
+    universityInteractive.accent = ACCENT_MAGENTA;
+    universityInteractive.action = ACTION_UNIVERSITY_INTERACTIVE;
+    universityInteractive.details.push_back("Creates a university complaint instance for live workflow management.");
+    universityInteractive.details.push_back("Add, cancel and alter work; add participants; assign and complete tasks.");
+    universityInteractive.details.push_back("Start additional independent instances and inspect each instance's audit history.");
+    items.push_back(universityInteractive);
 
     MenuItem docs;
     docs.label = "View documentation";
@@ -452,7 +476,7 @@ int main() {
     const std::vector<MenuItem> items = buildMenu();
     std::size_t selected = 0;
     StatusMessage status;
-    status.text = "Welcome. Pick a scenario to begin.";
+    status.text = "Choose an industry and select automatic or interactive mode.";
     status.accent = ACCENT_YELLOW;
     std::string docsLink;
     bool running = true;
@@ -478,11 +502,17 @@ int main() {
 
         if (!activate) continue;
         switch (items[selected].action) {
-            case ACTION_HOSPITAL:
+            case ACTION_HOSPITAL_AUTOMATIC:
                 status = runScenarioOutsideCurses(items[selected], runHospitalAdmissionScenario);
                 break;
-            case ACTION_UNIVERSITY:
+            case ACTION_HOSPITAL_INTERACTIVE:
+                status = runScenarioOutsideCurses(items[selected], runHospitalAdmissionInteractiveScenario);
+                break;
+            case ACTION_UNIVERSITY_AUTOMATIC:
                 status = runScenarioOutsideCurses(items[selected], runUniversityComplaintScenario);
+                break;
+            case ACTION_UNIVERSITY_INTERACTIVE:
+                status = runScenarioOutsideCurses(items[selected], runUniversityComplaintInteractiveScenario);
                 break;
             case ACTION_DOCS:
                 status = viewDocumentation(docsLink);

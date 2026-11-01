@@ -1,14 +1,15 @@
 #include "WorkItem.h"
 #include <iostream>
+#include <stdexcept>
 
 namespace tividy{
-  WorkItem::WorkItem() : name(), completed(false), requiredRole() {
+  WorkItem::WorkItem() : name(), completed(false), requiredRole(), priority(0) {
   }
 
-  WorkItem::WorkItem(const std::string& itemName) : name(itemName), completed(false), requiredRole() {
+  WorkItem::WorkItem(const std::string& itemName) : name(itemName), completed(false), requiredRole(), priority(0) {
   }
 
-  WorkItem::WorkItem(const std::string& itemName, const std::string& requiredRoleName) : name(itemName), completed(false), requiredRole(requiredRoleName) {
+  WorkItem::WorkItem(const std::string& itemName, const std::string& requiredRoleName) : name(itemName), completed(false), requiredRole(requiredRoleName), priority(0) {
   }
 
   void WorkItem::execute() {
@@ -33,6 +34,17 @@ namespace tividy{
 
   const std::string& WorkItem::getRequiredRole() const {
       return requiredRole;
+  }
+
+  void WorkItem::setPriority(int value) {
+      if (value < 0) {
+          throw std::invalid_argument("WorkItem priority cannot be negative");
+      }
+      priority = value;
+  }
+
+  int WorkItem::getPriority() const {
+      return priority;
   }
 
   void WorkItem::collectWorkItems(std::vector<WorkItem*>& items) {

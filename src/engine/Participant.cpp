@@ -102,21 +102,58 @@ void Participant::completeWork(
         return;
     }
 
+    bool hasAssignment = false;
     for (std::size_t i = 0; i < assignedItems.size(); ++i) {
-
         if (assignedItems[i].instance == instance &&
             assignedItems[i].item == item) {
+            hasAssignment = true;
+            break;
+        }
+    }
 
-            // Update this instance's progress, not the shared WorkItem.
-            instance->completeWorkItem(item);
+    if (!hasAssignment) {
+        return;
+    }
 
+    // WorkflowInstance is the authority for progress. It also releases any
+    // assignment registered through its assignment map. The explicit
+    // unassign below handles legacy direct Participant::assignWork calls.
+    instance->completeWorkItem(item);
+    unassignWork(instance, item);
+}
+
+bool Participant::unassignWork(WorkflowInstance* instance, WorkItem* item) {
+    if (instance == nullptr || item == nullptr) {
+        return false;
+    }
+
+    for (std::size_t i = 0; i < assignedItems.size(); ++i) {
+        if (assignedItems[i].instance == instance &&
+            assignedItems[i].item == item) {
             assignedItems.erase(assignedItems.begin() + i);
-
             if (workload > 0) {
                 --workload;
             }
+            return true;
+        }
+    }
+    return false;
+}
 
-            return;
+void Participant::clearAssignmentsForInstance(WorkflowInstance* instance) {
+    if (instance == nullptr) {
+        return;
+    }
+
+    std::size_t index = 0;
+    while (index < assignedItems.size()) {
+        if (assignedItems[index].instance == instance) {
+            assignedItems.erase(assignedItems.begin() + index);
+            if (workload > 0) {
+                --workload;
+            }
+        } else {
+            ++index;
         }
     }
 }
