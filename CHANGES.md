@@ -39,10 +39,15 @@
 ---
 # BUILDER
 
-- CHANGE:
-- ADD:
-- REMOVE:
-- DECIDE:
+- DONE: implementation
+	- WorkflowBuilder (abstract) declares the full step interface: `addWorkItem`, `createWorkItem`, `addRole`, `createRole`, `addParticipant`, `createParticipant`, `addDependency`, `setAssignmentStrategy`, `setEscalationHandler`, `addPriority`, `beginSubProcess`, `endSubProcess`, `getResult`. All operations are pure virtual with Doxygen comments
+	- ConcreteWorkflowBuilder implements WorkflowBuilder in two modes: creating mode (owns the definition) and configuring mode (edits an existing definition). TIVIDYFacade uses configuring mode via the private `builderFor()` helper
+	- WorkflowDirector drives a WorkflowBuilder through two fixed recipes: `constructSequentialWorkflow` (each step depends on the previous) and `constructParallelWorkflow` (no dependencies). Both validate the step list before touching the builder
+	- `WorkflowStep` struct added to WorkflowDirector.h — holds `name`, `role`, and `priority`
+- CHANGE: UML shows only a plain `WorkflowBuilder` and `WorkflowDirector`; the code separates them into three classes (`WorkflowBuilder` interface, `ConcreteWorkflowBuilder`, `WorkflowDirector`) and adds `WorkflowStep`. The Facade also holds one `ConcreteWorkflowBuilder*` per definition in a `std::map`; none of this is in the diagram
+- ADD: WorkflowDirector now exposes `constructParallelWorkflow` in addition to the sequential variant shown in the UML; the sequential recipe is accessible both through `constructSequentialWorkflow` (direct) and through `addStep` / `constructWorkflow` (accumulated steps)
+- REMOVE: nothing removed relative to the UML
+- DECIDE: Nothing open
 
 ---
 # STATE
@@ -69,34 +74,74 @@
 ---
 # STRATEGY
 
-- CHANGE:
-- ADD:
-- REMOVE:
-- DECIDE:
+- DONE: implementation
+	- AssignmentStrategy (abstract) declares `assign(WorkItem*, vector<Participant*>)` as a pure virtual and provides a default no-op `assign(WorkflowInstance*, WorkItem*, vector<Participant*>)` for instance-aware callers. Both overloads are documented
+	- RoleBasedAssignment: selects the first candidate whose role list contains the item's required role; returns nullptr when no role is set on the item or no candidate matches. Both the item-only and the instance-aware overloads are implemented and the second delegates to the first (instance is not used)
+	- WorkloadBasedAssignment: selects the candidate with the fewest active assignments (lowest workload). Ties broken by candidate order. Both overloads implemented; the instance-aware one passes through to the item-only variant
+	- WorkflowDefinition::selectAssignee() calls the configured strategy's instance-aware `assign()`. TIVIDYFacade::assignWork(instance, item, participants) invokes this and records the result with `instance->assignParticipant()`
+- CHANGE: UML shows only `AssignmentStrategy` and one concrete strategy; the code provides two concrete strategies (`RoleBasedAssignment`, `WorkloadBasedAssignment`) and adds the instance-aware overload to both
+- ADD: `WorkloadBasedAssignment` was not in the original UML diagram; it was added to support real workload-based routing
+- REMOVE: nothing removed relative to the UML
+- DECIDE: Nothing open
 
 ---
 # CHAIN OF RESPONSIBILITY
 
-- CHANGE:
-- ADD:
-- REMOVE:
-- DECIDE:
+- DONE: implementation
+	- Handler (abstract): base with `successor` pointer, `setSuccessor()`, and a default `handleRequest()` that validates the instance and forwards to the successor when one exists; null requests throw `std::invalid_argument`
+	- ApprovalHandler: validates the request and forwards it to the successor; used as the first link in the configured chain
+	- EscalationHandler: validates and forwards; throws `std::logic_error` if no successor is configured (the chain has no terminal handler)
+	- WorkHandler: validates and forwards; accepts with no action if no successor (i.e., it may be a standalone or terminal link)
+	- FinalDecisionHandler: terminal handler — validates and accepts the request but currently records no decision and does not change workflow state
+	- Chain is wired at runtime through `Handler::setSuccessor()`. WorkflowDefinition holds the head of the chain and calls `handleRequest()` on it from `handleEscalation()`
+- CHANGE: UML shows only `Handler` and one concrete handler; the code provides four concrete handlers (`ApprovalHandler`, `EscalationHandler`, `WorkHandler`, `FinalDecisionHandler`). The class names and the number of participants differ from the original diagram
+- ADD: `WorkHandler` and `FinalDecisionHandler` were not in the original UML diagram; they were added to demonstrate a complete three-link chain
+- REMOVE: nothing removed relative to the UML
+- NOT DONE: needs the team
+	- FinalDecisionHandler currently accepts the request without recording a decision or changing the workflow state. If escalation is supposed to have visible effects (e.g. set a flag or change a state), the body of FinalDecisionHandler::handleRequest() must be filled in
+	- EscalationHandler throws when there is no successor. If a chain of length one (only an ApprovalHandler) is a valid configuration, EscalationHandler's throwing behaviour is too strict; the policy should be decided and documented
 
 ---
 # COMMAND
 
-- CHANGE:
-- ADD:
-- REMOVE:
-- DECIDE:
+- DONE: implementation
+	- Command (abstract): holds a non-owning `receiver` pointer and an owned `WorkflowMemento* previous`. `saveState()` deletes any prior memento and calls `receiver->createMemento()`. Destructor deletes `previous`. Pure virtual `execute()` and `undo()` documented
+	- ApproveWorkCommand: `execute()` saves state, calls `receiver->activate()`; `undo()` calls `receiver->restore(previous)`
+	- AssignWorkCommand: `execute()` saves state, calls `receiver->startProcessing()`. **Note**: despite the name this command does not assign a WorkItem — it starts processing on the instance
+	- CompleteWorkCommand: `execute()` saves state, calls `receiver->resolve()`. **Note**: this calls raw `resolve()` with none of the "all items complete" check or the Active→InProgress guard in TIVIDYFacade::completeWork; do not use this command as a drop-in replacement for the Facade's completeWork
+	- EscalateWorkCommand: `execute()` saves state, calls `receiver->escalate()`; `undo()` restores the snapshot. Matches the Facade's `escalateWork` semantics exactly
+	- CancelWorkCommand: `execute()` saves state, calls `receiver->close()`. **Note**: closes the whole instance, not a single work item — it is functionally identical to CloseWorkflowCommand
+	- CloseWorkflowCommand: `execute()` saves state, calls `receiver->close()`; `undo()` restores the snapshot. Matches the Facade's `closeWorkflow` semantics exactly
+	- Invoker: non-owning `command` pointer, `setCommand()`, `executeCommand()` (throws if no command), `undoCommand()` (throws if no command). All documented
+- DONE: Facade integration (this session)
+	- TIVIDYFacade now owns one `Invoker`, one `EscalateWorkCommand`, and one `CloseWorkflowCommand` as private members
+	- `escalateWork(instance)` sets the receiver on `escalateCmd`, configures the Invoker, and calls `invoker.executeCommand()` — the command saves a memento before escalating, enabling undo
+	- `closeWorkflow(instance)` sets the receiver on `closeCmd`, configures the Invoker, and calls `invoker.executeCommand()` — same memento/undo path
+	- `undoLastCommand()` added to TIVIDYFacade's public interface; it delegates to `invoker.undoCommand()`, restoring the instance to its pre-escalation or pre-closure state
+	- `Invoker.h`, `EscalateWorkCommand.h`, and `CloseWorkflowCommand.h` added to the TIVIDYFacade.h includes
+	- The UML's dependency arrow from TIVIDYFacade to Invoker is now accurate
+- CHANGE: three commands have misleading names relative to their actual behaviour
+	- AssignWorkCommand starts processing, not work assignment (see note above)
+	- CompleteWorkCommand resolves the instance directly, bypassing Facade safeguards (see note above)
+	- CancelWorkCommand closes the whole instance rather than cancelling a single item (see note above)
+- ADD: `undoLastCommand()` on TIVIDYFacade — not in the original UML, added to expose the undo capability to callers. Only the last escalate or close is undoable; earlier operations are not tracked by the Invoker
+- NOT DONE: needs the team
+	- AssignWorkCommand, CompleteWorkCommand, and CancelWorkCommand are not wired through the Facade because their implemented behaviour does not match the Facade method with the same name. The team should either rename the commands to match what they actually do, or rewrite their `execute()` to match the Facade's validated logic so they can be safely integrated
 
 ---
 # COMPOSITE
 
-- CHANGE:
-- ADD:
-- REMOVE:
-- DECIDE:
+- DONE: implementation
+	- WorkflowComponent (abstract): declares `execute()`, `isComplete()`, `collectWorkItems()`, and `clone()`. Component participant in the Composite pattern
+	- WorkItem (Leaf): implements WorkflowComponent. Holds `name`, `completed`, `requiredRole`, and `priority`. `execute()` marks the item as started, `complete()` marks it done, `isComplete()` returns the flag
+	- WorkflowStage (Composite): holds a vector of non-owning WorkflowComponent pointers. `add()`, `remove()`, and a `swap()` helper used by the builder when wrapping an item in a priority decorator. `execute()` calls execute on every child; `isComplete()` returns true when every non-cancelled child is complete; `collectWorkItems()` recurses into children
+	- SubProcess (Composite): same interface as WorkflowStage, used for nested sub-processes opened with `beginSubProcess()` / `endSubProcess()` in the builder. Structurally identical to WorkflowStage but semantically distinct (a sub-process groups related steps and can be nested arbitrarily deep)
+	- PriorityDecorator wraps a WorkflowComponent and stores a priority value. The builder's `addPriority()` replaces an item in the stage with its wrapped decorator so the stage traverses the decorator transparently. The decorator is a Decorator (see DECORATOR section) but participates in the Composite tree as a leaf-wrapping node
+- CHANGE: UML shows only `WorkflowComponent`, `WorkItem`, and `WorkflowStage`; the code adds `SubProcess` as a second composite participant. The `swap()` helper on WorkflowStage and SubProcess is not in the UML but is needed by the builder
+- ADD: `SubProcess` was not in the original UML diagram; it was added to support nested sub-processes in workflow definitions
+- ADD: `collectWorkItems()` added to WorkflowComponent to allow traversal of the tree to gather all leaf WorkItems; not in the UML
+- REMOVE: nothing removed relative to the UML
+- DECIDE: Nothing open
 
 ---
 # ADAPTER
@@ -106,17 +151,40 @@
 	- Team decided: Option B — keep the throwing behaviour, fix the documentation instead of the code. A missing recipient or unconfigured service is a caller error; surfacing it immediately is more useful than a silent no-op that could hide a notification that never went out
 	- EmailAdapter.h rewritten: doc comment now states the real contract (`@throws std::invalid_argument` for a null recipient, `@throws std::logic_error` for a missing service), with a `@par Preconditions` paragraph explaining why these are enforced rather than silently skipped
 	- Tests updated to match: the two cases that previously expected a silent no-op (`CHECK_FALSE(run.threw)`) now assert `CHECK_THROWS_AS(..., std::logic_error)` / `CHECK_THROWS_AS(..., std::invalid_argument)`
-- ADD:
-- REMOVE:
-- DECIDE:
+- DONE: structure
+	- NotificationService (Target interface): declares `sendNotification(const std::string& message)` as a pure virtual; virtual destructor added
+	- ExternalEmailService (Adaptee): concrete class with its own `sendEmail(std::string)` method; no inheritance from NotificationService
+	- EmailAdapter (Adapter): inherits NotificationService, holds a non-owning `ExternalEmailService* service` and a `Participant* recipient`. `sendNotification()` adapts the call to `service->sendEmail()`, adding the recipient's email as a prefix. Default constructor sets `service` to null; `override` keyword added
+- ADD: nothing beyond what the UML shows for this pattern
+- REMOVE: nothing removed relative to the UML
+- DECIDE: Nothing open
 
 ---
 # FACADE
 
-- CHANGE:
-- ADD:
-- REMOVE:
+- DONE: original UML operations all implemented
+	- `createWorkflow(name)` and `createWorkflow()` — allocate and register a WorkflowDefinition; caller owns the returned pointer
+	- `startWorkflow(definition)` — creates an instance from the definition, calls `submit()` then `activate()`, registers it, and returns it; caller owns the returned pointer
+	- `assignWork(instance, item)` — validates and calls `item->execute()` after dependency checks; does not select a participant
+	- `completeWork(instance, item)` — marks the item complete and resolves the instance when all items are done, with an Active→InProgress guard before resolve
+	- `escalateWork(instance)` — now dispatched through `EscalateWorkCommand` via the Facade's Invoker (see COMMAND section)
+	- `closeWorkflow(instance)` — now dispatched through `CloseWorkflowCommand` via the Facade's Invoker (see COMMAND section)
+- DONE: Facade wired to Command/Invoker (this session)
+	- The original UML drew a dependency arrow from TIVIDYFacade to Invoker, but the previous code called `instance->escalate()` and `instance->close()` directly — the Invoker was never used. That gap is now closed
+	- TIVIDYFacade owns `Invoker invoker`, `EscalateWorkCommand escalateCmd`, and `CloseWorkflowCommand closeCmd` as private members
+	- `escalateWork` and `closeWorkflow` set their command's receiver and call `invoker.executeCommand()`
+	- `undoLastCommand()` added to the public interface and delegates to `invoker.undoCommand()`
+- ADD: the Facade's public surface grew far past the 6 operations in the original UML diagram. Everything below is additional:
+	- Instance-level work management: `assignWork(instance, item, participants)` (strategy-based), `completeWork(instance, item, participant)`, `addWorkItemToInstance`, `cancelWorkItem`, `reassignWorkItem`, `changeWorkItemRole`, `changeWorkItemPriority`, `addParticipantToInstance`
+	- Query operations: `getHistory`, `getProgress`, `getIncompleteWorkItems`, `getAllWorkItems`, `getParticipants`, `getParticipantObjects`, `getAssignedWorkItems`, `getAssignee`
+	- Registry queries: `getAllInstances`, `getAllDefinitions`, `getInstancesForDefinition`, `getRolesForDefinition`, `getParticipantsForDefinition`, `getAllParticipants`, `getDefinitionName`
+	- Definition-building, all routed through a per-definition `ConcreteWorkflowBuilder` the Facade owns: `configureAssignmentStrategy`, `configureEscalationHandler`, `addRoleToDefinition`, `addWorkItemToDefinition`, `addDependencyToWorkItem`, `addPriorityToWorkItem`, `createWorkItemInDefinition`, `beginSubProcessInDefinition`, `endSubProcessInDefinition`, `createParticipantInDefinition`, `addParticipantToDefinition`, `createSequentialWorkflow` (via `WorkflowDirector`)
+	- A real constructor/destructor: the Facade owns one builder per definition (`std::map<WorkflowDefinition*, ConcreteWorkflowBuilder*> builders`), created lazily by the private `builderFor()`, and deletes them in `~TIVIDYFacade()`
+	- `undoLastCommand()` — not in the original UML; exposes Command/Invoker undo for escalate and close
+- CHANGE: the UML's dependency arrow from TIVIDYFacade to Invoker was stale before this session; it is now accurate
+- REMOVE: nothing removed relative to the UML
 - DECIDE:
+	- Ownership of `definitions` and `instances` is caller-managed. `~TIVIDYFacade()` only deletes its builders; nothing in the Facade deletes the `WorkflowDefinition*` or `WorkflowInstance*` it hands out. Fine for the current demo but worth noting in the report if a memory-leak check is part of marking
 
 ---
 # MEMENTO
@@ -134,7 +202,11 @@
 ---
 # DECORATOR
 
-- CHANGE:
-- ADD:
-- REMOVE:
-- DECIDE:
+- DONE: implementation
+	- WorkItemDecorator (abstract Decorator): inherits WorkflowComponent, holds a `WorkflowComponent* component` pointer. Default is non-owning; a decorator produced by `clone()` sets `ownsWrapped = true` and deletes the wrapped clone on destruction. Concrete decorators must implement `execute()` and `isComplete()`
+	- PriorityDecorator (ConcreteDecorator): wraps a WorkflowComponent and adds a `priority` integer. `execute()` and `isComplete()` delegate to the wrapped component. `getPriority()` and `setPriority()` expose the value. The builder's `addPriority()` calls this and replaces the original item in the stage with the decorator
+	- The priority value is written onto the underlying WorkItem as well (via `WorkItem::setPriority()`), so the priority survives cloning into a workflow instance and is visible to assignment strategies through `WorkItem::getPriority()`
+- CHANGE: UML shows only `WorkItemDecorator` and one concrete decorator; the code has exactly that, so the structure matches. The ownership subtlety (ownsWrapped flag for clone-produced decorators) is not in the UML but is needed for safe tree cloning
+- ADD: nothing beyond what the UML shows for this pattern
+- REMOVE: nothing removed relative to the UML
+- DECIDE: Nothing open
