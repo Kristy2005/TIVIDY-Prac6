@@ -173,7 +173,9 @@ TEST_CASE("resolveIfComplete behaves the same from completeWork and cancelWorkIt
 
 TEST_CASE("Facade builds a definition through the builder-backed methods") {
     TIVIDYFacade facade;
-    WorkflowDefinition* definition = facade.createWorkflow("Onboarding");
+    // The unique_ptr owns the definition and deletes it at end of scope.
+    std::unique_ptr<WorkflowDefinition> owned(facade.createWorkflow("Onboarding"));
+    WorkflowDefinition* definition = owned.get();
     REQUIRE(definition != nullptr);
     CHECK(facade.getDefinitionName(definition) == "Onboarding");
 
@@ -204,7 +206,9 @@ TEST_CASE("Facade builds a definition through the builder-backed methods") {
 
 TEST_CASE("Facade sub-process nesting through beginSubProcessInDefinition/endSubProcessInDefinition") {
     TIVIDYFacade facade;
-    WorkflowDefinition* definition = facade.createWorkflow("Review");
+    // The unique_ptr owns the definition and deletes it at end of scope.
+    std::unique_ptr<WorkflowDefinition> owned(facade.createWorkflow("Review"));
+    WorkflowDefinition* definition = owned.get();
 
     WorkItem* outer = facade.createWorkItemInDefinition(definition, "Outer step");
     REQUIRE(outer != nullptr);
@@ -224,7 +228,10 @@ TEST_CASE("Facade creates a sequential workflow from WorkflowStep recipes") {
     steps.push_back(WorkflowStep("Draft", "Author", 1));
     steps.push_back(WorkflowStep("Review", "Reviewer", 2));
 
-    WorkflowDefinition* definition = facade.createSequentialWorkflow("Publishing", steps);
+    // The unique_ptr owns the definition. It is declared before the instance,
+    // so the instance is destroyed first.
+    std::unique_ptr<WorkflowDefinition> owned(facade.createSequentialWorkflow("Publishing", steps));
+    WorkflowDefinition* definition = owned.get();
     REQUIRE(definition != nullptr);
     CHECK(facade.getDefinitionName(definition) == "Publishing");
 
@@ -243,14 +250,18 @@ TEST_CASE("Facade creates a sequential workflow from WorkflowStep recipes") {
 TEST_CASE("Facade adds, reassigns and reroles work at the instance level") {
     TIVIDYFacade facade;
     WorkflowDefinition definition;
+
+    // Declared before the instance, so it outlives the instance. The instance
+    // clears its assignments from external participants in its destructor.
+    Participant reviewer("Reviewer One");
+    reviewer.addRole("Reviewer");
+
     std::unique_ptr<WorkflowInstance> instance(facade.startWorkflow(&definition));
     instance->startProcessing();
 
     WorkItem* item = facade.addWorkItemToInstance(instance.get(), "Dynamic task", "Reviewer");
     REQUIRE(item != nullptr);
 
-    Participant reviewer("Reviewer One");
-    reviewer.addRole("Reviewer");
     CHECK_NOTHROW(facade.addParticipantToInstance(instance.get(), &reviewer, false));
 
     CHECK_NOTHROW(facade.reassignWorkItem(instance.get(), item, &reviewer));
@@ -272,12 +283,15 @@ TEST_CASE("Facade adds, reassigns and reroles work at the instance level") {
 TEST_CASE("changing a work item's required role auto-releases an incompatible assignee") {
     TIVIDYFacade facade;
     WorkflowDefinition definition;
+
+    // Declared before the instance, so it outlives the instance.
+    Participant reviewer("Reviewer One");
+    reviewer.addRole("Reviewer");
+
     std::unique_ptr<WorkflowInstance> instance(facade.startWorkflow(&definition));
     instance->startProcessing();
 
     WorkItem* item = facade.addWorkItemToInstance(instance.get(), "Dynamic task", "Reviewer");
-    Participant reviewer("Reviewer One");
-    reviewer.addRole("Reviewer");
     facade.addParticipantToInstance(instance.get(), &reviewer, false);
     facade.reassignWorkItem(instance.get(), item, &reviewer);
     REQUIRE(facade.getAssignee(instance.get(), item) == &reviewer);
@@ -298,8 +312,11 @@ TEST_CASE("Facade validates null arguments on the newer instance- and definition
     WorkItemType item("Task");
     root.add(&item);
     definition.setRoot(&root);
-    std::unique_ptr<WorkflowInstance> instance(facade.startWorkflow(&definition));
+
+    // Declared before the instance, so it outlives the instance.
     Participant participant("Someone");
+
+    std::unique_ptr<WorkflowInstance> instance(facade.startWorkflow(&definition));
 
     CHECK_THROWS_AS(facade.cancelWorkItem(nullptr, &item), std::invalid_argument);
     CHECK_THROWS_AS(facade.cancelWorkItem(instance.get(), nullptr), std::invalid_argument);
