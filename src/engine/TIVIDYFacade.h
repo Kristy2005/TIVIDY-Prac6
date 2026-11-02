@@ -6,10 +6,15 @@
 #include "Participant.h"
 #include "WorkflowHistory.h"
 #include "WorkflowBuilder.h"
+#include "WorkflowDirector.h"
 
+#include <map>
+#include <string>
 #include <vector>
 
 namespace tividy {
+class ConcreteWorkflowBuilder;
+
 /**
  * @brief Facade exposing common workflow operations through a small interface.
  *
@@ -24,6 +29,21 @@ namespace tividy {
  */
 	class TIVIDYFacade {
 	public:
+    /** @brief Construct a facade with no definitions or instances. */
+    TIVIDYFacade();
+
+    /**
+     * @brief Destroy the facade's builders.
+     *
+     * Definitions and instances are not deleted here; their owners still
+     * delete them, instances before the definitions they came from.
+     */
+    ~TIVIDYFacade();
+
+    /** @brief Copying is disabled because the facade owns its builders. */
+    TIVIDYFacade(const TIVIDYFacade&) = delete;
+    TIVIDYFacade& operator=(const TIVIDYFacade&) = delete;
+
 	/**
      * @brief Allocate an empty workflow definition.
      * @return Newly allocated definition; caller owns the returned pointer.
@@ -244,14 +264,6 @@ namespace tividy {
           */
         std::vector<Role<void>*> getRolesForDefinition(WorkflowDefinition* definition) const;
 
-        // /**
-        //   * @brief Add a participant to a specific workflow definition.
-        //   * @param definition Workflow definition to which the participant will be added; must not be null.
-        //   * @param participant Participant to add; must not be null.
-        //   * @throws std::invalid_argument If either argument is null.
-        //   */
-        // void addParticipantToDefinition(WorkflowDefinition* definition, Participant* participant);
-
         /**
           * @brief Configure the assignment strategy for a specific workflow definition.
           * @param definition Workflow definition for which to configure the strategy; must not be null.
@@ -302,12 +314,75 @@ namespace tividy {
           */
        void addPriorityToWorkItem(WorkflowDefinition* definition, WorkItem* item, int priority);
 
-       
+       /**
+         * @brief Create a work item owned by the definition and add it to the work structure.
+         * @param definition Definition to add to; must not be null.
+         * @param name Non-blank item name.
+         * @param requiredRole Role required for the item; may be empty.
+         * @return The new item; the definition owns it, do not delete it.
+         * @throws std::invalid_argument If @p definition is null or @p name is blank.
+         */
+       WorkItem* createWorkItemInDefinition(WorkflowDefinition* definition,
+                                            const std::string& name,
+                                            const std::string& requiredRole = std::string());
+
+       /** @brief Open a nested sub-process in the definition; later items go inside it. */
+       void beginSubProcessInDefinition(WorkflowDefinition* definition);
+
+       /** @brief Close the innermost open sub-process of the definition. */
+       void endSubProcessInDefinition(WorkflowDefinition* definition);
+
+       /**
+         * @brief Create a participant owned by the definition.
+         *
+         * Instances started from the definition afterwards include the participant.
+         * @param definition Definition to add to; must not be null.
+         * @param name Non-blank participant name, unique within the definition.
+         * @param role Optional first role; also registered as a role of the definition.
+         * @return The new participant; the definition owns it, do not delete it.
+         * @throws std::invalid_argument On a null definition or a blank/duplicate name.
+         */
+       Participant* createParticipantInDefinition(WorkflowDefinition* definition,
+                                                  const std::string& name,
+                                                  const std::string& role = std::string());
+
+       /**
+         * @brief Register an existing, caller-owned participant with a definition.
+         * @throws std::invalid_argument On null arguments or a blank/duplicate name.
+         */
+       void addParticipantToDefinition(WorkflowDefinition* definition, Participant* participant);
+
+       /**
+         * @brief Return the participants registered with a definition.
+         * @throws std::invalid_argument If @p definition is null.
+         */
+       std::vector<Participant*> getParticipantsForDefinition(WorkflowDefinition* definition) const;
+
+       /** @brief Return every participant registered with any definition, without duplicates. */
+       std::vector<Participant*> getAllParticipants() const;
+
+       /**
+         * @brief Create a definition whose steps run one after another.
+         * @param name Name of the new definition.
+         * @param steps Recipe passed to WorkflowDirector::constructSequentialWorkflow.
+         * @return New definition registered with the facade.
+         * @throws std::invalid_argument If a step is invalid; nothing is created.
+         */
+       WorkflowDefinition* createSequentialWorkflow(const std::string& name,
+                                                    const std::vector<WorkflowStep>& steps);
+
+       /** @brief Return a definition's name. @throws std::invalid_argument If null. */
+       std::string getDefinitionName(WorkflowDefinition* definition) const;
+
      private:
         std::vector<WorkflowDefinition*> definitions;
         std::vector<WorkflowInstance*> instances;
-        WorkflowBuilder* builder;
-        
+
+        /** @brief One builder per definition, kept so priority and nesting state persists. Owned. */
+        std::map<WorkflowDefinition*, ConcreteWorkflowBuilder*> builders;
+
+        /** @brief Find or create the builder that edits @p definition. */
+        ConcreteWorkflowBuilder& builderFor(WorkflowDefinition* definition);
 	};
 
 

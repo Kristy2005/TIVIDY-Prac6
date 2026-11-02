@@ -13,23 +13,45 @@ class WorkflowInstance;
 /**
  * @brief Blueprint used to configure and create workflow instances.
  *
- * The root component, assignment strategy, and escalation handler are stored
- * as non-owning pointers. Their owners must keep them alive while this
- * definition or any instance using it needs them. createInstance() returns a
- * newly allocated instance; the caller is responsible for deleting it.
+ * A definition holds the work structure (root component), the assignment
+ * strategy, the escalation handler, the roles and the participants that take
+ * part in workflows built from it.
  *
- * The currently declared name field is reserved and is not used by the
- * implementation.
+ * @par Ownership
+ * The root component, assignment strategy and escalation handler are
+ * non-owning unless set with setOwnedRoot(). Roles and participants are
+ * non-owning unless added with takeOwnership = true. Components handed to
+ * adoptComponent() are always owned. Everything the definition owns is
+ * deleted in its destructor. Every instance created from a definition must
+ * be deleted before the definition, because instances point at the
+ * definition's participants.
  *
+ * @par Participants
+ * Participants registered here are copied (as pointers) into every instance
+ * created afterwards by createInstance(). The same Participant object is
+ * shared by those instances, so its workload counts work across all of them.
+ * Participants added to a definition after an instance exists are not added
+ * to that instance; use WorkflowInstance::addParticipant for that.
+ *
+ * createInstance() returns a newly allocated instance; the caller is
+ * responsible for deleting it.
+ *
+ * Copying is disabled because a copy would own the same objects twice.
  */
 
 class WorkflowDefinition {
 public:
-    /** @brief Construct a definition with no root, assignment strategy or handler. */
+    /** @brief Construct a named definition with no root, assignment strategy or handler. */
     WorkflowDefinition(const std::string& name);
 
-    /*@brief default constructor*/
+    /** @brief Default constructor (empty name). */
     WorkflowDefinition();
+
+    /** @brief Return the definition's name (empty if none was given). */
+    const std::string& getName() const;
+
+    /** @brief Change the definition's name. */
+    void setName(const std::string& newName);
 
     /**
      * @brief Set the root component that represents this workflow.
@@ -89,6 +111,10 @@ public:
 
     /**
      * @brief Allocate a workflow instance based on this definition.
+     *
+     * The new instance clones the work tree and registers this definition's
+     * participants.
+     *
      * @return Newly allocated instance, initially in the Submitted state; caller owns it.
      */
     WorkflowInstance* createInstance();
@@ -113,13 +139,57 @@ public:
     void setOwnedRoot(WorkflowComponent* component);
 
     /**
-     * @brief Add a role to the workflow definition.
-     * @param role Role pointer; must not be null.
-     * @throws std::invalid_argument If @p role is null.
+     * @brief Transfer ownership of a component to this definition.
+     *
+     * The component is deleted with the definition. It is not added to the
+     * work tree; the caller (normally the builder) places it in a stage.
+     * If the call throws, the component has already been deleted.
+     *
+     * @param component Component to own; must not be null.
+     * @throws std::invalid_argument If @p component is null.
      */
-    void addRole(Role<void>* role);
+    void adoptComponent(WorkflowComponent* component);
+
     /**
-     * @brief Destructor deleting root.
+     * @brief Add a role to the workflow definition.
+     *
+     * Adding the same pointer again does nothing.
+     *
+     * @param role Role pointer; must not be null.
+     * @param takeOwnership When true the definition deletes the role.
+     * @throws std::invalid_argument If @p role is null, or a different role
+     *         with the same non-empty name is already present.
+     */
+    void addRole(Role<void>* role, bool takeOwnership = false);
+
+    /**
+     * @brief Register a participant for workflows built from this definition.
+     *
+     * Adding the same pointer again does nothing.
+     *
+     * @param participant Participant to register; must not be null and must
+     *        have a non-blank name unique within this definition.
+     * @param takeOwnership When true the definition deletes the participant.
+     * @throws std::invalid_argument If @p participant is null, has a blank
+     *         name, or another participant already has that name.
+     */
+    void addParticipant(Participant* participant, bool takeOwnership = false);
+
+    /**
+     * @brief Return the participants registered with this definition.
+     * @return Copy of the pointer list, in the order they were added; non-owning.
+     */
+    std::vector<Participant*> getParticipants() const;
+
+    /**
+     * @brief Find a registered participant by name.
+     * @param participantName Exact name to look for.
+     * @return The participant, or nullptr when none has that name.
+     */
+    Participant* findParticipant(const std::string& participantName) const;
+
+    /**
+     * @brief Destructor. Deletes the owned root, components, roles and participants.
      */
     ~WorkflowDefinition();
 
@@ -128,17 +198,19 @@ public:
      * @return Vector of role pointers; non-owning and may be empty.
      */
     std::vector<Role<void>*> getRoles() const;
+
 private:
-    /**
-     * @brief Indicates whether this definition owns and must delete its root component.
-     */
-    bool ownsRoot;
+    WorkflowDefinition(const WorkflowDefinition&);
+    WorkflowDefinition& operator=(const WorkflowDefinition&);
 
     /** @brief Definition name */
     std::string name;
 
-    /** @brief Root workflow component; non-owning. */
+    /** @brief Root workflow component. */
     WorkflowComponent* root;
+
+    /** @brief Indicates whether this definition owns and must delete its root component. */
+    bool ownsRoot;
 
     /** @brief Configured assignment strategy; non-owning. */
     AssignmentStrategy* strategy;
@@ -146,8 +218,20 @@ private:
     /** @brief First escalation handler; non-owning. */
     Handler* escalationHandler;
 
-    /** @brief Configured roles; non-owning. */
+    /** @brief Configured roles. */
     std::vector<Role<void>*> roles;
+
+    /** @brief Registered participants. */
+    std::vector<Participant*> participants;
+
+    /** @brief Components deleted with this definition (items, sub-processes, decorators). */
+    std::vector<WorkflowComponent*> ownedComponents;
+
+    /** @brief Roles deleted with this definition. */
+    std::vector<Role<void>*> ownedRoles;
+
+    /** @brief Participants deleted with this definition. */
+    std::vector<Participant*> ownedParticipants;
 };
 }
 #endif

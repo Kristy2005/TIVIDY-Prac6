@@ -28,6 +28,20 @@ public:
      */
     void remove(WorkflowComponent* component);
 
+    /**
+     * @brief Swap one child for another without changing its position.
+     *
+     * Used by the builder to put a decorator in the place of the item it
+     * wraps. The stage never deletes @p oldComponent; the caller keeps
+     * responsibility for it (it is non-owning in definition trees).
+     *
+     * @param oldComponent Child to replace; must currently be in this node.
+     * @param newComponent Replacement; must not be null, this node, or
+     *        already a child.
+     * @return true if the replacement happened; otherwise false.
+     */
+    bool replace(WorkflowComponent* oldComponent, WorkflowComponent* newComponent);
+
     /** @brief Execute each child component. */
     virtual void execute();
 
@@ -58,6 +72,6 @@ private:
     bool ownsComponents = false;
 };
 
-#endif // TIVIDY_SUB_PROCESS_H
 }
 
+#endif // TIVIDY_SUB_PROCESS_H
