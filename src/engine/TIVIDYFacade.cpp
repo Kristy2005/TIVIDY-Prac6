@@ -8,6 +8,7 @@
 #include "ConcreteWorkflowBuilder.h"
 #include "PriorityDecorator.h"
 #include "WorkflowDirector.h"
+#include "ActiveState.h"
 
 #include <algorithm>
 
@@ -67,6 +68,7 @@ WorkflowInstance* TIVIDYFacade::startWorkflow(WorkflowDefinition* definition) {
     WorkflowInstance* instance = definition->createInstance();
     instance->submit();
     instance->activate();
+    //instance->startProcessing();
     this->instances.push_back(instance);
     return instance;
 }
@@ -95,6 +97,10 @@ void TIVIDYFacade::completeWork(WorkflowInstance* instance, WorkItem* item) {
     instance->completeWorkItem(item);
 
     if (instance->areAllWorkItemsComplete()) {
+
+        if(dynamic_cast<ActiveState*>(instance->getState()) != nullptr) {
+            instance->startProcessing();
+        }
         instance->resolve();
     }
 }
@@ -168,6 +174,9 @@ void TIVIDYFacade::completeWork(
     participant->completeWork(instance, actualItem);
 
     if (instance->areAllWorkItemsComplete()) {
+        if(dynamic_cast<ActiveState*>(instance->getState()) != nullptr) {
+            instance->startProcessing();
+        }
         instance->resolve();
     }
 }
@@ -263,6 +272,9 @@ void TIVIDYFacade::cancelWorkItem(WorkflowInstance* instance, WorkItem* item) {
     }
     instance->cancelWorkItem(item);
     if (instance->areAllWorkItemsComplete()) {
+        if(dynamic_cast<ActiveState*>(instance->getState()) != nullptr) {
+            instance->startProcessing();
+        }
         instance->resolve();
     }
 }
@@ -397,7 +409,7 @@ void TIVIDYFacade::addWorkItemToDefinition(WorkflowDefinition* definition, WorkI
     if (definition == nullptr || item == nullptr) {
         throw std::invalid_argument("addWorkItemToDefinition: definition and item cannot be null");
     }
-    this->builderFor(definition).addWorkItem(item);
+    builderFor(definition).addWorkItem(item);
 }
 
 void TIVIDYFacade::addDependencyToWorkItem(WorkflowDefinition* definition, WorkItem* item, WorkItem* dependency) {

@@ -13,7 +13,7 @@ namespace tividy{
   }
 
   void WorkItem::execute() {
-    std::cout<<"Executing work item: " << this->name << std::endl;
+    // std::cout<<"Executing work item: " << this->name << std::endl;
   }
 
   bool WorkItem::isComplete() const {
