@@ -12,7 +12,7 @@ file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS src/*.cpp)
 list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 add_library(tividy_engine ${ENGINE_SRC})
-target_include_directories(tividy_engine PUBLIC src/engine)
+target_include_directories(tividy_engine PUBLIC src)
 
 # The application (TUI)
 find_package(Curses REQUIRED)
