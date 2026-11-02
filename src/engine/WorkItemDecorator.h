@@ -6,9 +6,13 @@
 /**
  * @brief Abstract decorator base for adding behaviour to a workflow component.
  *
- * The decorator holds a non-owning pointer to the wrapped component. Concrete
- * decorators must implement execute() and isComplete(), normally delegating
- * to the wrapped component while adding their own behaviour.
+ * The decorator holds a pointer to the wrapped component. By default the
+ * pointer is non-owning (the builder keeps the original item alive in the
+ * definition). A decorator produced by clone() owns the wrapped clone it
+ * created and deletes it, so cloned work trees do not leak.
+ *
+ * Concrete decorators must implement execute() and isComplete(), normally
+ * delegating to the wrapped component while adding their own behaviour.
  */
 
 namespace tividy {
@@ -21,7 +25,7 @@ public:
      */
     explicit WorkItemDecorator(WorkflowComponent* wrapped);
 
-    /** @brief Inherited virtual destruction is preserved through the base. */
+    /** @brief Deletes the wrapped component only if this decorator owns it. */
     virtual ~WorkItemDecorator();
 
     /** @brief Execute the decorated component; implemented by subclasses. */
@@ -35,10 +39,22 @@ public:
     virtual void collectWorkItems(std::vector<WorkItem*>& items);
 
 protected:
-    /** Non-owning pointer to the component wrapped by this decorator. */
-    WorkflowComponent* component;
-};
+    /**
+     * @brief Make this decorator delete the wrapped component on destruction.
+     * @param owns true to take ownership; false (default state) for non-owning.
+     */
+    void setOwnsWrapped(bool owns);
 
-#endif // TIVIDY_WORK_ITEM_DECORATOR_H
+    /** Pointer to the component wrapped by this decorator. */
+    WorkflowComponent* component;
+
+private:
+    /** @brief True when the wrapped component is deleted with this decorator. */
+    bool ownsWrapped;
+
+    WorkItemDecorator(const WorkItemDecorator&);
+    WorkItemDecorator& operator=(const WorkItemDecorator&);
+};
 }
 
+#endif // TIVIDY_WORK_ITEM_DECORATOR_H

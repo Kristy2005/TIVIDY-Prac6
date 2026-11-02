@@ -7,26 +7,56 @@
 #include "Role.h"
 #include "ConcreteWorkflowBuilder.h"
 #include "PriorityDecorator.h"
+#include "WorkflowDirector.h"
+
+#include <algorithm>
 
 #include <stdexcept>
 #include <vector>
 
 namespace tividy {
 
+TIVIDYFacade::TIVIDYFacade() : definitions(), instances(), builders() {}
+
+TIVIDYFacade::~TIVIDYFacade() {
+    for (std::map<WorkflowDefinition*, ConcreteWorkflowBuilder*>::iterator it = builders.begin();
+         it != builders.end(); ++it) {
+        delete it->second;
+    }
+}
+
+ConcreteWorkflowBuilder& TIVIDYFacade::builderFor(WorkflowDefinition* definition) {
+    if (definition == nullptr) {
+        throw std::invalid_argument("builderFor: definition cannot be null");
+    }
+    std::map<WorkflowDefinition*, ConcreteWorkflowBuilder*>::iterator found = builders.find(definition);
+    if (found != builders.end()) {
+        return *found->second;
+    }
+    // Configuring mode: the builder edits the definition but does not own it.
+    ConcreteWorkflowBuilder* created = new ConcreteWorkflowBuilder(definition);
+    try {
+        builders[definition] = created;
+    } catch (...) {
+        delete created;
+        throw;
+    }
+    return *created;
+}
+
 WorkflowDefinition* TIVIDYFacade::createWorkflow(const std::string& name) {
-    ConcreteWorkflowBuilder builder;
-    // Constructing the workflow definition
     WorkflowDefinition* definition = new WorkflowDefinition(name);
-    this->definitions.push_back(definition);
+    try {
+        this->definitions.push_back(definition);
+    } catch (...) {
+        delete definition;
+        throw;
+    }
     return definition;
 }
 
 WorkflowDefinition* TIVIDYFacade::createWorkflow() {
-    ConcreteWorkflowBuilder builder;
-    // Constructing the workflow definition
-    WorkflowDefinition* definition = new WorkflowDefinition();
-    this->definitions.push_back(definition);
-    return definition;
+    return createWorkflow(std::string());
 }
 
 WorkflowInstance* TIVIDYFacade::startWorkflow(WorkflowDefinition* definition) {
@@ -346,54 +376,135 @@ void TIVIDYFacade::addRoleToDefinition(WorkflowDefinition* definition, Role<void
     if (definition == nullptr || role == nullptr) {
         throw std::invalid_argument("addRoleToDefinition: definition and role cannot be null");
     }
-    ConcreteWorkflowBuilder builder;
-    definition->addRole(role);
+    builderFor(definition).addRole(role);
 }
-
-// void TIVIDYFacade::addParticipantToDefinition(WorkflowDefinition* definition, Participant* participant) {
-//     if (definition == nullptr || participant == nullptr) {
-//         throw std::invalid_argument("addParticipantToDefinition: definition and participant cannot be null");
-//     }
-//     // ConcreteWorkflowBuilder builder;
-//     this->builder->addParticipant(participant);
-// }
 
 void TIVIDYFacade::configureAssignmentStrategy(WorkflowDefinition* definition, AssignmentStrategy* strategy) {
     if (definition == nullptr || strategy == nullptr) {
         throw std::invalid_argument("configureAssignmentStrategy: definition and strategy cannot be null");
     }
-    ConcreteWorkflowBuilder builder;
-    definition->setAssignmentStrategy(strategy);
+    builderFor(definition).setAssignmentStrategy(strategy);
 }
 
 void TIVIDYFacade::configureEscalationHandler(WorkflowDefinition* definition, Handler* handler) {
     if (definition == nullptr || handler == nullptr) {
         throw std::invalid_argument("configureEscalationHandler: definition and handler cannot be null");
     }
-    ConcreteWorkflowBuilder builder;
-    definition->setEscalationHandler(handler);
+    builderFor(definition).setEscalationHandler(handler);
 }
 
 void TIVIDYFacade::addWorkItemToDefinition(WorkflowDefinition* definition, WorkItem* item) {
     if (definition == nullptr || item == nullptr) {
         throw std::invalid_argument("addWorkItemToDefinition: definition and item cannot be null");
     }
-    // ConcreteWorkflowBuilder builder;
-    this->builder->addWorkItem(item);
+    this->builderFor(definition).addWorkItem(item);
 }
 
 void TIVIDYFacade::addDependencyToWorkItem(WorkflowDefinition* definition, WorkItem* item, WorkItem* dependency) {
     if (definition == nullptr || item == nullptr || dependency == nullptr) {
         throw std::invalid_argument("addDependencyToWorkItem: arguments cannot be null");
     }
-    item->addDependency(dependency);
+    // 'item' must wait for 'dependency'.
+    builderFor(definition).addDependency(dependency, item);
 }
 
 void TIVIDYFacade::addPriorityToWorkItem(WorkflowDefinition* definition, WorkItem* item, int priority) {
     if (definition == nullptr || item == nullptr) {
         throw std::invalid_argument("addPriorityToWorkItem: definition and item cannot be null");
     }
-    this->builder->addPriority(item, priority);
+    builderFor(definition).addPriority(item, priority);
+}
+
+WorkItem* TIVIDYFacade::createWorkItemInDefinition(
+    WorkflowDefinition* definition,
+    const std::string& name,
+    const std::string& requiredRole) {
+    if (definition == nullptr) {
+        throw std::invalid_argument("createWorkItemInDefinition: definition cannot be null");
+    }
+    return builderFor(definition).createWorkItem(name, requiredRole);
+}
+
+void TIVIDYFacade::beginSubProcessInDefinition(WorkflowDefinition* definition) {
+    if (definition == nullptr) {
+        throw std::invalid_argument("beginSubProcessInDefinition: definition cannot be null");
+    }
+    builderFor(definition).beginSubProcess();
+}
+
+void TIVIDYFacade::endSubProcessInDefinition(WorkflowDefinition* definition) {
+    if (definition == nullptr) {
+        throw std::invalid_argument("endSubProcessInDefinition: definition cannot be null");
+    }
+    builderFor(definition).endSubProcess();
+}
+
+Participant* TIVIDYFacade::createParticipantInDefinition(
+    WorkflowDefinition* definition,
+    const std::string& name,
+    const std::string& role) {
+    if (definition == nullptr) {
+        throw std::invalid_argument("createParticipantInDefinition: definition cannot be null");
+    }
+    return builderFor(definition).createParticipant(name, role);
+}
+
+void TIVIDYFacade::addParticipantToDefinition(WorkflowDefinition* definition, Participant* participant) {
+    if (definition == nullptr || participant == nullptr) {
+        throw std::invalid_argument("addParticipantToDefinition: definition and participant cannot be null");
+    }
+    builderFor(definition).addParticipant(participant);
+}
+
+std::vector<Participant*> TIVIDYFacade::getParticipantsForDefinition(WorkflowDefinition* definition) const {
+    if (definition == nullptr) {
+        throw std::invalid_argument("getParticipantsForDefinition: definition cannot be null");
+    }
+    return definition->getParticipants();
+}
+
+std::vector<Participant*> TIVIDYFacade::getAllParticipants() const {
+    std::vector<Participant*> all;
+    for (std::size_t d = 0; d < definitions.size(); ++d) {
+        const std::vector<Participant*> members = definitions[d]->getParticipants();
+        for (std::size_t p = 0; p < members.size(); ++p) {
+            if (std::find(all.begin(), all.end(), members[p]) == all.end()) {
+                all.push_back(members[p]);
+            }
+        }
+    }
+    return all;
+}
+
+WorkflowDefinition* TIVIDYFacade::createSequentialWorkflow(
+    const std::string& name,
+    const std::vector<WorkflowStep>& steps) {
+    WorkflowDefinition* definition = createWorkflow(name);
+    try {
+        WorkflowDirector director;
+        director.setBuilder(&builderFor(definition));
+        director.constructSequentialWorkflow(steps);
+    } catch (...) {
+        // Do not leave a half-built definition registered.
+        definitions.erase(std::remove(definitions.begin(), definitions.end(), definition),
+                          definitions.end());
+        std::map<WorkflowDefinition*, ConcreteWorkflowBuilder*>::iterator found = builders.find(definition);
+        if (found != builders.end()) {
+            delete found->second;
+            builders.erase(found);
+        }
+        delete definition;
+        throw;
+    }
+    return definition;
+}
+
+std::string TIVIDYFacade::getDefinitionName(WorkflowDefinition* definition) const {
+    if (definition == nullptr) {
+        throw std::invalid_argument("getDefinitionName: definition cannot be null");
+    }
+    return definition->getName();
 }
 
 } // namespace tividy
+

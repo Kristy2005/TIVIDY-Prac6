@@ -2,7 +2,8 @@
 #include <stdexcept>
 
 namespace tividy {
-WorkItemDecorator::WorkItemDecorator(WorkflowComponent* wrapped) : component(wrapped) {
+WorkItemDecorator::WorkItemDecorator(WorkflowComponent* wrapped)
+    : component(wrapped), ownsWrapped(false) {
     if (component == nullptr) {
         throw std::invalid_argument("WorkItemDecorator requires a non-null component");
     }
@@ -12,7 +13,13 @@ void WorkItemDecorator::collectWorkItems(std::vector<WorkItem*>& items) {
     component->collectWorkItems(items);
 }
 
+void WorkItemDecorator::setOwnsWrapped(bool owns) {
+    ownsWrapped = owns;
+}
+
 WorkItemDecorator::~WorkItemDecorator() {
-    // The wrapped component is non-owning and must not be deleted here.
+    if (ownsWrapped) {
+        delete component;
     }
+}
 }

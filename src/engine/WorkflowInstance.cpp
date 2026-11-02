@@ -41,6 +41,22 @@ WorkflowInstance::WorkflowInstance(WorkflowDefinition* workflowDefinition)
         }
     }
 
+    // Register the participants configured on the definition (non-owning).
+    // They are shared with every other instance of the same definition.
+    if (definition != nullptr) {
+        try {
+            const std::vector<Participant*> defaults = definition->getParticipants();
+            for (std::size_t i = 0; i < defaults.size(); ++i) {
+                addParticipant(defaults[i], false);
+            }
+        } catch (...) {
+            for (std::size_t i = 0; i < participants.size(); ++i) {
+                participants[i]->clearAssignmentsForInstance(this);
+            }
+            delete workTree;
+            throw;
+        }
+    }
 }
 
 WorkflowInstance::~WorkflowInstance() {

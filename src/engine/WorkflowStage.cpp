@@ -33,6 +33,24 @@ void WorkflowStage::remove(WorkflowComponent* component) {
             return;
     }
 }}
+bool WorkflowStage::replace(WorkflowComponent* oldComponent, WorkflowComponent* newComponent) {
+    if (oldComponent == nullptr || newComponent == nullptr || newComponent == this) {
+        return false;
+    }
+    for (std::vector<WorkflowComponent*>::size_type i = 0; i < components.size(); ++i) {
+        if (components[i] == newComponent) {
+            return false;
+        }
+    }
+    for (std::vector<WorkflowComponent*>::size_type i = 0; i < components.size(); ++i) {
+        if (components[i] == oldComponent) {
+            components[i] = newComponent;
+            return true;
+        }
+    }
+    return false;
+}
+
 void WorkflowStage::execute() {
     for (std::vector<WorkflowComponent*>::iterator it = components.begin();
          it != components.end(); ++it) {
