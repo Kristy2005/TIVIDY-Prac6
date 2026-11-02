@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TIVIDY | Workflow Demonstrator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo">LP</span><div><strong>LA TIVIDY</strong><small>WORKFLOW ENGINE</small></div></div>
+    <span class="system"><i></i></span>
+  </header>
+
+  <main class="shell">
+    <section id="scenarioScreen" class="screen active">
+      <div class="eyebrow">WELCOME TO TIVIDY (by LA PEACE)</div>
+      <h1>What process would you like to demonstrate?</h1>
+      <p class="intro">Choose a workflow scenario.</p>
+      <div id="scenarioGrid" class="scenario-grid"></div>
+    </section>
+
+    <section id="startScreen" class="screen">
+      <button class="back" onclick="goToScenarios()">← All scenarios</button>
+      <div class="eyebrow" id="startCategory">SCENARIO</div>
+      <h1 id="startTitle">Start a workflow</h1>
+      <p class="intro" id="startDescription"></p>
+      <div class="start-card">
+        <div class="start-icon" id="startIcon">↗</div>
+        <div>
+          <h2>Ready to begin?</h2>
+          <p>This will create a new case and move it into the submitted state.</p>
+          <label for="caseName">Case / reference name</label>
+          <input id="caseName" maxlength="70" placeholder="e.g. Patient admission / Complaint 014">
+          <label for="reportText">Submit your report or request</label>
+          <textarea id="reportText" rows="4" placeholder="Describe the matter that needs to be processed..."></textarea>
+          <button class="primary" onclick="submitCase()">Submit report and start process →</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="processScreen" class="screen">
+      <div class="process-head">
+        <div><button class="back" onclick="confirmExit()">← Exit process</button><div class="eyebrow" id="processCategory">WORKFLOW</div><h1 id="processTitle"></h1><p class="intro" id="caseSubtitle"></p></div>
+        <div class="state-pill" id="statePill">SUBMITTED</div>
+      </div>
+      <div class="progress-wrap"><div class="progress-label"><span>Workflow journey</span><b id="progressText">0%</b></div><div class="progress"><i id="progressBar"></i></div></div>
+      <div class="process-grid">
+        <div class="main-panel">
+          <div class="state-heading"><span class="state-icon" id="stateIcon">1</span><div><div class="eyebrow">CURRENT STATE</div><h2 id="stateTitle">Report submitted</h2><p id="stateDescription"></p></div></div>
+          <div id="decisionArea"></div>
+        </div>
+        <aside class="side-panel">
+          <h3>Case details</h3>
+          <div class="detail"><span>Reference</span><b id="caseReference">—</b></div>
+          <div class="detail"><span>Current handler</span><b id="currentHandler">—</b></div>
+          <div class="detail"><span>Current role</span><b id="currentRole">—</b></div>
+          <div class="detail"><span>Escalations</span><b id="escalationCount">0</b></div>
+          <hr>
+          <h3>Process states</h3>
+          <div id="stateTimeline" class="timeline"></div>
+        </aside>
+      </div>
+      <div class="activity-panel"><h3>Case activity</h3><div id="activityLog"><p class="muted">No activity yet.</p></div></div>
+    </section>
+
+    <section id="closedScreen" class="screen">
+      <div class="closed-card">
+        <div class="closed-mark">✓</div>
+        <div class="eyebrow">WORKFLOW FINISHED</div>
+        <h1 id="closedTitle">Case closed</h1>
+        <p id="closedMessage"></p>
+        <div class="closed-summary" id="closedSummary"></div>
+        <button class="primary" onclick="goToScenarios()">Choose another scenario</button>
+        <button class="secondary" onclick="restartSame()">Run this scenario again</button>
+      </div>
+    </section>
+  </main>
+  <footer>TIVIDY · by LA PEACE</footer>
+  <div id="toast" role="status"></div>
+  <script src="script.js"></script>
+</body>
+</html>
