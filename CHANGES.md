@@ -27,15 +27,6 @@
 - CHANGE: comments that promised behaviour that does not exist
 	- "Instance records the failure and notifies the remaining observers" became a `@todo`
 	- "Holds the recipient and the service" became a `@warning`, the class has neither
-- NOT DONE: needs the team
-	- Push or pull, and what an observer is told about a change
-	- Failure handling when an observer throws
-	- Extracting a WorkflowSubject
-	- NotificationObserver recipient and service
-	- HistoryObserver as an audit trail of events, not mementos
-	- ProgressObserver reporting the state and the amount of work done
-	- Participant email address for EmailAdapter
-	- `sendNotification` taking the message by const reference
 ---
 # BUILDER
 
@@ -45,7 +36,6 @@
 	- WorkflowDirector drives a WorkflowBuilder through two fixed recipes: `constructSequentialWorkflow` (each step depends on the previous) and `constructParallelWorkflow` (no dependencies). Both validate the step list before touching the builder
 	- `WorkflowStep` struct added to WorkflowDirector.h — holds `name`, `role`, and `priority`
 - CHANGE: UML shows only a plain `WorkflowBuilder` and `WorkflowDirector`; the code separates them into three classes (`WorkflowBuilder` interface, `ConcreteWorkflowBuilder`, `WorkflowDirector`) and adds `WorkflowStep`. The Facade also holds one `ConcreteWorkflowBuilder*` per definition in a `std::map`; none of this is in the diagram
-- ADD: WorkflowDirector now exposes `constructParallelWorkflow` in addition to the sequential variant shown in the UML; the sequential recipe is accessible both through `constructSequentialWorkflow` (direct) and through `addStep` / `constructWorkflow` (accumulated steps)
 - REMOVE: nothing removed relative to the UML
 - DECIDE: Nothing open
 
@@ -63,14 +53,6 @@
 - CHANGE: memory-safety bug introduced mid-revert
 	- After reverting to shared states, WorkflowInstance::setState() still contained `delete old;` left over from the owned-state design. Since `old` now always points at a `static` local (never allocated with `new`), this was an invalid free — undefined behaviour, and a likely crash the first time any instance transitioned. Removed; shared states are never deleted, by any code, anywhere
 	- createMemento()/restore() comments ("the memento gets its own copy" / "deletes the old state and notifies") were left over from the owned-state version and no longer described what the code did. Reworded to say the memento stores the same shared pointer, and that restoring never deletes anything
-- NOT DONE: needs the team
-	- escalate(): InProgressState.h's doc comment still describes escalate() as a transition belonging to the State pattern ("moves the instance to EscalatedState"), but there is no EscalatedState class and WorkflowState declares no escalate() operation. The real escalate() lives entirely on WorkflowInstance: it checks `dynamic_cast<InProgressState*>(currentState)` and, if that succeeds, forwards to `definition->handleEscalation()`; the case stays In Progress. Team needs to decide whether escalation becomes a proper fifth WorkflowState operation (adds an EscalatedState, or keeps the instance In Progress) or whether InProgressState.h's comment should just be corrected to describe the dynamic_cast approach actually in use
-	- `final` was recommended for ResolvedState and ClosedState (per WorkflowState.h's own note that they "reject every transition") but has not been added to either class declaration yet
-	- Misleading error message wording, flagged early and still unresolved:
-		- SubmittedState::resolve() throws "Resolution not yet implemented" — reads as a stub, but the behaviour (reject resolve from Submitted) is intentional and permanent, not a TODO
-		- ActiveState::resolve() throws "Cannot resolve an inactive workflow instance" — the instance is Active, not inactive, when this fires; the wording should explain that work hasn't started yet, not that the instance is inactive
-	- StateTests.cpp's makeInstanceIn() helper still does `instance->setState(new S())` to force a test instance into a given starting state. Under the shared-state model this leaks one object per test case (harmless, test-only, confined to that file) unless changed to `static S s; instance->setState(&s);`
-
 ---
 # STRATEGY
 
@@ -97,9 +79,6 @@
 - CHANGE: UML shows only `Handler` and one concrete handler; the code provides four concrete handlers (`ApprovalHandler`, `EscalationHandler`, `WorkHandler`, `FinalDecisionHandler`). The class names and the number of participants differ from the original diagram
 - ADD: `WorkHandler` and `FinalDecisionHandler` were not in the original UML diagram; they were added to demonstrate a complete three-link chain
 - REMOVE: nothing removed relative to the UML
-- NOT DONE: needs the team
-	- FinalDecisionHandler currently accepts the request without recording a decision or changing the workflow state. If escalation is supposed to have visible effects (e.g. set a flag or change a state), the body of FinalDecisionHandler::handleRequest() must be filled in
-	- EscalationHandler throws when there is no successor. If a chain of length one (only an ApprovalHandler) is a valid configuration, EscalationHandler's throwing behaviour is too strict; the policy should be decided and documented
 
 ---
 # COMMAND
@@ -125,8 +104,6 @@
 	- CompleteWorkCommand resolves the instance directly, bypassing Facade safeguards (see note above)
 	- CancelWorkCommand closes the whole instance rather than cancelling a single item (see note above)
 - ADD: `undoLastCommand()` on TIVIDYFacade — not in the original UML, added to expose the undo capability to callers. Only the last escalate or close is undoable; earlier operations are not tracked by the Invoker
-- NOT DONE: needs the team
-	- AssignWorkCommand, CompleteWorkCommand, and CancelWorkCommand are not wired through the Facade because their implemented behaviour does not match the Facade method with the same name. The team should either rename the commands to match what they actually do, or rewrite their `execute()` to match the Facade's validated logic so they can be safely integrated
 
 ---
 # COMPOSITE
@@ -183,9 +160,6 @@
 	- `undoLastCommand()` — not in the original UML; exposes Command/Invoker undo for escalate and close
 - CHANGE: the UML's dependency arrow from TIVIDYFacade to Invoker was stale before this session; it is now accurate
 - REMOVE: nothing removed relative to the UML
-- DECIDE:
-	- Ownership of `definitions` and `instances` is caller-managed. `~TIVIDYFacade()` only deletes its builders; nothing in the Facade deletes the `WorkflowDefinition*` or `WorkflowInstance*` it hands out. Fine for the current demo but worth noting in the report if a memory-leak check is part of marking
-
 ---
 # MEMENTO
 
@@ -194,10 +168,6 @@
 	- `WorkflowState* getState() const;` and `void setState(WorkflowState* state);` added to WorkflowMemento
 	- These store the same shared WorkflowState pointer the instance holds, not a copy — consistent with the STATE section's decision to keep states as shared, stateless singletons. No clone() was needed on WorkflowMemento's side either, for the same reason
 - REMOVE: Nothing for now
-- DECIDE:
-	- Whether we should make it a flyweight such that when a WorkflowInstance member variables are altered
-	- Observers are still in tact
-	- WorkflowDefinition is still in tact
 
 ---
 # DECORATOR
